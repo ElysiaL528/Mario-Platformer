@@ -31,7 +31,7 @@ namespace Platformer
 
             if (HitBox.Contains(mouseState.X, mouseState.Y))
             {
-                _color = Color.Black;
+                _color = Color.DarkGray;
                 if (mouseState.LeftButton == ButtonState.Pressed && lastms.LeftButton == ButtonState.Released)
                 {
                     isclicked = true;

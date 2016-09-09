@@ -81,6 +81,7 @@
     <Compile Include="Frame.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="LevelMaps.cs" />
+    <Compile Include="ULevelMaps.cs" />
     <Compile Include="ULevels.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

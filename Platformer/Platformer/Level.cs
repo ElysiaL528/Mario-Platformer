@@ -10,7 +10,7 @@ namespace Platformer
     public class Level
     {
         public List<Sprite> platforms = new List<Sprite>();
-        Texture2D backgroundImage;
+        public Texture2D backgroundImage;
         public Sprite Door;
 
         public Level(List<Sprite> platform, Texture2D background, Sprite door)

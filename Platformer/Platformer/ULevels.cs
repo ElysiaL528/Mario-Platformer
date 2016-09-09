@@ -23,16 +23,17 @@ namespace Platformer
      public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(backgroundImage, new Microsoft.Xna.Framework.Rectangle(0, 0, 1000, 489), Color.White);
-            
 
-            for (int i = 0; i < platforms.Count; i++)
-            {
-                platforms[i].Draw(spriteBatch);
-            }
             for (int i = 0; i < _lavaPlatform.Count; i++)
             {
                 _lavaPlatform[i].Draw(spriteBatch);
             }
+            for (int i = 0; i < platforms.Count; i++)
+            {
+                platforms[i].Draw(spriteBatch);
+            }
+            
+            
             Door.Draw(spriteBatch);
         }
     }

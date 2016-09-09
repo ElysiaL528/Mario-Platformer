@@ -5,12 +5,8 @@ using System.Text;
 
 namespace Platformer
 {
-    public enum LevelMaps
+    public enum ULevelMaps
     {
-        Stars,
-        Sunset,
-        Clouds,
-        Black,
-        Gameover,
+        Kelp,
     }
 }
