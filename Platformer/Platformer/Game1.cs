@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Media;
 namespace Platformer
 {
     /* To do: Is there a way to differentiate levels & ULevels? (LevelMap & ULevelMap dictionaries?)
+     * - Fix game
             - Some buttons don't highlight
             - Lava platforms aren't showing up (Ulevel 3)
             - Moving Platforms
@@ -32,11 +33,6 @@ namespace Platformer
             - Title game (& change title screen)
 
         COMPRESS CODE
-
-
-        Aug. 22, 2016 commit - Map selection
-        Aug. 27, 2016 commit - Attempted to fix map selection bug
-        Aug. 29, 2016 commit - Fixed map selection bug, attempted to fix lava platform bug, created dictionary for ULevelMaps
 
             */
 
@@ -104,45 +100,16 @@ namespace Platformer
         Button LandLevelsButton;
         Button UnderwaterLevelsButton;
         Button BackgroundButton;
-        Level level2;
-        Level level3;
-        Level level4;
-        Level level5;
-        Level level6;
-        Level level7;
-        Level level8;
-        Level level9;
-        Level level10;
-        Level level11;
-        Level level12;
-        Level level13;
-        ULevels level02;
-        ULevels level03;
-        ULevels level04;
-        ULevels level05;
-        ULevels level06;
-        ULevels level07;
-        ULevels level08;
-        ULevels level09;
-        ULevels level010;
-        ULevels level011;
-        ULevels level012;
-        ULevels level013;
-        Sprite bunny;
-        Sprite pizza;
 
-        Level currentLevel;
-        ULevels currentULevel;
+
 
         AnimatedSprite Penguin;
 
         Character Mario;
         Sprite StartScreenBackground;
 
-        Sprite portal1;
-        Sprite portal2;
-        Sprite invert;
-        Sprite uninvert;
+
+
         Sprite flower;
         Button MenuButton;
         Button LevelSelectButton;
@@ -150,6 +117,7 @@ namespace Platformer
         int screen = 6;
         int fireballhitcount = 0;
         string character = "Patrick";
+        string leveltype = "Land";
         int maxFireballHits = 1;
         Button restartbutton;
 
@@ -159,14 +127,6 @@ namespace Platformer
         SpriteFont font2;
         Sprite GameOverScreen;
         Sprite LevelMenuBg;
-        Sprite HealthPowerup;
-
-        Texture2D level1Background;
-        Texture2D Map2;
-        Texture2D Map3;
-        Texture2D Map4;
-        Texture2D UnderwaterMap;
-        Texture2D Gameoverscreen;
 
         Dictionary<AnimationType, List<Frame>> marioAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<AnimationType, List<Frame>> penguinAnimations = new Dictionary<AnimationType, List<Frame>>();
@@ -174,17 +134,28 @@ namespace Platformer
         Dictionary<AnimationType, List<Frame>> SpongebobAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<AnimationType, List<Frame>> PatrickAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<AnimationType, List<Frame>> CoinAnimations = new Dictionary<AnimationType, List<Frame>>();
-        Dictionary<LevelMaps, Texture2D> maps;
-        Dictionary<ULevelMaps, Texture2D> Umaps;
-        
+
+        LevelMap currentMap;
+        Dictionary<LevelMap, Texture2D> maps;
+
 
         TimeSpan movingTime;
         TimeSpan timeToMove = new TimeSpan(0, 0, 0, 0, 2000);
         TimeSpan ShotDelay = TimeSpan.FromMilliseconds(300);
         TimeSpan TimeSinceLastShot = TimeSpan.Zero;
 
-        LevelMaps levelmaps;
-        ULevelMaps Ulevelmaps;
+
+
+
+
+        //
+        //
+        //
+        //
+        Dictionary<World, List<Level>> levels;
+        World currentWorld = World.Land;
+        int currentLevel = 0;
+
 
         public Game1()
         {
@@ -425,13 +396,9 @@ namespace Platformer
 
 
             //Spongebob = new Character(SpongebobSpritesheet, position, SpongebobAnimations, Content.Load<Texture2D>("Fireball"));
-            pizza = new Sprite(Content.Load<Texture2D>("pizza"), new Vector2(870, 210), Color.White);
-            portal2 = new Sprite(Content.Load<Texture2D>("portal"), new Vector2(700, 380), Color.White);
-            portal1 = new Sprite(Content.Load<Texture2D>("portal"), new Vector2(95, 380), Color.White);
-            invert = new Sprite(Content.Load<Texture2D>("invert"), new Vector2(800, 120), Color.White);
-            uninvert = new Sprite(Content.Load<Texture2D>("re-invert"), new Vector2(500, 189), Color.White);
+
+
             flower = new Sprite(Content.Load<Texture2D>("Fireball_Flower"), new Vector2(220, 250), Color.White);
-            bunny = new Sprite(Content.Load<Texture2D>("bunny"), new Vector2(270, 400), Color.White);
             StartScreenBackground = new Sprite(Content.Load<Texture2D>("PlatformerMap1"), new Vector2(0, 0), Color.White);
             GameOverScreen = new Sprite(Content.Load<Texture2D>("GameOver"), new Vector2(0, 0), Color.White);
             LevelMenuBg = new Sprite(Content.Load<Texture2D>("LevelSelectMenu"), new Vector2(0, 0), Color.White);
@@ -467,7 +434,6 @@ namespace Platformer
             ShopButton = new Button(Content.Load<Texture2D>("ShopButton"), new Vector2(400, 100), Color.White);
             ExitButton = new Button(Content.Load<Texture2D>("ExitButton"), new Vector2(400, 400), Color.White);
             PlayButton = new Button(Content.Load<Texture2D>("PlayButton"), new Vector2(400, 400), Color.White);
-            HealthPowerup = new Sprite(Content.Load<Texture2D>("Caduceus"), new Vector2(100, 100), Color.White);
             LandLevelsButton = new Button(Content.Load<Texture2D>("Land Levels_Button"), new Vector2(100, 100), Color.White);
             UnderwaterLevelsButton = new Button(Content.Load<Texture2D>("Underwater Levels_Button"), new Vector2(200, 100), Color.White);
             BackgroundButton = new Button(Content.Load<Texture2D>("ChooseBackgroundButton"), new Vector2(50, 300), Color.White);
@@ -490,299 +456,325 @@ namespace Platformer
              UnderwaterMap = Content.Load<Texture2D>("UnderwaterMap");
              Gameoverscreen = Content.Load<Texture2D>("GameOver");
              */
-            maps = new Dictionary<LevelMaps, Texture2D>();
-            maps.Add(LevelMaps.Stars, Content.Load<Texture2D>("PlatformerMap1"));
-            maps.Add(LevelMaps.Sunset, Content.Load<Texture2D>("PlatformerMap2"));
-            maps.Add(LevelMaps.Clouds, Content.Load<Texture2D>("PlatformerMap3"));
-            maps.Add(LevelMaps.Black, Content.Load<Texture2D>("PlatformerMap4"));
-            maps.Add(LevelMaps.Gameover, Content.Load<Texture2D>("GameOver"));
+            maps = new Dictionary<LevelMap, Texture2D>();
+            maps.Add(LevelMap.Stars, Content.Load<Texture2D>("PlatformerMap1"));
+            maps.Add(LevelMap.Sunset, Content.Load<Texture2D>("PlatformerMap2"));
+            maps.Add(LevelMap.Clouds, Content.Load<Texture2D>("PlatformerMap3"));
+            maps.Add(LevelMap.Black, Content.Load<Texture2D>("PlatformerMap4"));
+            maps.Add(LevelMap.Gameover, Content.Load<Texture2D>("GameOver"));
+            maps.Add(LevelMap.Kelp, Content.Load<Texture2D>("UnderwaterMap"));
 
 
-            currentLevelMap = maps[levelmaps];
+            currentLevelMap = maps[currentMap];
 
-            Umaps = new Dictionary<ULevelMaps, Texture2D>();
-            Umaps.Add(ULevelMaps.Kelp, Content.Load<Texture2D>("ULevelMap"));
 
             if (setLevelMap)
             {
-                currentLevelMap = maps[levelmaps];
+                currentLevelMap = maps[currentMap];
             }
+            levels = new Dictionary<World, List<Level>>();
+            levels.Add(World.Land, new List<Level>());
+            #region level0-0
+            List<Sprite> level0_0Platforms = new List<Sprite>();
+            level0_0Platforms.Add(new Sprite(platformImage, new Vector2(0, 429), Color.White));
+            level0_0Platforms[0].Size = new Vector2(59, 61);
+            level0_0Platforms.Add(new Sprite(platformImage, new Vector2(104, 349), Color.White));
+            level0_0Platforms[1].Size = new Vector2(20, 20);
+            level0_0Platforms.Add(new Sprite(platformImage, new Vector2(280, 297), Color.White));
+            level0_0Platforms[2].Size = new Vector2(20, 20);
+            level0_0Platforms.Add(new Sprite(platformImage, new Vector2(460, 248), Color.White));
+            level0_0Platforms[3].Size = new Vector2(20, 20);
+            level0_0Platforms.Add(new Sprite(platformImage, new Vector2(635, 207), Color.White));
+            level0_0Platforms[4].Size = new Vector2(20, 20);
+            level0_0Platforms.Add(new Sprite(platformImage, new Vector2(793, 125), Color.White));
+            level0_0Platforms[5].Size = new Vector2(20, 20);
 
-            #region level0
-            List<Sprite> level0Platforms = new List<Sprite>();
-            level0Platforms.Add(new Sprite(platformImage, new Vector2(0, 429), Color.White));
-            level0Platforms[0].Size = new Vector2(59, 61);
-            level0Platforms.Add(new Sprite(platformImage, new Vector2(104, 349), Color.White));
-            level0Platforms[1].Size = new Vector2(20, 20);
-            level0Platforms.Add(new Sprite(platformImage, new Vector2(280, 297), Color.White));
-            level0Platforms[2].Size = new Vector2(20, 20);
-            level0Platforms.Add(new Sprite(platformImage, new Vector2(460, 248), Color.White));
-            level0Platforms[3].Size = new Vector2(20, 20);
-            level0Platforms.Add(new Sprite(platformImage, new Vector2(635, 207), Color.White));
-            level0Platforms[4].Size = new Vector2(20, 20);
-            level0Platforms.Add(new Sprite(platformImage, new Vector2(793, 125), Color.White));
-            level0Platforms[5].Size = new Vector2(20, 20);
-
-            level0 = new Level(level0Platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
+            levels[World.Land].Add(new Level(level0_0Platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion            
+            #region level0-1
+            List<Sprite> level0_1Platforms = new List<Sprite>();
+            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(0, 438), Color.White));
+            level0_1Platforms[0].Size = new Vector2(112, 51);
+            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(148, 383), Color.White));
+            level0_1Platforms[1].Size = new Vector2(74, 25);
+            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(262, 437), Color.White));
+            level0_1Platforms[2].Size = new Vector2(165, 52);
+            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(487, 355), Color.White));
+            level0_1Platforms[3].Size = new Vector2(73, 25);
+            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(781, 329), Color.White));
+            level0_1Platforms[4].Size = new Vector2(74, 25);
+            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(873, 439), Color.White));
+            level0_1Platforms[5].Size = new Vector2(127, 50);
+            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(616, 439), Color.White));
+            level0_1Platforms[6].Size = new Vector2(146, 50);
 
-            #region level1
-            List<Sprite> level1Platforms = new List<Sprite>();
-            level1Platforms.Add(new Sprite(platformImage, new Vector2(0, 438), Color.White));
-            level1Platforms[0].Size = new Vector2(112, 51);
+            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(0, 400), Color.White));
+            level0_1Platforms[7].Size = new Vector2(20, 100);
+
+            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(100, 400), Color.White));
+            level0_1Platforms[8].Size = new Vector2(20, 100);
+
+            levels[World.Land].Add(new Level(level0_1Platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(940, 368), Color.White) { Scale = new Vector2(.75f) }));
+
+            #endregion
+            #region level0-2
+            List<Sprite> level0_2Platforms = new List<Sprite>();
+
+            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(1, 447), Color.White));
+            level0_2Platforms[0].Size = new Vector2(101, 41);
+            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(234, 445), Color.White));
+            level0_2Platforms[1].Size = new Vector2(101, 41);
+            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(380, 263), Color.White));
+            level0_2Platforms[2].Size = new Vector2(42, 226);
+            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(593, 183), Color.White));
+            level0_2Platforms[3].Size = new Vector2(40, 306);
+            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(820, 264), Color.White));
+            level0_2Platforms[4].Size = new Vector2(42, 224);
+            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(921, 150), Color.White));
+            level0_2Platforms[5].Size = new Vector2(77, 22);
+            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(540, 363), Color.White));
+            level0_2Platforms[6].Size = new Vector2(156, 53);
 
 
-            level1Platforms.Add(new Sprite(platformImage, new Vector2(148, 383), Color.White));
-            level1Platforms[1].Size = new Vector2(74, 25);
-            level1Platforms.Add(new Sprite(platformImage, new Vector2(262, 437), Color.White));
-            level1Platforms[2].Size = new Vector2(165, 52);
-            level1Platforms.Add(new Sprite(platformImage, new Vector2(487, 355), Color.White));
-            level1Platforms[3].Size = new Vector2(73, 25);
-            level1Platforms.Add(new Sprite(platformImage, new Vector2(781, 329), Color.White));
-            level1Platforms[4].Size = new Vector2(74, 25);
-            level1Platforms.Add(new Sprite(platformImage, new Vector2(873, 439), Color.White));
-            level1Platforms[5].Size = new Vector2(127, 50);
-            level1Platforms.Add(new Sprite(platformImage, new Vector2(616, 439), Color.White));
-            level1Platforms[6].Size = new Vector2(146, 50);
 
-            level1Platforms.Add(new Sprite(platformImage, new Vector2(0, 400), Color.White));
-            level1Platforms[7].Size = new Vector2(20, 100);
+            List<Item> items0_2 = new List<Item>();
+            items0_2.Add(new Item(Content.Load<Texture2D>("bunny"), new Vector2(270, 400), Color.White));
 
-            level1Platforms.Add(new Sprite(platformImage, new Vector2(100, 400), Color.White));
-            level1Platforms[8].Size = new Vector2(20, 100);
+            levels[World.Land].Add(new Level(level0_2Platforms, items0_2, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            #endregion
+            #region level0-3
+            List<Sprite> level0_3Platforms = new List<Sprite>();
+
+            level0_3Platforms.Add(new Sprite(platformImage, new Vector2(1, 465), Color.White));
+            level0_3Platforms[0].Size = new Vector2(995, 23);
+            level0_3Platforms.Add(new Sprite(platformImage, new Vector2(177, 280), Color.White));
+            level0_3Platforms[1].Size = new Vector2(614, 56);
+            level0_3Platforms.Add(new Sprite(platformImage, new Vector2(0, 159), Color.White));
+            level0_3Platforms[2].Size = new Vector2(316, 18);
+            level0_3Platforms.Add(new Sprite(platformImage, new Vector2(775, 153), Color.White));
+            level0_3Platforms[3].Size = new Vector2(221, 18);
+            level0_3Platforms.Add(new Sprite(platformImage, new Vector2(446, 82), Color.White));
+            level0_3Platforms[4].Size = new Vector2(206, 37);
+            level0_3Platforms.Add(new Sprite(platformImage, new Vector2(33, 355), Color.White));
+            level0_3Platforms[5].Size = new Vector2(48, 16);
+
+            List<Item> items0_3 = new List<Item>();
+            items0_3.Add(new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(100, 100), Color.White));
+
+            levels[World.Land].Add(new Level(level0_3Platforms, items0_3, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            #endregion
+            #region level0-4
+            List<Sprite> level0_4Platforms = new List<Sprite>();
+            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(163, 261), Color.White));
+            level0_4Platforms[0].Size = new Vector2(50, 225);
+            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(307, 479), Color.White));
+            level0_4Platforms[1].Size = new Vector2(27, 7);
+            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(307, 1), Color.White));
+            level0_4Platforms[2].Size = new Vector2(38, 341);
+            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(436, 254), Color.White));
+            level0_4Platforms[3].Size = new Vector2(38, 234);
+            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(550, 0), Color.White));
+            level0_4Platforms[4].Size = new Vector2(39, 325);
+            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(569, 479), Color.White));
+            level0_4Platforms[5].Size = new Vector2(39, 6);
+            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(701, 259), Color.White));
+            level0_4Platforms[6].Size = new Vector2(38, 227);
+            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(834, 173), Color.White));
+            level0_4Platforms[7].Size = new Vector2(166, 44);
+
+            levels[World.Land].Add(new Level(level0_4Platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            #endregion
+            #region level0-5
+            List<Sprite> level0_5platforms = new List<Sprite>();
+            level0_5platforms.Add(new Sprite(platformImage, new Vector2(1, 242), Color.White));
+            level0_5platforms[0].Size = new Vector2(858, 41);
+            level0_5platforms.Add(new Sprite(platformImage, new Vector2(257, 297), Color.White));
+            level0_5platforms[1].Size = new Vector2(743, 41);
+            level0_5platforms.Add(new Sprite(platformImage, new Vector2(0, 460), Color.White));
+            level0_5platforms[2].Size = new Vector2(133, 26);
+            level0_5platforms.Add(new Sprite(platformImage, new Vector2(677, 465), Color.White));
+            level0_5platforms[3].Size = new Vector2(321, 23);
+
+            List<Item> items0_5 = new List<Item>();
+
+
+            items0_5.Add(new Item(Content.Load<Texture2D>("pizza"), new Vector2(870, 210), Color.White));
+            items0_5.Add(new Item(Content.Load<Texture2D>("portal"), new Vector2(700, 380), Color.White));
+            items0_5.Add(new Item(Content.Load<Texture2D>("portal"), new Vector2(95, 380), Color.White));
+
+
+            levels[World.Land].Add(new Level(level0_5platforms, items0_5, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 465), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            #endregion
+            #region level0-6
+            List<Sprite> level0_6platforms = new List<Sprite>();
+            level0_6platforms.Add(new Sprite(platformImage, new Vector2(1, 440), Color.White));
+            level0_6platforms[0].Size = new Vector2(280, 45);
+            level0_6platforms.Add(new Sprite(platformImage, new Vector2(357, 349), Color.White));
+            level0_6platforms[1].Size = new Vector2(83, 16);
+            level0_6platforms.Add(new Sprite(platformImage, new Vector2(358, 229), Color.White));
+            level0_6platforms[2].Size = new Vector2(83, 16);
+            level0_6platforms.Add(new Sprite(platformImage, new Vector2(355, 142), Color.White));
+            level0_6platforms[3].Size = new Vector2(235, 12);
+            level0_6platforms.Add(new Sprite(platformImage, new Vector2(494, 229), Color.White));
+            level0_6platforms[4].Size = new Vector2(88, 15);
+            level0_6platforms.Add(new Sprite(platformImage, new Vector2(495, 350), Color.White));
+            level0_6platforms[5].Size = new Vector2(88, 15);
+            level0_6platforms.Add(new Sprite(platformImage, new Vector2(624, 439), Color.White));
+            level0_6platforms[6].Size = new Vector2(374, 46);
+            level0_6platforms.Add(new Sprite(platformImage, new Vector2(439, 141), Color.White));
+            level0_6platforms[7].Size = new Vector2(56, 347);
+
+            List<Item> items0_6 = new List<Item>();
+            items0_6.Add(new Platformer.Item(Content.Load<Texture2D>("Caduceus"), new Vector2(500, 290), Color.White));
+
+            levels[World.Land].Add(new Level(level0_6platforms, items0_6, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 438), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            #endregion
+            #region level0-7
+            List<Sprite> level0_7platforms = new List<Sprite>();
+            level0_7platforms.Add(new Sprite(platformImage, new Vector2(2, 186), Color.White));
+            level0_7platforms[0].Size = new Vector2(996, 56);
+            level0_7platforms.Add(new Sprite(platformImage, new Vector2(237, 448), Color.White));
+            level0_7platforms[1].Size = new Vector2(487, 37);
+
+
+
+
+
+            List<Item> items0_7 = new List<Item>();
+            items0_7.Add(new Item(Content.Load<Texture2D>("invert"), new Vector2(800, 120), Color.White));
+            items0_7.Add(new Item(Content.Load<Texture2D>("re-invert"), new Vector2(500, 189), Color.White));
+
+            levels[World.Land].Add(new Level(level0_7platforms, items0_7, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(500, 447), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            #endregion
+            #region level0-8
+            List<Sprite> level0_8platforms = new List<Sprite>();
+            level0_8platforms.Add(new Sprite(platformImage, new Vector2(1, 452), Color.White));
+            level0_8platforms[0].Size = new Vector2(163, 36);
+            level0_8platforms.Add(new Sprite(platformImage, new Vector2(168, 334), Color.White));
+            level0_8platforms[1].Size = new Vector2(161, 36);
+            level0_8platforms.Add(new Sprite(platformImage, new Vector2(365, 244), Color.White));
+            level0_8platforms[2].Size = new Vector2(161, 36);
+            level0_8platforms.Add(new Sprite(platformImage, new Vector2(593, 177), Color.White));
+            level0_8platforms[3].Size = new Vector2(161, 36);
+            level0_8platforms.Add(new Sprite(platformImage, new Vector2(833, 111), Color.White));
+            level0_8platforms[4].Size = new Vector2(161, 36);
+
+            levels[World.Land].Add(new Level(level0_8platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(940, 110), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            #endregion
+            #region level0-9
+            List<Sprite> level0_9platforms = new List<Sprite>();
+            level0_9platforms.Add(new Sprite(platformImage, new Vector2(208, 135), Color.White));
+            level0_9platforms[0].Size = new Vector2(27, 75);
+            level0_9platforms.Add(new Sprite(platformImage, new Vector2(1, 2), Color.White));
+            level0_9platforms[1].Size = new Vector2(24, 488);
+            level0_9platforms.Add(new Sprite(platformImage, new Vector2(0, 1), Color.White));
+            level0_9platforms[2].Size = new Vector2(1012, 27);
+            level0_9platforms.Add(new Sprite(platformImage, new Vector2(302, 28), Color.White));
+            level0_9platforms[3].Size = new Vector2(47, 285);
+            level0_9platforms.Add(new Sprite(platformImage, new Vector2(25, 136), Color.White));
+            level0_9platforms[4].Size = new Vector2(209, 31);
+            level0_9platforms.Add(new Sprite(platformImage, new Vector2(0, 469), Color.White));
+            level0_9platforms[5].Size = new Vector2(1001, 20);
+            level0_9platforms.Add(new Sprite(platformImage, new Vector2(185, 208), Color.White));
+            level0_9platforms[6].Size = new Vector2(65, 18);
+            level0_9platforms.Add(new Sprite(platformImage, new Vector2(148, 285), Color.White));
+            level0_9platforms[7].Size = new Vector2(829, 28);
+            level0_9platforms.Add(new Sprite(platformImage, new Vector2(457, 127), Color.White));
+            level0_9platforms[8].Size = new Vector2(516, 159);
+            level0_9platforms.Add(new Sprite(platformImage, new Vector2(973, 4), Color.White));
+            level0_9platforms[9].Size = new Vector2(26, 484);
+
+            List<Item> items0_9 = new List<Item>();
+            items0_9.Add(new Item(Content.Load<Texture2D>("portal"), new Vector2(700, 380), Color.White));
+            items0_9.Add(new Item(Content.Load<Texture2D>("portal"), new Vector2(375, 175), Color.White));
+
+
+            levels[World.Land].Add(new Level(level0_9platforms, items0_9, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(910, 130), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            #endregion
+            #region level0-10
+            List<Sprite> level0_10platforms = new List<Sprite>();
+            level0_10platforms.Add(new Sprite(platformImage, new Vector2(0, 230), Color.White));
+            level0_10platforms[0].Size = new Vector2(193, 98);
+            level0_10platforms.Add(new Sprite(platformImage, new Vector2(281, 231), Color.White));
+            level0_10platforms[1].Size = new Vector2(17, 35);
+            level0_10platforms.Add(new Sprite(platformImage, new Vector2(387, 227), Color.White));
+            level0_10platforms[2].Size = new Vector2(17, 35);
+            level0_10platforms.Add(new Sprite(platformImage, new Vector2(500, 226), Color.White));
+            level0_10platforms[3].Size = new Vector2(17, 35);
+            level0_10platforms.Add(new Sprite(platformImage, new Vector2(611, 226), Color.White));
+            level0_10platforms[4].Size = new Vector2(17, 35);
+            level0_10platforms.Add(new Sprite(platformImage, new Vector2(721, 225), Color.White));
+            level0_10platforms[5].Size = new Vector2(17, 35);
+            level0_10platforms.Add(new Sprite(platformImage, new Vector2(814, 219), Color.White));
+            level0_10platforms[6].Size = new Vector2(103, 37);
+
+            levels[World.Land].Add(new Level(level0_10platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(880, 215), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            #endregion
+            #region level0-11
+            List<Sprite> level0_11platforms = new List<Sprite>();
+            level0_11platforms.Add(new Sprite(platformImage, new Vector2(205, 320), Color.White));
+            level0_11platforms[0].Size = new Vector2(14, 14);
+            level0_11platforms.Add(new Sprite(platformImage, new Vector2(95, 213), Color.White));
+            level0_11platforms[1].Size = new Vector2(750, 29);
+            level0_11platforms.Add(new Sprite(platformImage, new Vector2(311, 140), Color.White));
+            level0_11platforms[2].Size = new Vector2(370, 345);
+
+
+            List<Item> items0_11 = new List<Item>();
+            items0_11.Add(new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(100, 100), Color.White));
+
+            levels[World.Land].Add(new Level(level0_11platforms, items0_11, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(700, 440), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            #endregion
+            #region level0-12
+            List<Sprite> level0_12platforms = new List<Sprite>();
+            level0_12platforms.Add(new Sprite(platformImage, new Vector2(1, 249), Color.White));
+            level0_12platforms[0].Size = new Vector2(132, 39);
+            level0_12platforms.Add(new Sprite(platformImage, new Vector2(159, 363), Color.White));
+            level0_12platforms[1].Size = new Vector2(659, 52);
+            level0_12platforms.Add(new Sprite(platformImage, new Vector2(873, 245), Color.White));
+            level0_12platforms[2].Size = new Vector2(132, 39);
+
+            List<Item> items0_12 = new List<Item>();
+            items0_12.Add(new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(100, 100), Color.White));
+
+            levels[World.Land].Add(new Level(level0_12platforms, items0_12, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(900, 240), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            #endregion
+            #region level0-13
+            List<Sprite> level0_13platforms = new List<Sprite>();
+            level0_13platforms.Add(new Sprite(platformImage, new Vector2(82, 463), Color.White));
+            level0_13platforms[0].Size = new Vector2(225, 21);
+            level0_13platforms.Add(new Sprite(platformImage, new Vector2(176, 53), Color.White));
+            level0_13platforms[1].Size = new Vector2(31, 431);
+            level0_13platforms.Add(new Sprite(platformImage, new Vector2(83, 313), Color.White));
+            level0_13platforms[2].Size = new Vector2(223, 26);
+            level0_13platforms.Add(new Sprite(platformImage, new Vector2(85, 187), Color.White));
+            level0_13platforms[3].Size = new Vector2(223, 26);
+            level0_13platforms.Add(new Sprite(platformImage, new Vector2(82, 54), Color.White));
+            level0_13platforms[4].Size = new Vector2(223, 26);
+            level0_13platforms.Add(new Sprite(platformImage, new Vector2(610, 0), Color.White));
+            level0_13platforms[5].Size = new Vector2(33, 388);
+            level0_13platforms.Add(new Sprite(platformImage, new Vector2(456, 123), Color.White));
+            level0_13platforms[6].Size = new Vector2(326, 29);
+            level0_13platforms.Add(new Sprite(platformImage, new Vector2(528, 231), Color.White));
+            level0_13platforms[7].Size = new Vector2(204, 37);
+            level0_13platforms.Add(new Sprite(platformImage, new Vector2(575, 369), Color.White));
+            level0_13platforms[8].Size = new Vector2(98, 22);
+            level0_13platforms.Add(new Sprite(platformImage, new Vector2(789, 326), Color.White));
+            level0_13platforms[9].Size = new Vector2(208, 22);
+            level0_13platforms.Add(new Sprite(platformImage, new Vector2(-1, -108), Color.White));
+            level0_13platforms[10].Size = new Vector2(491, 103);
+            level0_13platforms.Add(new Sprite(platformImage, new Vector2(560, 467), Color.White));
+            level0_13platforms[11].Size = new Vector2(138, 20);
+
+
+            levels[World.Land].Add(new Level(level0_13platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(660, 120), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
 
-            level1 = new Level(level1Platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(940, 368), Color.White) { Scale = new Vector2(.75f) });
-
-
-
-            #region level2
-            List<Sprite> level2Platforms = new List<Sprite>();
-
-            level2Platforms.Add(new Sprite(platformImage, new Vector2(1, 447), Color.White));
-            level2Platforms[0].Size = new Vector2(101, 41);
-            level2Platforms.Add(new Sprite(platformImage, new Vector2(234, 445), Color.White));
-            level2Platforms[1].Size = new Vector2(101, 41);
-            level2Platforms.Add(new Sprite(platformImage, new Vector2(380, 263), Color.White));
-            level2Platforms[2].Size = new Vector2(42, 226);
-            level2Platforms.Add(new Sprite(platformImage, new Vector2(593, 183), Color.White));
-            level2Platforms[3].Size = new Vector2(40, 306);
-            level2Platforms.Add(new Sprite(platformImage, new Vector2(820, 264), Color.White));
-            level2Platforms[4].Size = new Vector2(42, 224);
-            level2Platforms.Add(new Sprite(platformImage, new Vector2(921, 150), Color.White));
-            level2Platforms[5].Size = new Vector2(77, 22);
-            level2Platforms.Add(new Sprite(platformImage, new Vector2(540, 363), Color.White));
-            level2Platforms[6].Size = new Vector2(156, 53);
-
-            level2 = new Level(level2Platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
-            #endregion
-
-            #region level3platforms
-            List<Sprite> level3Platforms = new List<Sprite>();
-
-            level3Platforms.Add(new Sprite(platformImage, new Vector2(1, 465), Color.White));
-            level3Platforms[0].Size = new Vector2(995, 23);
-            level3Platforms.Add(new Sprite(platformImage, new Vector2(177, 280), Color.White));
-            level3Platforms[1].Size = new Vector2(614, 56);
-            level3Platforms.Add(new Sprite(platformImage, new Vector2(0, 159), Color.White));
-            level3Platforms[2].Size = new Vector2(316, 18);
-            level3Platforms.Add(new Sprite(platformImage, new Vector2(775, 153), Color.White));
-            level3Platforms[3].Size = new Vector2(221, 18);
-            level3Platforms.Add(new Sprite(platformImage, new Vector2(446, 82), Color.White));
-            level3Platforms[4].Size = new Vector2(206, 37);
-            level3Platforms.Add(new Sprite(platformImage, new Vector2(33, 355), Color.White));
-            level3Platforms[5].Size = new Vector2(48, 16);
-
-            level3 = new Level(level3Platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
-            #endregion
-
-            List<Sprite> level4Platforms = new List<Sprite>();
-
-            #region level4
-            level4Platforms.Add(new Sprite(platformImage, new Vector2(163, 261), Color.White));
-            level4Platforms[0].Size = new Vector2(50, 225);
-            level4Platforms.Add(new Sprite(platformImage, new Vector2(307, 479), Color.White));
-            level4Platforms[1].Size = new Vector2(27, 7);
-            level4Platforms.Add(new Sprite(platformImage, new Vector2(307, 1), Color.White));
-            level4Platforms[2].Size = new Vector2(38, 341);
-            level4Platforms.Add(new Sprite(platformImage, new Vector2(436, 254), Color.White));
-            level4Platforms[3].Size = new Vector2(38, 234);
-            level4Platforms.Add(new Sprite(platformImage, new Vector2(550, 0), Color.White));
-            level4Platforms[4].Size = new Vector2(39, 325);
-            level4Platforms.Add(new Sprite(platformImage, new Vector2(569, 479), Color.White));
-            level4Platforms[5].Size = new Vector2(39, 6);
-            level4Platforms.Add(new Sprite(platformImage, new Vector2(701, 259), Color.White));
-            level4Platforms[6].Size = new Vector2(38, 227);
-            level4Platforms.Add(new Sprite(platformImage, new Vector2(834, 173), Color.White));
-            level4Platforms[7].Size = new Vector2(166, 44);
-
-            level4 = new Level(level4Platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
-            #endregion
-
-            List<Sprite> level5platforms = new List<Sprite>();
-
-            #region level5
-            level5platforms.Add(new Sprite(platformImage, new Vector2(1, 242), Color.White));
-            level5platforms[0].Size = new Vector2(858, 41);
-            level5platforms.Add(new Sprite(platformImage, new Vector2(257, 297), Color.White));
-            level5platforms[1].Size = new Vector2(743, 41);
-            level5platforms.Add(new Sprite(platformImage, new Vector2(0, 460), Color.White));
-            level5platforms[2].Size = new Vector2(133, 26);
-            level5platforms.Add(new Sprite(platformImage, new Vector2(677, 465), Color.White));
-            level5platforms[3].Size = new Vector2(321, 23);
-
-            level5 = new Level(level5platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 465), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
-            #endregion
-
-            List<Sprite> level6platforms = new List<Sprite>();
-            #region level6
-            level6platforms.Add(new Sprite(platformImage, new Vector2(1, 440), Color.White));
-            level6platforms[0].Size = new Vector2(280, 45);
-            level6platforms.Add(new Sprite(platformImage, new Vector2(357, 349), Color.White));
-            level6platforms[1].Size = new Vector2(83, 16);
-            level6platforms.Add(new Sprite(platformImage, new Vector2(358, 229), Color.White));
-            level6platforms[2].Size = new Vector2(83, 16);
-            level6platforms.Add(new Sprite(platformImage, new Vector2(355, 142), Color.White));
-            level6platforms[3].Size = new Vector2(235, 12);
-            level6platforms.Add(new Sprite(platformImage, new Vector2(494, 229), Color.White));
-            level6platforms[4].Size = new Vector2(88, 15);
-            level6platforms.Add(new Sprite(platformImage, new Vector2(495, 350), Color.White));
-            level6platforms[5].Size = new Vector2(88, 15);
-            level6platforms.Add(new Sprite(platformImage, new Vector2(624, 439), Color.White));
-            level6platforms[6].Size = new Vector2(374, 46);
-            level6platforms.Add(new Sprite(platformImage, new Vector2(439, 141), Color.White));
-            level6platforms[7].Size = new Vector2(56, 347);
-
-            level6 = new Level(level6platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 438), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
-            #endregion
-
-            List<Sprite> level7platforms = new List<Sprite>();
-            #region level7
-            level7platforms.Add(new Sprite(platformImage, new Vector2(2, 186), Color.White));
-            level7platforms[0].Size = new Vector2(996, 56);
-            level7platforms.Add(new Sprite(platformImage, new Vector2(237, 448), Color.White));
-            level7platforms[1].Size = new Vector2(487, 37);
-
-            level7 = new Level(level7platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(500, 447), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
-            #endregion
-
-            List<Sprite> level8platforms = new List<Sprite>();
-            #region
-            level8platforms.Add(new Sprite(platformImage, new Vector2(1, 452), Color.White));
-            level8platforms[0].Size = new Vector2(163, 36);
-            level8platforms.Add(new Sprite(platformImage, new Vector2(168, 334), Color.White));
-            level8platforms[1].Size = new Vector2(161, 36);
-            level8platforms.Add(new Sprite(platformImage, new Vector2(365, 244), Color.White));
-            level8platforms[2].Size = new Vector2(161, 36);
-            level8platforms.Add(new Sprite(platformImage, new Vector2(593, 177), Color.White));
-            level8platforms[3].Size = new Vector2(161, 36);
-            level8platforms.Add(new Sprite(platformImage, new Vector2(833, 111), Color.White));
-            level8platforms[4].Size = new Vector2(161, 36);
-
-            level8 = new Level(level8platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(940, 110), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
-            #endregion
-
-            List<Sprite> level9platforms = new List<Sprite>();
-            #region
-            level9platforms.Add(new Sprite(platformImage, new Vector2(208, 135), Color.White));
-            level9platforms[0].Size = new Vector2(27, 75);
-            level9platforms.Add(new Sprite(platformImage, new Vector2(1, 2), Color.White));
-            level9platforms[1].Size = new Vector2(24, 488);
-            level9platforms.Add(new Sprite(platformImage, new Vector2(0, 1), Color.White));
-            level9platforms[2].Size = new Vector2(1012, 27);
-            level9platforms.Add(new Sprite(platformImage, new Vector2(302, 28), Color.White));
-            level9platforms[3].Size = new Vector2(47, 285);
-            level9platforms.Add(new Sprite(platformImage, new Vector2(25, 136), Color.White));
-            level9platforms[4].Size = new Vector2(209, 31);
-            level9platforms.Add(new Sprite(platformImage, new Vector2(0, 469), Color.White));
-            level9platforms[5].Size = new Vector2(1001, 20);
-            level9platforms.Add(new Sprite(platformImage, new Vector2(185, 208), Color.White));
-            level9platforms[6].Size = new Vector2(65, 18);
-            level9platforms.Add(new Sprite(platformImage, new Vector2(148, 285), Color.White));
-            level9platforms[7].Size = new Vector2(829, 28);
-            level9platforms.Add(new Sprite(platformImage, new Vector2(457, 127), Color.White));
-            level9platforms[8].Size = new Vector2(516, 159);
-            level9platforms.Add(new Sprite(platformImage, new Vector2(973, 4), Color.White));
-            level9platforms[9].Size = new Vector2(26, 484);
-
-            level9 = new Level(level9platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(910, 130), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
-            #endregion
-            List<Sprite> level10platforms = new List<Sprite>();
-            #region
-            level10platforms.Add(new Sprite(platformImage, new Vector2(0, 230), Color.White));
-            level10platforms[0].Size = new Vector2(193, 98);
-            level10platforms.Add(new Sprite(platformImage, new Vector2(281, 231), Color.White));
-            level10platforms[1].Size = new Vector2(17, 35);
-            level10platforms.Add(new Sprite(platformImage, new Vector2(387, 227), Color.White));
-            level10platforms[2].Size = new Vector2(17, 35);
-            level10platforms.Add(new Sprite(platformImage, new Vector2(500, 226), Color.White));
-            level10platforms[3].Size = new Vector2(17, 35);
-            level10platforms.Add(new Sprite(platformImage, new Vector2(611, 226), Color.White));
-            level10platforms[4].Size = new Vector2(17, 35);
-            level10platforms.Add(new Sprite(platformImage, new Vector2(721, 225), Color.White));
-            level10platforms[5].Size = new Vector2(17, 35);
-            level10platforms.Add(new Sprite(platformImage, new Vector2(814, 219), Color.White));
-            level10platforms[6].Size = new Vector2(103, 37);
-
-            level10 = new Level(level10platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(880, 215), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
-            #endregion
-            List<Sprite> level11platforms = new List<Sprite>();
-            #region
-            level11platforms.Add(new Sprite(platformImage, new Vector2(205, 320), Color.White));
-            level11platforms[0].Size = new Vector2(14, 14);
-            level11platforms.Add(new Sprite(platformImage, new Vector2(95, 213), Color.White));
-            level11platforms[1].Size = new Vector2(750, 29);
-            level11platforms.Add(new Sprite(platformImage, new Vector2(311, 140), Color.White));
-            level11platforms[2].Size = new Vector2(370, 345);
-
-            level11 = new Level(level11platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(700, 440), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
-            #endregion
-            List<Sprite> level12platforms = new List<Sprite>();
-            #region
-            level12platforms.Add(new Sprite(platformImage, new Vector2(1, 249), Color.White));
-            level12platforms[0].Size = new Vector2(132, 39);
-            level12platforms.Add(new Sprite(platformImage, new Vector2(159, 363), Color.White));
-            level12platforms[1].Size = new Vector2(659, 52);
-            level12platforms.Add(new Sprite(platformImage, new Vector2(873, 245), Color.White));
-            level12platforms[2].Size = new Vector2(132, 39);
-
-
-            level12 = new Level(level12platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(900, 240), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
-            #endregion
-            List<Sprite> level13platforms = new List<Sprite>();
-            #region
-            level13platforms.Add(new Sprite(platformImage, new Vector2(82, 463), Color.White));
-            level13platforms[0].Size = new Vector2(225, 21);
-            level13platforms.Add(new Sprite(platformImage, new Vector2(176, 53), Color.White));
-            level13platforms[1].Size = new Vector2(31, 431);
-            level13platforms.Add(new Sprite(platformImage, new Vector2(83, 313), Color.White));
-            level13platforms[2].Size = new Vector2(223, 26);
-            level13platforms.Add(new Sprite(platformImage, new Vector2(85, 187), Color.White));
-            level13platforms[3].Size = new Vector2(223, 26);
-            level13platforms.Add(new Sprite(platformImage, new Vector2(82, 54), Color.White));
-            level13platforms[4].Size = new Vector2(223, 26);
-            level13platforms.Add(new Sprite(platformImage, new Vector2(610, 0), Color.White));
-            level13platforms[5].Size = new Vector2(33, 388);
-            level13platforms.Add(new Sprite(platformImage, new Vector2(456, 123), Color.White));
-            level13platforms[6].Size = new Vector2(326, 29);
-            level13platforms.Add(new Sprite(platformImage, new Vector2(528, 231), Color.White));
-            level13platforms[7].Size = new Vector2(204, 37);
-            level13platforms.Add(new Sprite(platformImage, new Vector2(575, 369), Color.White));
-            level13platforms[8].Size = new Vector2(98, 22);
-            level13platforms.Add(new Sprite(platformImage, new Vector2(789, 326), Color.White));
-            level13platforms[9].Size = new Vector2(208, 22);
-            level13platforms.Add(new Sprite(platformImage, new Vector2(-1, -108), Color.White));
-            level13platforms[10].Size = new Vector2(491, 103);
-            level13platforms.Add(new Sprite(platformImage, new Vector2(560, 467), Color.White));
-            level13platforms[11].Size = new Vector2(138, 20);
-
-
-            level13 = new Level(level13platforms, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(660, 120), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
-            #endregion
-            List<Sprite> level01platforms = new List<Sprite>();
-            #region
-            level01platforms.Add(new Sprite(platformImage, new Vector2(18, 473), Color.White));
-            level01platforms[0].Size = new Vector2(968, 19);
+            levels.Add(World.Underwater, new List<Level>());
+            #region level 1-0
+            List<Sprite> level1_0platforms = new List<Sprite>();
+            level1_0platforms.Add(new Sprite(platformImage, new Vector2(18, 473), Color.White));
+            level1_0platforms[0].Size = new Vector2(968, 19);
             /*level01platforms.Add(new Sprite(lavaPlatformImage, new Vector2(0, 0), Color.White));
             level01platforms[1].Size = new Vector2(19, 490);
             level01platforms.Add(new Sprite(lavaPlatformImage, new Vector2(18, 0), Color.White));
@@ -796,118 +788,90 @@ namespace Platformer
             */
 
 
-            List<Sprite> level01lavaplatforms = new List<Sprite>();
-            level01lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(0, 0), Color.White));
-            level01lavaplatforms[0].Size = new Vector2(19, 490);
-            level01lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(18, 0), Color.White));
-            level01lavaplatforms[1].Size = new Vector2(968, 19);
-            level01lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(985, 1), Color.White));
-            level01lavaplatforms[2].Size = new Vector2(15, 488);
-            level01lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(207, 321), Color.White));
-            level01lavaplatforms[3].Size = new Vector2(779, 22);
-            level01lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(17, 157), Color.White));
-            level01lavaplatforms[4].Size = new Vector2(802, 22);
+            List<Sprite> level1_0lavaplatforms = new List<Sprite>();
+            level1_0lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(0, 0), Color.White));
+            level1_0lavaplatforms[0].Size = new Vector2(19, 490);
+            level1_0lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(18, 0), Color.White));
+            level1_0lavaplatforms[1].Size = new Vector2(968, 19);
+            level1_0lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(985, 1), Color.White));
+            level1_0lavaplatforms[2].Size = new Vector2(15, 488);
+            level1_0lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(207, 321), Color.White));
+            level1_0lavaplatforms[3].Size = new Vector2(779, 22);
+            level1_0lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(17, 157), Color.White));
+            level1_0lavaplatforms[4].Size = new Vector2(802, 22);
+
+            levels[World.Underwater].Add(new ULevels(level1_0platforms, level1_0lavaplatforms, new List<Item>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(660, 120), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+
 
             #endregion
-            
-    
-            level01 = new ULevels(level01platforms, level01lavaplatforms, Umaps[ULevelMaps.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(660, 120), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
+            #region level 1-1
+            List<Sprite> level1_1platforms = new List<Sprite>();
+            level1_1platforms.Add(new Sprite(platformImage, new Vector2(0, 435), Color.White));
+            level1_1platforms[0].Size = new Vector2(151, 53);
 
+            List<Sprite> level1_1lavaplatforms = new List<Sprite>();
+            level1_1lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(227, 0), Color.White));
+            level1_1lavaplatforms[0].Size = new Vector2(25, 169);
+            level1_1lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(227, 251), Color.White));
+            level1_1lavaplatforms[1].Size = new Vector2(25, 237);
+            level1_1lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(353, 0), Color.White));
+            level1_1lavaplatforms[2].Size = new Vector2(25, 240);
+            level1_1lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(354, 327), Color.White));
+            level1_1lavaplatforms[3].Size = new Vector2(25, 162);
+            level1_1lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(481, 0), Color.White));
+            level1_1lavaplatforms[4].Size = new Vector2(25, 379);
+            level1_1lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(483, 461), Color.White));
+            level1_1lavaplatforms[5].Size = new Vector2(25, 27);
+            level1_1lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(594, 0), Color.White));
+            level1_1lavaplatforms[6].Size = new Vector2(25, 96);
+            level1_1lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(596, 228), Color.White));
+            level1_1lavaplatforms[7].Size = new Vector2(26, 260);
+            level1_1lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(709, 0), Color.White));
+            level1_1lavaplatforms[8].Size = new Vector2(26, 290);
+            level1_1lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(709, 392), Color.White));
+            level1_1lavaplatforms[9].Size = new Vector2(25, 97);
+            level1_1lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(803, 0), Color.White));
+            level1_1lavaplatforms[10].Size = new Vector2(195, 220);
+            level1_1lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(803, 322), Color.White));
+            level1_1lavaplatforms[11].Size = new Vector2(196, 167);
 
-            List<Sprite> level02platforms = new List<Sprite>();
-            #region
-            level02platforms.Add(new Sprite(platformImage, new Vector2(0, 435), Color.White));
-            level02platforms[0].Size = new Vector2(151, 53);
-            /*level02platforms.Add(new Sprite(lavaPlatformImage, new Vector2(227, 0), Color.White));
-            level02platforms[1].Size = new Vector2(25, 169);
-            level02platforms.Add(new Sprite(lavaPlatformImage, new Vector2(227, 251), Color.White));
-            level02platforms[2].Size = new Vector2(25, 237);
-            level02platforms.Add(new Sprite(lavaPlatformImage, new Vector2(353, 0), Color.White));
-            level02platforms[3].Size = new Vector2(25, 240);
-            level02platforms.Add(new Sprite(lavaPlatformImage, new Vector2(354, 327), Color.White));
-            level02platforms[4].Size = new Vector2(25, 162);
-            level02platforms.Add(new Sprite(lavaPlatformImage, new Vector2(481, 0), Color.White));
-            level02platforms[5].Size = new Vector2(25, 379);
-            level02platforms.Add(new Sprite(lavaPlatformImage, new Vector2(483, 461), Color.White));
-            level02platforms[6].Size = new Vector2(25, 27);
-            level02platforms.Add(new Sprite(lavaPlatformImage, new Vector2(594, 0), Color.White));
-            level02platforms[7].Size = new Vector2(25, 96);
-            level02platforms.Add(new Sprite(lavaPlatformImage, new Vector2(596, 228), Color.White));
-            level02platforms[8].Size = new Vector2(26, 260);
-            level02platforms.Add(new Sprite(lavaPlatformImage, new Vector2(709, 0), Color.White));
-            level02platforms[9].Size = new Vector2(26, 290);
-            level02platforms.Add(new Sprite(lavaPlatformImage, new Vector2(709, 392), Color.White));
-            level02platforms[10].Size = new Vector2(25, 97);
-            level02platforms.Add(new Sprite(lavaPlatformImage, new Vector2(803, 0), Color.White));
-            level02platforms[11].Size = new Vector2(195, 220);
-            level02platforms.Add(new Sprite(lavaPlatformImage, new Vector2(803, 322), Color.White));
-            level02platforms[12].Size = new Vector2(196, 167);
-            */
-
-            List<Sprite> level02lavaplatforms = new List<Sprite>();
-            level02lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(227, 0), Color.White));
-            level02lavaplatforms[0].Size = new Vector2(25, 169);
-            level02lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(227, 251), Color.White));
-            level02lavaplatforms[1].Size = new Vector2(25, 237);
-            level02lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(353, 0), Color.White));
-            level02lavaplatforms[2].Size = new Vector2(25, 240);
-            level02lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(354, 327), Color.White));
-            level02lavaplatforms[3].Size = new Vector2(25, 162);
-            level02lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(481, 0), Color.White));
-            level02lavaplatforms[4].Size = new Vector2(25, 379);
-            level02lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(483, 461), Color.White));
-            level02lavaplatforms[5].Size = new Vector2(25, 27);
-            level02lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(594, 0), Color.White));
-            level02lavaplatforms[6].Size = new Vector2(25, 96);
-            level02lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(596, 228), Color.White));
-            level02lavaplatforms[7].Size = new Vector2(26, 260);
-            level02lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(709, 0), Color.White));
-            level02lavaplatforms[8].Size = new Vector2(26, 290);
-            level02lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(709, 392), Color.White));
-            level02lavaplatforms[9].Size = new Vector2(25, 97);
-            level02lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(803, 0), Color.White));
-            level02lavaplatforms[10].Size = new Vector2(195, 220);
-            level02lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(803, 322), Color.White));
-            level02lavaplatforms[11].Size = new Vector2(196, 167);
-
-            level02 = new ULevels(level02platforms, level02lavaplatforms, Umaps[ULevelMaps.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(950, 300), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
+            levels[World.Underwater].Add(new ULevels(level1_1platforms, level1_1lavaplatforms, new List<Item>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(950, 300), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
-
-            #region ULevel3platforms
-            List<Sprite> ULevel3platforms = new List<Sprite>();
+            #region Level 1-2
+            List<Sprite> Level1_2platforms = new List<Sprite>();
             //Regular platforms || X speed = 0 || Y speed = 0
-            ULevel3platforms.Add(new Sprite(platformImage, new Vector2(0, 70), Color.White));
-            ULevel3platforms[0].Size = new Vector2(143, 28);
-            ULevel3platforms.Add(new Sprite(platformImage, new Vector2(635, 286), Color.White));
-            ULevel3platforms[1].Size = new Vector2(143, 28);
+            Level1_2platforms.Add(new Sprite(platformImage, new Vector2(0, 70), Color.White));
+            Level1_2platforms[0].Size = new Vector2(143, 28);
+            Level1_2platforms.Add(new Sprite(platformImage, new Vector2(635, 286), Color.White));
+            Level1_2platforms[1].Size = new Vector2(143, 28);
             // Horizontally moving platforms || X speed = 5 || Y speed = 0
-            ULevel3platforms.Add(new Sprite(platformImage, new Vector2(180, 69), Color.White));
-            ULevel3platforms[2].Size = new Vector2(139, 28);
-            ULevel3platforms.Add(new Sprite(platformImage, new Vector2(652, 460), Color.White));
-            ULevel3platforms[3].Size = new Vector2(139, 28);
-            ULevel3platforms.Add(new Sprite(platformImage, new Vector2(125, 251), Color.White));
-            ULevel3platforms[4].Size = new Vector2(139, 28);
+            Level1_2platforms.Add(new Sprite(platformImage, new Vector2(180, 69), Color.White));
+            Level1_2platforms[2].Size = new Vector2(139, 28);
+            Level1_2platforms.Add(new Sprite(platformImage, new Vector2(652, 460), Color.White));
+            Level1_2platforms[3].Size = new Vector2(139, 28);
+            Level1_2platforms.Add(new Sprite(platformImage, new Vector2(125, 251), Color.White));
+            Level1_2platforms[4].Size = new Vector2(139, 28);
 
             // Vertically moving platforms || X speed = 0 || Y speed = 5
-            ULevel3platforms.Add(new Sprite(platformImage, new Vector2(862, 83), Color.White));
-            ULevel3platforms[5].Size = new Vector2(139, 28);
-            ULevel3platforms.Add(new Sprite(platformImage, new Vector2(0, 460), Color.White));
-            ULevel3platforms[6].Size = new Vector2(112, 28);
+            Level1_2platforms.Add(new Sprite(platformImage, new Vector2(862, 83), Color.White));
+            Level1_2platforms[5].Size = new Vector2(139, 28);
+            Level1_2platforms.Add(new Sprite(platformImage, new Vector2(0, 460), Color.White));
+            Level1_2platforms[6].Size = new Vector2(112, 28);
 
             // Lava platforms
-            List<Sprite> ULevel3lavaplatforms = new List<Sprite>();
-            ULevel3lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(0, 124), Color.White));
-            ULevel3lavaplatforms[0].Size = new Vector2(795, 23);
-            ULevel3lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(777, 147), Color.White));
-            ULevel3lavaplatforms[1].Size = new Vector2(19, 194);
-            ULevel3lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(265, 314), Color.White));
-            ULevel3lavaplatforms[2].Size = new Vector2(531, 27);
-            ULevel3lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(265, 286), Color.White));
-            ULevel3lavaplatforms[3].Size = new Vector2(33, 29);
-            ULevel3lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(265, 147), Color.White));
-            ULevel3lavaplatforms[4].Size = new Vector2(33, 29);
+            List<Sprite> Level1_2lavaplatforms = new List<Sprite>();
+            Level1_2lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(0, 124), Color.White));
+            Level1_2lavaplatforms[0].Size = new Vector2(795, 23);
+            Level1_2lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(777, 147), Color.White));
+            Level1_2lavaplatforms[1].Size = new Vector2(19, 194);
+            Level1_2lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(265, 314), Color.White));
+            Level1_2lavaplatforms[2].Size = new Vector2(531, 27);
+            Level1_2lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(265, 286), Color.White));
+            Level1_2lavaplatforms[3].Size = new Vector2(33, 29);
+            Level1_2lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(265, 147), Color.White));
+            Level1_2lavaplatforms[4].Size = new Vector2(33, 29);
 
-            level03 = new ULevels(ULevel3platforms, ULevel3lavaplatforms, Umaps[ULevelMaps.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(950, 300), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) });
+            levels[World.Underwater].Add(new ULevels(Level1_2platforms, Level1_2lavaplatforms, new List<Item>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(950, 300), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
 
 
             #endregion
@@ -915,8 +879,6 @@ namespace Platformer
 
             pixel = new Texture2D(GraphicsDevice, 1, 1);
             pixel.SetData<Color>(new Color[] { Color.White });
-
-            currentLevel = level1;
         }
 
         protected override void UnloadContent()
@@ -938,6 +900,16 @@ namespace Platformer
 
             if (screen == 1)
             {
+                Mario.Update(gameTime);
+                levels[currentWorld][currentLevel].Update(Mario);
+
+                Mario.CheckCollision(levels[currentWorld][currentLevel].platforms);
+
+
+
+
+
+
 
 
                 if (character == "Mario")
@@ -961,186 +933,63 @@ namespace Platformer
                 }
 
 
-
-                if (Mario.HitBox.Intersects(bunny.HitBox) && currentLevel == level2)
+                if (currentLevelMap == maps[currentMap])
                 {
-                    hasJumpBoost = true;
-                    Mario.jumpPower = 2;
+                    leveltype = "Land";
                 }
+                //else if(currentLevelMap == maps[c])
+                //{
+                //    leveltype = "Underwater";
+                //}
+                if (leveltype == "Underwater")
+                {
+                    currentLevel = 0;
+                }
+
 
                 if (Mario.touchedLava == true)
                 {
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition - Vector2.UnitY * 50;
+                    enemyisdead = false;
+                    hasfirepower = false;
+                    enemyisdead = false;
+                    MoreLives = false;
                     lives--;
                 }
 
                 //setting your keyboardstate = what is happening with the keyboard
                 if (Mario.Y >= 489)
                 {
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y - 50;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition - Vector2.UnitY * 50;
+                    enemyisdead = false;
+                    hasfirepower = false;
+                    enemyisdead = false;
+                    MoreLives = false;
                     lives--;
                 }
-                if (Mario.HitBox.Intersects(currentLevel.Door.HitBox) && ks.IsKeyDown(Keys.O))
-                {
-                    if (currentLevel == level1)
-                    {
-                        fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        currentLevel = level2;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y;
 
-                    }
-                    else if (currentLevel == level2)
+                if (Mario.HitBox.Intersects(levels[currentWorld][currentLevel].Door.HitBox) && ks.IsKeyDown(Keys.O))
+                {
+                    if (currentLevel < levels[currentWorld].Count)
                     {
+                        currentLevel++;
                         fireballhitcount = 0;
                         Mario.Scale = Vector2.One;
-                        currentLevel = level3;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y;
+                        Mario.Position = levels[currentWorld][currentLevel].startPosition;
                         enemyisdead = false;
-                        penguinPosition = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 1.8f);
-                        MoreLives = false;
-                    }
-                    else if (currentLevel == level3)
-                    {
-                        fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        currentLevel = level4;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y;
-                    }
-                    else if (currentLevel == level4)
-                    {
-                        fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        currentLevel = level5;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y;
-                    }
-                    else if (currentLevel == level5)
-                    {
-                        fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        currentLevel = level6;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y;
-                        MoreLives = false;
-                    }
-                    else if (currentLevel == level6)
-                    {
-                        fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        currentLevel = level7;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y;
-                    }
-                    else if (currentLevel == level7)
-                    {
-                        fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        currentLevel = level8;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y;
-                    }
-                    else if (currentLevel == level8)
-                    {
-                        fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        currentLevel = level9;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y;
-                    }
-                    else if (currentLevel == level9)
-                    {
-                        fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        currentLevel = level10;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y;
-                    }
-                    else if (currentLevel == level10)
-                    {
-                        fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        currentLevel = level11;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y - 50;
-                        MoreLives = false;
-                    }
-                    else if (currentLevel == level11)
-                    {
-                        fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        currentLevel = level12;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y;
+                        hasfirepower = false;
                         enemyisdead = false;
-                        Penguin.X = 500;
-                        Penguin.Y = 350;
                         MoreLives = false;
-
                     }
-                    else if (currentLevel == level12)
+                    else
                     {
-                        fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        currentLevel = level13;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y;
-                    }
-                    //else if (currentLevel == level0)
-                    //{
-                    //    Mario.Scale = Vector2.One;
-                    //    currentLevel = level02;
-                    //    Mario.X = 10;
-                    //    Mario.Y = 0;
-                    //}
-                    else if (currentLevel == level01)
-                    {
-                        fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        currentLevel = level02;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y;
-                    }
-                    else if (currentLevel == level02)
-                    {
-                        fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        currentLevel = level03;
-                        Mario.X = currentLevel.platforms[0].X;
-                        Mario.Y = currentLevel.platforms[0].Y;
-                    }
-
-                }
-                if (Mario.HitBox.Intersects(Penguin.HitBox))
-                {
-                    if (enemyisdead == false)
-                    {
-                        if (currentLevel == level3 || currentLevel == level12)
-                        {
-                            lives -= 10;
-                            lostlife = true;
-
-                            if (lives == 0)
-                            {
-
-                            }
-                        }
+                        //finished world
+                        //make them go to main menu
                     }
                 }
-
-                if (currentLevel == level3 || currentLevel == level12)
-                {
-                    Penguin.Update(gameTime);
-                }
-
-                Mario.CheckCollision(currentLevel.platforms);
-                //Mario.CheckLavaCollision(currentLevel.lavaplatforms);
+                //Mario.CheckLavaCollision(currentULevel._lavaPlatform);
 
 
-                Mario.Update(gameTime);
                 base.Update(gameTime);
 
                 if (ks.IsKeyDown(Keys.R))
@@ -1148,151 +997,13 @@ namespace Platformer
                     fireballhitcount = 0;
                     gameisover = false;
                     Mario.Scale = Vector2.One;
-                    currentLevel = level1;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
-                }
-                if (ks.IsKeyDown(Keys.D1))
-                {
-                    fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level1;
-                    Mario.Origin = new Vector2(15, 33);
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
-                    fireballhitcount = 0;
-                }
-                if (ks.IsKeyDown(Keys.D2))
-                {
-                    fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level2;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
-                }
-                if (ks.IsKeyDown(Keys.D3))
-                {
-                    fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level3;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                     enemyisdead = false;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
                     hasfirepower = false;
                     enemyisdead = false;
                     MoreLives = false;
-                    penguinPosition = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 1.8f);
                 }
-                if (ks.IsKeyDown(Keys.D4))
-                {
-                    fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level4;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
-                }
-                if (ks.IsKeyDown(Keys.D5))
-                {
-                    fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level5;
-                    IsTiny = false;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
-                    portal2 = new Sprite(Content.Load<Texture2D>("portal"), new Vector2(700, 380), Color.White);
-                    portal1 = new Sprite(Content.Load<Texture2D>("portal"), new Vector2(95, 380), Color.White);
-                }
-
-                if (ks.IsKeyDown(Keys.D6))
-                {
-                    fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level6;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
-                    MoreLives = false;
-
-                }
-                if (ks.IsKeyDown(Keys.D7))
-                {
-                    fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level7;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
-
-                }
-                if (ks.IsKeyDown(Keys.D8))
-                {
-                    fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level8;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
-
-                }
-                if (ks.IsKeyDown(Keys.D9))
-                {
-                    fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level9;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
-
-                }
-                if (ks.IsKeyDown(Keys.D0))
-                {
-                    fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level10;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
-
-                }
-                if (ks.IsKeyDown(Keys.Q))
-                {
-                    fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level11;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y - 50;
-                    MoreLives = false;
-                }
-                if (ks.IsKeyDown(Keys.W))
-                {
-                    fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level12;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
-                    enemyisdead = false;
-                    Penguin.X = 500;
-                    Penguin.Y = 350;
-                    MoreLives = false;
-                }
-                if (ks.IsKeyDown(Keys.E))
-                {
-                    fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level13;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
-                }
-                if (ks.IsKeyDown(Keys.Back))
-                {
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
-                }
-                if (ks.IsKeyDown(Keys.Enter))
-                {
-                    Mario.Scale = Vector2.One;
-                    currentLevel = level01;
-                    Mario.X = 900;
-                    Mario.Y = 448;
-                }
-                if (ks.IsKeyDown(Keys.B))
+                /*if (ks.IsKeyDown(Keys.B))
                 {
                     currentLevel.Door.Scale += new Vector2(0.005f, .01f);
                     currentLevel.Door.Y--;
@@ -1301,71 +1012,21 @@ namespace Platformer
                 {
                     currentLevel.Door.Scale -= new Vector2(0.005f, .01f);
                     currentLevel.Door.Y++;
-                }
+                }*/
+
                 if (restartbutton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     //restarts here
                     lives = 100;
-                    currentLevel = level1;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    fireballhitcount = 0;
                     Mario.Scale = Vector2.One;
-                    gameisover = false;
-                }
-                if (Mario.HitBox.Intersects(pizza.HitBox) && currentLevel == level5)
-                {
-                    if (IsTiny == false)
-                    {
-                        for (int i = 0; i < 70; i++)
-                        {
-                            Mario.Scale -= new Vector2(0.005f, .01f);
-                        }
-                        IsTiny = true;
-                        currentLevel.Door.Scale = new Vector2(.25f);
-                    }
-
-
-
-                }
-                if (Mario.HitBox.Intersects(portal1.HitBox) && currentLevel == level5 || Mario.HitBox.Intersects(portal1.HitBox) && currentLevel == level9)
-                {
-                    movingTime += gameTime.ElapsedGameTime;
-                    if (movingTime >= timeToMove)
-                    {
-                        Mario.X = portal2.X;
-                        Mario.Scale -= new Vector2(0.05f, .1f);
-                        Mario.Y = portal2.Y;
-                        Mario.Scale += new Vector2(0.05f, .1f);
-                        movingTime = TimeSpan.Zero;
-                    }
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    enemyisdead = false;
+                    hasfirepower = false;
+                    enemyisdead = false;
+                    MoreLives = false;
                 }
 
-                if (Mario.HitBox.Intersects(portal2.HitBox) && currentLevel == level5 || Mario.HitBox.Intersects(portal2.HitBox) && currentLevel == level9)
-                {
-                    movingTime += gameTime.ElapsedGameTime;
-                    if (movingTime >= timeToMove)
-                    {
-                        Mario.X = portal1.X;
-                        Mario.Scale -= new Vector2(0.05f, .1f);
-                        Mario.Y = portal1.Y;
-                        Mario.Scale += new Vector2(0.05f, .1f);
-                        movingTime = TimeSpan.Zero;
-                    }
-                }
-                if (Mario.HitBox.Intersects(invert.HitBox) && currentLevel == level7)
-                {
-                    Mario.Scale -= new Vector2(1.5f, 3);
-                }
-                if (Mario.InvertHitBox.Intersects(uninvert.HitBox) && currentLevel == level7)
-                {
-                    Mario.Scale = Vector2.One;
-                    Mario.Y = 300;
-                    Mario.X = uninvert.X;
-                }
-                if (Mario.HitBox.Intersects(flower.HitBox))
-                {
-                    Mario.canShoot = true;
-                }
 
                 if (ks.IsKeyDown(Keys.Space) && hasfirepower == true)
                 {
@@ -1393,14 +1054,7 @@ namespace Platformer
 
                 //loop through all marios fireballs and check if any of them collide with enemies
                 //if collide remove both
-                if (Mario.HitBox.Intersects(HealthPowerup.HitBox))
-                {
-                    if (MoreLives == false)
-                    {
-                        lives += 10;
-                        MoreLives = true;
-                    }
-                }
+
                 for (int i = 0; i < Mario.Fireballs.Count; i++)
                 {
                     if (Mario.Fireballs[i].HitBox.Intersects(Penguin.HitBox) && canShootEnemy == true)
@@ -1413,11 +1067,7 @@ namespace Platformer
                 {
                     enemyisdead = true;
                 }
-                if (currentLevel == level9)
-                {
-                    portal1 = new Sprite(Content.Load<Texture2D>("portal"), new Vector2(700, 380), Color.White);
-                    portal2 = new Sprite(Content.Load<Texture2D>("portal"), new Vector2(375, 175), Color.White);
-                }
+
                 if (ks.IsKeyDown(Keys.M))
                 {
                     Mario.X = ms.X;
@@ -1444,72 +1094,7 @@ namespace Platformer
                 {
                     screen = 4;
                 }
-                if (currentLevel == level1)
-                {
 
-                }
-                if (currentLevel == level2)
-                {
-
-                }
-                if (currentLevel == level3)
-                {
-                    hasJumpBoost = false;
-                    Penguin.X = 500;
-                    Penguin.Y = 272;
-                    HealthPowerup.X = 100;
-                    HealthPowerup.Y = 100;
-                }
-                if (currentLevel == level4)
-                {
-
-                }
-                if (currentLevel == level5)
-                {
-
-                }
-                if (currentLevel == level6)
-                {
-                    HealthPowerup.X = 500;
-                    HealthPowerup.Y = 290;
-
-                }
-                if (currentLevel == level7)
-                {
-                }
-                if (currentLevel == level8)
-                {
-                }
-                if (currentLevel == level9)
-                {
-                }
-                if (currentLevel == level10)
-                {
-                }
-                if (currentLevel == level11)
-                {
-                    HealthPowerup.X = 100;
-                    HealthPowerup.Y = 100;
-
-                }
-                if (currentLevel == level12)
-                {
-                    //    Penguin.X = 500;
-                    //    Penguin.Y = 350;
-                    HealthPowerup.X = 100;
-                    HealthPowerup.Y = 100;
-                    penguinPosition = new Vector2(500, 350);
-
-                }
-                if (currentLevel == level13)
-                {
-                    Mario.isLevel13 = true;
-
-                }
-                else
-                {
-                    Mario.isLevel13 = false;
-                }
                 if (fireballhitcount <= maxFireballHits)
                 {
                     canShootEnemy = true;
@@ -1528,124 +1113,111 @@ namespace Platformer
                 if (lvl1button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level1;
+                    currentLevel = 0;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl1button.Update();
 
                 if (lvl2button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level2;
+                    currentLevel = 1;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl2button.Update();
 
                 if (lvl3button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level3;
+                    currentLevel = 2;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl3button.Update();
                 if (lvl4button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level4;
+                    currentLevel = 3;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl4button.Update();
                 if (lvl5button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level5;
+                    currentLevel = 4;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl5button.Update();
                 if (lvl6button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level6;
+                    currentLevel = 5;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl6button.Update();
                 if (lvl7button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level7;
+                    currentLevel = 6;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl7button.Update();
                 if (lvl8button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level8;
+                    currentLevel = 7;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl8button.Update();
                 if (lvl9button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level9;
+                    currentLevel = 8;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl9button.Update();
                 if (lvl10button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level10;
+                    currentLevel = 9;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl10button.Update();
                 if (lvl11button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level11;
+                    currentLevel = 10;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl11button.Update();
                 if (lvl12button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level12;
+                    currentLevel = 11;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl12button.Update();
                 if (lvl13button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level13;
+                    currentLevel = 12;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl13button.Update();
@@ -1671,9 +1243,8 @@ namespace Platformer
                 {
                     //restarts here
                     lives = 100;
-                    currentLevel = level1;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    currentLevel = 0;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                     Mario.Scale = Vector2.One;
                     gameisover = false;
                     screen = 1;
@@ -1785,123 +1356,110 @@ namespace Platformer
                 if (lvl1button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level01;
+                    currentLevel = 0;
                     fireballhitcount = 0;
-                    Mario.X = 300;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl1button.Update();
 
                 if (lvl2button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level02;
+                    currentLevel = 1;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl2button.Update();
                 if (lvl3button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level03;
+                    currentLevel = 2;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl3button.Update();
                 if (lvl4button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level04;
+                    currentLevel = 3;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl4button.Update();
                 if (lvl5button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level05;
+                    currentLevel = 4;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl5button.Update();
                 if (lvl6button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level06;
+                    currentLevel = 5;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl6button.Update();
                 if (lvl7button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level07;
+                    currentLevel = 6;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl7button.Update();
                 if (lvl8button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level08;
+                    currentLevel = 7;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl8button.Update();
                 if (lvl9button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level09;
+                    currentLevel = 8;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl9button.Update();
                 if (lvl10button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level010;
+                    currentLevel = 9;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl10button.Update();
                 if (lvl11button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level011;
+                    currentLevel = 10;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl11button.Update();
                 if (lvl12button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level012;
+                    currentLevel = 11;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl12button.Update();
                 if (lvl13button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 1;
-                    currentLevel = level013;
+                    currentLevel = 12;
                     fireballhitcount = 0;
-                    Mario.X = currentLevel.platforms[0].X;
-                    Mario.Y = currentLevel.platforms[0].Y;
+                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl13button.Update();
@@ -1932,36 +1490,34 @@ namespace Platformer
             {
                 if (ks.IsKeyDown(Keys.Right) && lastKS.IsKeyUp(Keys.Right))
                 {
-                    if (levelmaps == LevelMaps.Black)
+                    if (currentMap == LevelMap.Black)
                     {
-                        levelmaps = LevelMaps.Stars;
+                        currentMap = LevelMap.Stars;
                     }
                     else
                     {
-                        levelmaps++;
+                        currentMap++;
                     }
-                    currentLevelMap = maps[levelmaps];
+                    currentLevelMap = maps[currentMap];
                     setLevelMap = true;
                 }
                 else if (ks.IsKeyDown(Keys.Left) && lastKS.IsKeyUp(Keys.Left))
                 {
-                    if (levelmaps == LevelMaps.Stars)
+                    if (currentMap == LevelMap.Stars)
                     {
-                        levelmaps = LevelMaps.Black;
+                        currentMap = LevelMap.Black;
                     }
                     else
                     {
-                        levelmaps--;
+                        currentMap--;
                     }
-                    currentLevelMap = maps[levelmaps];
+                    currentLevelMap = maps[currentMap];
                     setLevelMap = true;
                 }
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = 4;
-                    currentLevel.backgroundImage = maps[levelmaps];
                 }
-
 
                 lastKS = ks;
             }
@@ -1982,8 +1538,11 @@ namespace Platformer
 
             if (screen == 1)
             {
-                
-                    currentLevel.Draw(spriteBatch);
+                levels[currentWorld][currentLevel].Draw(spriteBatch);
+                Mario.Draw(spriteBatch);
+                /*
+                currentLevel.backgroundImage = maps[currentMap];
+                currentLevel.Draw(spriteBatch);
 
                 //spriteBatch.Draw(bunny, new Vector2(100, 100), Color.White);
                 if (gameisover == false)
@@ -2056,7 +1615,7 @@ namespace Platformer
                     Mario.Draw(spriteBatch);
 
 
-                }
+                }*/
                 MenuButton.Draw(spriteBatch);
             }
 

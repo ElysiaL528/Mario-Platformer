@@ -11,6 +11,19 @@ namespace Platformer
     {
         protected Texture2D _texture;
         protected Vector2 _location;
+
+        public Vector2 Position
+        {
+            get
+            {
+                return _location;
+            }
+            set
+            {
+                _location = value;
+            }
+        }
+
         public float X
         {
             get
