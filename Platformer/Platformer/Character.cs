@@ -10,6 +10,15 @@ namespace Platformer
 {
     public class Character : AnimatedSprite
     {
+        CharacterName currentCharacterName;
+        public CharacterName getCharacterName
+        {
+            get
+            {
+                return currentCharacterName;
+            }
+        }
+
         Rectangle feetHitBox;
         public Rectangle FeetHitBox
         {
@@ -388,6 +397,14 @@ namespace Platformer
             {
                 fireballs[i].Draw(spritebatch);
             }
+        }
+
+        public enum CharacterName
+        {
+            Mario = 0,
+            Spongebob = 1,
+            Patrick = 2,
+            Luigi = 3,
         }
     }
 }

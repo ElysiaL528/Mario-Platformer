@@ -36,8 +36,10 @@ namespace Platformer
 
             */
 
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class PlatformerGame : Microsoft.Xna.Framework.Game
     {
+        //Instance Variables
+        #region
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D spriteSheet;
@@ -61,10 +63,31 @@ namespace Platformer
         bool lostlife = false;
         bool canShootEnemy = false;
         bool setLevelMap = false;
+        MouseState ms;
+        KeyboardState lastKS;
+        SpriteFont font;
+        SpriteFont font2;
+        Sprite GameOverScreen;
+        Sprite LevelMenuBg;
+        Dictionary<AnimationType, List<Frame>> marioAnimations = new Dictionary<AnimationType, List<Frame>>();
+        Dictionary<AnimationType, List<Frame>> penguinAnimations = new Dictionary<AnimationType, List<Frame>>();
+        Dictionary<AnimationType, List<Frame>> luigiAnimations = new Dictionary<AnimationType, List<Frame>>();
+        Dictionary<AnimationType, List<Frame>> SpongebobAnimations = new Dictionary<AnimationType, List<Frame>>();
+        Dictionary<AnimationType, List<Frame>> PatrickAnimations = new Dictionary<AnimationType, List<Frame>>();
+        Dictionary<AnimationType, List<Frame>> CoinAnimations = new Dictionary<AnimationType, List<Frame>>();
+        LevelMap currentMap;
+        Dictionary<LevelMap, Texture2D> maps;
+        Dictionary<World, List<Level>> levels;
+        AnimatedSprite Penguin;
+        Character MainCharacter;
+        Sprite StartScreenBackground;
+        Sprite flower;
+        
         //bool setLevelMap = false;
-        Level level0;
-        Level level1;
-        ULevels level01;
+        #endregion
+
+        //Buttons
+        #region 
         Button lvl1button;
         Button lvl2button;
         Button lvl3button;
@@ -100,64 +123,26 @@ namespace Platformer
         Button LandLevelsButton;
         Button UnderwaterLevelsButton;
         Button BackgroundButton;
-
-
-
-        AnimatedSprite Penguin;
-
-        Character Mario;
-        Sprite StartScreenBackground;
-
-
-
-        Sprite flower;
         Button MenuButton;
         Button LevelSelectButton;
+        Button restartbutton;
+        List<Button> landLevelButtons = new List<Button>();
+        #endregion
+
+        //Run-time variables
         int lives = 100;
-        int screen = 6;
+        int screen = (int)Gamescreen.StartScreen;
         int fireballhitcount = 0;
         string character = "Patrick";
         string leveltype = "Land";
         int maxFireballHits = 1;
-        Button restartbutton;
-
-        MouseState ms;
-        KeyboardState lastKS;
-        SpriteFont font;
-        SpriteFont font2;
-        Sprite GameOverScreen;
-        Sprite LevelMenuBg;
-
-        Dictionary<AnimationType, List<Frame>> marioAnimations = new Dictionary<AnimationType, List<Frame>>();
-        Dictionary<AnimationType, List<Frame>> penguinAnimations = new Dictionary<AnimationType, List<Frame>>();
-        Dictionary<AnimationType, List<Frame>> luigiAnimations = new Dictionary<AnimationType, List<Frame>>();
-        Dictionary<AnimationType, List<Frame>> SpongebobAnimations = new Dictionary<AnimationType, List<Frame>>();
-        Dictionary<AnimationType, List<Frame>> PatrickAnimations = new Dictionary<AnimationType, List<Frame>>();
-        Dictionary<AnimationType, List<Frame>> CoinAnimations = new Dictionary<AnimationType, List<Frame>>();
-
-        LevelMap currentMap;
-        Dictionary<LevelMap, Texture2D> maps;
-
-
-        TimeSpan movingTime;
         TimeSpan timeToMove = new TimeSpan(0, 0, 0, 0, 2000);
         TimeSpan ShotDelay = TimeSpan.FromMilliseconds(300);
         TimeSpan TimeSinceLastShot = TimeSpan.Zero;
-
-
-
-
-
-        //
-        //
-        //
-        //
-        Dictionary<World, List<Level>> levels;
         World currentWorld = World.Land;
         int currentLevel = 0;
 
-
-        public Game1()
+        public PlatformerGame()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -175,18 +160,16 @@ namespace Platformer
 
         protected override void LoadContent()
         {
-
+            //Instance variables
             spriteBatch = new SpriteBatch(GraphicsDevice);
             spriteSheet = Content.Load<Texture2D>("Mario Sprite Sheet");
             penguinspritesheet = Content.Load<Texture2D>("penguin");
             PatrickSpritesheet = Content.Load<Texture2D>("PatrickSpriteSheet");
             SpongebobSpritesheet = Content.Load<Texture2D>("Spongebob_Spritesheet_2");
-
-
             font = Content.Load<SpriteFont>("SpriteFont1");
             font2 = Content.Load<SpriteFont>("Font2");
 
-            #region mario Animations
+            #region Mario Animations
             List<Frame> walking = new List<Frame>();
             walking.Add(new Frame(new Rectangle(304, 18, 32, 47), new Vector2(15, 31)));
             walking.Add(new Frame(new Rectangle(343, 16, 24, 47), new Vector2(12, 31)));
@@ -217,7 +200,8 @@ namespace Platformer
             crouching.Add(new Frame(new Rectangle(6, 92, 35, 32), new Vector2(20, 25)));
             marioAnimations.Add(AnimationType.Crouching, crouching);
             #endregion
-            #region penguin Animations
+
+            #region Penguin Animations
 
             List<Frame> strolling = new List<Frame>();
             strolling.Add(new Frame(new Rectangle(6, 272, 71, 64), new Vector2(2, 51)));
@@ -231,6 +215,7 @@ namespace Platformer
             penguinAnimations.Add(AnimationType.Idle, still);
 
             #endregion
+
             #region Luigi Animations
 
             List<Frame> lwalking = new List<Frame>();
@@ -352,83 +337,81 @@ namespace Platformer
 
             #endregion
 
-
-
+            //Run-time variables
             position = new Vector2(40, 390);
             penguinPosition = new Vector2(500, 272);
             speed = new Vector2(4);
-
-            if (character == "Mario")
-            {
-                if (!IsTiny)
-                {
-                    Mario = new Character(spriteSheet, position, marioAnimations, Content.Load<Texture2D>("FireBall_1"));
-                }
-                else
-                {
-                    Mario = new Character(spriteSheet, position, marioAnimations, Content.Load<Texture2D>("Copy of Fireball_1"));
-                }
-            }
-            else if (character == "Spongebob")
-            {
-                if (!IsTiny)
-                {
-                    Mario = new Character(SpongebobSpritesheet, position, SpongebobAnimations, Content.Load<Texture2D>("FireBall_1"));
-                }
-                else
-                {
-                    Mario = new Character(SpongebobSpritesheet, position, SpongebobAnimations, Content.Load<Texture2D>("FireBall_1"));
-                }
-            }
-            else if (character == "Patrick")
-            {
-                if (!IsTiny)
-                {
-                    Mario = new Character(PatrickSpritesheet, position, PatrickAnimations, Content.Load<Texture2D>("FireBall_1"));
-                }
-                else
-                {
-                    Mario = new Character(PatrickSpritesheet, position, PatrickAnimations, Content.Load<Texture2D>("Copy of Fireball_1"));
-                }
-            }
-
             Penguin = new AnimatedSprite(penguinspritesheet, penguinPosition, Color.White, strolling);
 
+            //Assign main character values and fireballs
+             if (!IsTiny)
+             {
+                MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("FireBall_1"));
+             }
+             else
+             {
+                MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("Copy of Fireball_1"));
+             }
 
-            //Spongebob = new Character(SpongebobSpritesheet, position, SpongebobAnimations, Content.Load<Texture2D>("Fireball"));
-
-
+            //Load Starting Objects
+            #region
             flower = new Sprite(Content.Load<Texture2D>("Fireball_Flower"), new Vector2(220, 250), Color.White);
             StartScreenBackground = new Sprite(Content.Load<Texture2D>("PlatformerMap1"), new Vector2(0, 0), Color.White);
             GameOverScreen = new Sprite(Content.Load<Texture2D>("GameOver"), new Vector2(0, 0), Color.White);
             LevelMenuBg = new Sprite(Content.Load<Texture2D>("LevelSelectMenu"), new Vector2(0, 0), Color.White);
             restartbutton = new Button(Content.Load<Texture2D>("RestartButton"), new Vector2(960, 0), Color.White);
             lvl1button = new Button(Content.Load<Texture2D>("lvl1button"), new Vector2(150, 150), Color.White);
+            landLevelButtons.Add(lvl1button);
             lvl2button = new Button(Content.Load<Texture2D>("lvl2button"), new Vector2(300, 150), Color.White);
+            landLevelButtons.Add(lvl2button);
             lvl3button = new Button(Content.Load<Texture2D>("lvl3button"), new Vector2(450, 150), Color.White);
+            landLevelButtons.Add(lvl3button);
             lvl4button = new Button(Content.Load<Texture2D>("lvl4button"), new Vector2(600, 150), Color.White);
+            landLevelButtons.Add(lvl4button);
             lvl5button = new Button(Content.Load<Texture2D>("lvl5button"), new Vector2(150, 210), Color.White);
+            landLevelButtons.Add(lvl5button);
             lvl6button = new Button(Content.Load<Texture2D>("lvl6button"), new Vector2(300, 210), Color.White);
+            landLevelButtons.Add(lvl6button);
             lvl7button = new Button(Content.Load<Texture2D>("lvl7button"), new Vector2(450, 210), Color.White);
+            landLevelButtons.Add(lvl7button);
             lvl8button = new Button(Content.Load<Texture2D>("lvl8button"), new Vector2(600, 210), Color.White);
+            landLevelButtons.Add(lvl8button);
             lvl9button = new Button(Content.Load<Texture2D>("lvl9button"), new Vector2(150, 270), Color.White);
+            landLevelButtons.Add(lvl9button);
             lvl10button = new Button(Content.Load<Texture2D>("lvl10button"), new Vector2(300, 270), Color.White);
+            landLevelButtons.Add(lvl10button);
             lvl11button = new Button(Content.Load<Texture2D>("lvl11button"), new Vector2(450, 270), Color.White);
+            landLevelButtons.Add(lvl11button);
             lvl12button = new Button(Content.Load<Texture2D>("lvl12button"), new Vector2(600, 270), Color.White);
-            lvl13button = new Button(Content.Load<Texture2D>("lvl13button"), new Vector2(100, 100), Color.White);
+            landLevelButtons.Add(lvl12button);
+            lvl13button = new Button(Content.Load<Texture2D>("lvl13button"), new Vector2(150, 330), Color.White);
+            landLevelButtons.Add(lvl13button);
             lvl01button = new Button(Content.Load<Texture2D>("lvl1button"), new Vector2(150, 150), Color.White);
+            landLevelButtons.Add(lvl01button);
             lvl02button = new Button(Content.Load<Texture2D>("lvl2button"), new Vector2(300, 150), Color.White);
+            landLevelButtons.Add(lvl02button);
             lvl03button = new Button(Content.Load<Texture2D>("lvl3button"), new Vector2(450, 150), Color.White);
+            landLevelButtons.Add(lvl03button);
             lvl04button = new Button(Content.Load<Texture2D>("lvl4button"), new Vector2(600, 150), Color.White);
+            landLevelButtons.Add(lvl04button);
             lvl05button = new Button(Content.Load<Texture2D>("lvl5button"), new Vector2(150, 210), Color.White);
+            landLevelButtons.Add(lvl05button);
             lvl06button = new Button(Content.Load<Texture2D>("lvl6button"), new Vector2(300, 210), Color.White);
+            landLevelButtons.Add(lvl06button);
             lvl07button = new Button(Content.Load<Texture2D>("lvl7button"), new Vector2(450, 210), Color.White);
+            landLevelButtons.Add(lvl07button);
             lvl08button = new Button(Content.Load<Texture2D>("lvl8button"), new Vector2(600, 210), Color.White);
+            landLevelButtons.Add(lvl08button);
             lvl09button = new Button(Content.Load<Texture2D>("lvl9button"), new Vector2(150, 270), Color.White);
+            landLevelButtons.Add(lvl09button);
             lvl010button = new Button(Content.Load<Texture2D>("lvl10button"), new Vector2(300, 270), Color.White);
+            landLevelButtons.Add(lvl010button);
             lvl011button = new Button(Content.Load<Texture2D>("lvl11button"), new Vector2(450, 270), Color.White);
+            landLevelButtons.Add(lvl011button);
             lvl012button = new Button(Content.Load<Texture2D>("lvl12button"), new Vector2(600, 270), Color.White);
-            lvl013button = new Button(Content.Load<Texture2D>("lvl13button"), new Vector2(100, 100), Color.White);
+            landLevelButtons.Add(lvl012button);
+            lvl013button = new Button(Content.Load<Texture2D>("lvl13button"), new Vector2(600, 330), Color.White);
+            landLevelButtons.Add(lvl013button);
             MenuButton = new Button(Content.Load<Texture2D>("MenuButton"), new Vector2(960, 40), Color.White);
             LevelSelectButton = new Button(Content.Load<Texture2D>("LevelSelectButton"), new Vector2(100, 100), Color.White);
             ShopButton = new Button(Content.Load<Texture2D>("ShopButton"), new Vector2(400, 100), Color.White);
@@ -437,25 +420,16 @@ namespace Platformer
             LandLevelsButton = new Button(Content.Load<Texture2D>("Land Levels_Button"), new Vector2(100, 100), Color.White);
             UnderwaterLevelsButton = new Button(Content.Load<Texture2D>("Underwater Levels_Button"), new Vector2(200, 100), Color.White);
             BackgroundButton = new Button(Content.Load<Texture2D>("ChooseBackgroundButton"), new Vector2(50, 300), Color.White);
-
-
             MarioButton = new Button(Content.Load<Texture2D>("MarioButton"), new Vector2(100, 100), Color.White);
             SpongebobButton = new Button(Content.Load<Texture2D>("SpongebobButton"), new Vector2(250, 100), Color.White);
             PatrickButton = new Button(Content.Load<Texture2D>("PatrickButton"), new Vector2(400, 100), Color.White);
+            #endregion
 
-
-            Mario.Origin = new Vector2(15, 33);
+            //Instance Variables
+            MainCharacter.Origin = new Vector2(15, 33);
             Penguin.Origin = new Vector2(300, 300);
             Texture2D platformImage = Content.Load<Texture2D>("Platform");
             Texture2D lavaPlatformImage = Content.Load<Texture2D>("lava");
-
-            /* level1Background = Content.Load<Texture2D>("PlatformerMap1");
-             Map2 = Content.Load<Texture2D>("PlatformerMap2");
-             Map3 = Content.Load<Texture2D>("PlatformerMap3");
-             Map4 = Content.Load<Texture2D>("PlatformerMap4");
-             UnderwaterMap = Content.Load<Texture2D>("UnderwaterMap");
-             Gameoverscreen = Content.Load<Texture2D>("GameOver");
-             */
             maps = new Dictionary<LevelMap, Texture2D>();
             maps.Add(LevelMap.Stars, Content.Load<Texture2D>("PlatformerMap1"));
             maps.Add(LevelMap.Sunset, Content.Load<Texture2D>("PlatformerMap2"));
@@ -463,18 +437,21 @@ namespace Platformer
             maps.Add(LevelMap.Black, Content.Load<Texture2D>("PlatformerMap4"));
             maps.Add(LevelMap.Gameover, Content.Load<Texture2D>("GameOver"));
             maps.Add(LevelMap.Kelp, Content.Load<Texture2D>("UnderwaterMap"));
+            levels = new Dictionary<World, List<Level>>();
+            levels.Add(World.Land, new List<Level>());
+            levels.Add(World.Underwater, new List<Level>());
 
-
+            //Sets the level background to the map selected
             currentLevelMap = maps[currentMap];
 
-
+            //If background is changed, change map
             if (setLevelMap)
             {
                 currentLevelMap = maps[currentMap];
             }
-            levels = new Dictionary<World, List<Level>>();
-            levels.Add(World.Land, new List<Level>());
-            #region level0-0
+            
+            //Draws the platforms for each level. 0-1 means on land and level 1, 1-2 means underwater. First number can go from 0 to 1, second number can go from 0 to 13.
+            #region level 0-0
             List<Sprite> level0_0Platforms = new List<Sprite>();
             level0_0Platforms.Add(new Sprite(platformImage, new Vector2(0, 429), Color.White));
             level0_0Platforms[0].Size = new Vector2(59, 61);
@@ -491,7 +468,7 @@ namespace Platformer
 
             levels[World.Land].Add(new Level(level0_0Platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion            
-            #region level0-1
+            #region level 0-1
             List<Sprite> level0_1Platforms = new List<Sprite>();
             level0_1Platforms.Add(new Sprite(platformImage, new Vector2(0, 438), Color.White));
             level0_1Platforms[0].Size = new Vector2(112, 51);
@@ -517,7 +494,7 @@ namespace Platformer
             levels[World.Land].Add(new Level(level0_1Platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(940, 368), Color.White) { Scale = new Vector2(.75f) }));
 
             #endregion
-            #region level0-2
+            #region level 0-2
             List<Sprite> level0_2Platforms = new List<Sprite>();
 
             level0_2Platforms.Add(new Sprite(platformImage, new Vector2(1, 447), Color.White));
@@ -542,7 +519,7 @@ namespace Platformer
 
             levels[World.Land].Add(new Level(level0_2Platforms, items0_2, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
-            #region level0-3
+            #region level 0-3
             List<Sprite> level0_3Platforms = new List<Sprite>();
 
             level0_3Platforms.Add(new Sprite(platformImage, new Vector2(1, 465), Color.White));
@@ -563,7 +540,7 @@ namespace Platformer
 
             levels[World.Land].Add(new Level(level0_3Platforms, items0_3, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
-            #region level0-4
+            #region level 0-4
             List<Sprite> level0_4Platforms = new List<Sprite>();
             level0_4Platforms.Add(new Sprite(platformImage, new Vector2(163, 261), Color.White));
             level0_4Platforms[0].Size = new Vector2(50, 225);
@@ -584,7 +561,7 @@ namespace Platformer
 
             levels[World.Land].Add(new Level(level0_4Platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
-            #region level0-5
+            #region level 0-5
             List<Sprite> level0_5platforms = new List<Sprite>();
             level0_5platforms.Add(new Sprite(platformImage, new Vector2(1, 242), Color.White));
             level0_5platforms[0].Size = new Vector2(858, 41);
@@ -605,7 +582,7 @@ namespace Platformer
 
             levels[World.Land].Add(new Level(level0_5platforms, items0_5, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 465), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
-            #region level0-6
+            #region level 0-6
             List<Sprite> level0_6platforms = new List<Sprite>();
             level0_6platforms.Add(new Sprite(platformImage, new Vector2(1, 440), Color.White));
             level0_6platforms[0].Size = new Vector2(280, 45);
@@ -629,7 +606,7 @@ namespace Platformer
 
             levels[World.Land].Add(new Level(level0_6platforms, items0_6, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 438), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
-            #region level0-7
+            #region level 0-7
             List<Sprite> level0_7platforms = new List<Sprite>();
             level0_7platforms.Add(new Sprite(platformImage, new Vector2(2, 186), Color.White));
             level0_7platforms[0].Size = new Vector2(996, 56);
@@ -646,7 +623,7 @@ namespace Platformer
 
             levels[World.Land].Add(new Level(level0_7platforms, items0_7, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(500, 447), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
-            #region level0-8
+            #region level 0-8
             List<Sprite> level0_8platforms = new List<Sprite>();
             level0_8platforms.Add(new Sprite(platformImage, new Vector2(1, 452), Color.White));
             level0_8platforms[0].Size = new Vector2(163, 36);
@@ -661,7 +638,7 @@ namespace Platformer
 
             levels[World.Land].Add(new Level(level0_8platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(940, 110), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
-            #region level0-9
+            #region level 0-9
             List<Sprite> level0_9platforms = new List<Sprite>();
             level0_9platforms.Add(new Sprite(platformImage, new Vector2(208, 135), Color.White));
             level0_9platforms[0].Size = new Vector2(27, 75);
@@ -691,7 +668,7 @@ namespace Platformer
 
             levels[World.Land].Add(new Level(level0_9platforms, items0_9, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(910, 130), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
-            #region level0-10
+            #region level 0-10
             List<Sprite> level0_10platforms = new List<Sprite>();
             level0_10platforms.Add(new Sprite(platformImage, new Vector2(0, 230), Color.White));
             level0_10platforms[0].Size = new Vector2(193, 98);
@@ -710,7 +687,7 @@ namespace Platformer
 
             levels[World.Land].Add(new Level(level0_10platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(880, 215), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
-            #region level0-11
+            #region level 0-11
             List<Sprite> level0_11platforms = new List<Sprite>();
             level0_11platforms.Add(new Sprite(platformImage, new Vector2(205, 320), Color.White));
             level0_11platforms[0].Size = new Vector2(14, 14);
@@ -725,7 +702,7 @@ namespace Platformer
 
             levels[World.Land].Add(new Level(level0_11platforms, items0_11, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(700, 440), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
-            #region level0-12
+            #region level 0-12
             List<Sprite> level0_12platforms = new List<Sprite>();
             level0_12platforms.Add(new Sprite(platformImage, new Vector2(1, 249), Color.White));
             level0_12platforms[0].Size = new Vector2(132, 39);
@@ -739,7 +716,7 @@ namespace Platformer
 
             levels[World.Land].Add(new Level(level0_12platforms, items0_12, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(900, 240), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
-            #region level0-13
+            #region level 0-13
             List<Sprite> level0_13platforms = new List<Sprite>();
             level0_13platforms.Add(new Sprite(platformImage, new Vector2(82, 463), Color.White));
             level0_13platforms[0].Size = new Vector2(225, 21);
@@ -769,8 +746,6 @@ namespace Platformer
 
             levels[World.Land].Add(new Level(level0_13platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(660, 120), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
-
-            levels.Add(World.Underwater, new List<Level>());
             #region level 1-0
             List<Sprite> level1_0platforms = new List<Sprite>();
             level1_0platforms.Add(new Sprite(platformImage, new Vector2(18, 473), Color.White));
@@ -892,44 +867,35 @@ namespace Platformer
             MouseState lastMs = ms;
             ms = Mouse.GetState();
 
-
+            //Shortcut to Underwater Level Menu
             if (ks.IsKeyDown(Keys.L))
             {
-                screen = 8;
+                screen = (int)Gamescreen.UnderwaterLevelMenu;
             }
 
-            if (screen == 1)
+            //If we're playing the game, then...
+            if (screen == (int)Gamescreen.Maingame)
             {
-                Mario.Update(gameTime);
-                levels[currentWorld][currentLevel].Update(Mario);
+                MainCharacter.Update(gameTime);
+                levels[currentWorld][currentLevel].Update(MainCharacter);
+                MainCharacter.CheckCollision(levels[currentWorld][currentLevel].platforms);
 
-                Mario.CheckCollision(levels[currentWorld][currentLevel].platforms);
-
-
-
-
-
-
-
-
+                //Assign character traits
                 if (character == "Mario")
                 {
-                    //set your image to mario
-
-                    //set your animations to mario
-                    Mario.Image = spriteSheet;
-                    Mario.Animations = marioAnimations;
-
+                    MainCharacter.Image = spriteSheet;
+                    MainCharacter.Animations = marioAnimations;
+                    
                 }
                 else if (character == "Spongebob")
                 {
-                    Mario.Image = SpongebobSpritesheet;
-                    Mario.Animations = SpongebobAnimations;
+                    MainCharacter.Image = SpongebobSpritesheet;
+                    MainCharacter.Animations = SpongebobAnimations;
                 }
                 else if (character == "Patrick")
                 {
-                    Mario.Image = PatrickSpritesheet;
-                    Mario.Animations = PatrickAnimations;
+                    MainCharacter.Image = PatrickSpritesheet;
+                    MainCharacter.Animations = PatrickAnimations;
                 }
 
 
@@ -945,11 +911,11 @@ namespace Platformer
                 {
                     currentLevel = 0;
                 }
+                
 
-
-                if (Mario.touchedLava == true)
+                if (MainCharacter.touchedLava == true)
                 {
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition - Vector2.UnitY * 50;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition - Vector2.UnitY * 50;
                     enemyisdead = false;
                     hasfirepower = false;
                     enemyisdead = false;
@@ -958,9 +924,9 @@ namespace Platformer
                 }
 
                 //setting your keyboardstate = what is happening with the keyboard
-                if (Mario.Y >= 489)
+                if (MainCharacter.Y >= 489)
                 {
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition - Vector2.UnitY * 50;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition - Vector2.UnitY * 50;
                     enemyisdead = false;
                     hasfirepower = false;
                     enemyisdead = false;
@@ -968,14 +934,14 @@ namespace Platformer
                     lives--;
                 }
 
-                if (Mario.HitBox.Intersects(levels[currentWorld][currentLevel].Door.HitBox) && ks.IsKeyDown(Keys.O))
+                if (MainCharacter.HitBox.Intersects(levels[currentWorld][currentLevel].Door.HitBox) && ks.IsKeyDown(Keys.O))
                 {
                     if (currentLevel < levels[currentWorld].Count)
                     {
                         currentLevel++;
                         fireballhitcount = 0;
-                        Mario.Scale = Vector2.One;
-                        Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                        MainCharacter.Scale = Vector2.One;
+                        MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                         enemyisdead = false;
                         hasfirepower = false;
                         enemyisdead = false;
@@ -996,8 +962,8 @@ namespace Platformer
                 {
                     fireballhitcount = 0;
                     gameisover = false;
-                    Mario.Scale = Vector2.One;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Scale = Vector2.One;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     enemyisdead = false;
                     hasfirepower = false;
                     enemyisdead = false;
@@ -1019,8 +985,8 @@ namespace Platformer
                     //restarts here
                     lives = 100;
                     fireballhitcount = 0;
-                    Mario.Scale = Vector2.One;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Scale = Vector2.One;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     enemyisdead = false;
                     hasfirepower = false;
                     enemyisdead = false;
@@ -1032,18 +998,13 @@ namespace Platformer
                 {
                     hasfirepower = false;
                 }
-                if (lives == 0)
+                if (lives <= 0)
                 {
-                    screen = 3;
+                    screen = (int)Gamescreen.GameOver;
                     gameisover = true;
 
                 }
-                if (gameisover == true)
-                {
-                    screen = 3;
-                    lives = 0;
 
-                }
 
 
 
@@ -1055,9 +1016,9 @@ namespace Platformer
                 //loop through all marios fireballs and check if any of them collide with enemies
                 //if collide remove both
 
-                for (int i = 0; i < Mario.Fireballs.Count; i++)
+                for (int i = 0; i < MainCharacter.Fireballs.Count; i++)
                 {
-                    if (Mario.Fireballs[i].HitBox.Intersects(Penguin.HitBox) && canShootEnemy == true)
+                    if (MainCharacter.Fireballs[i].HitBox.Intersects(Penguin.HitBox) && canShootEnemy == true)
                     {
                         fireballhitcount++;
 
@@ -1070,29 +1031,29 @@ namespace Platformer
 
                 if (ks.IsKeyDown(Keys.M))
                 {
-                    Mario.X = ms.X;
-                    Mario.Y = ms.Y;
+                    MainCharacter.X = ms.X;
+                    MainCharacter.Y = ms.Y;
                 }
 
 
                 if (hasJumpBoost == false)
                 {
-                    Mario.jumpPower = 5;
+                    MainCharacter.jumpPower = 5;
                 }
                 else if (hasJumpBoost == true)
                 {
-                    Mario.jumpPower = 10;
+                    MainCharacter.jumpPower = 10;
                 }
                 if (isUnderwaterLevel == true)
                 {
-                    Mario.jumpPower = 1f;
-                    Mario.gravity = 1f;
-                    Mario.elapsedJumpTime = TimeSpan.FromMilliseconds(1);
+                    MainCharacter.jumpPower = 1f;
+                    MainCharacter.gravity = 1f;
+                    MainCharacter.elapsedJumpTime = TimeSpan.FromMilliseconds(1);
                 }
 
                 if (MenuButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 4;
+                    screen = (int)Gamescreen.MainMenu;
                 }
 
                 if (fireballhitcount <= maxFireballHits)
@@ -1106,118 +1067,118 @@ namespace Platformer
 
 
             }
-            if (screen == 2)
+            if (screen == (int)Gamescreen.LandLevelMenu)
             {
                 ExitButton = new Button(Content.Load<Texture2D>("ExitButton"), new Vector2(0, 420), Color.White);
 
                 if (lvl1button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 0;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl1button.Update();
 
                 if (lvl2button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 1;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl2button.Update();
 
                 if (lvl3button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 2;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl3button.Update();
                 if (lvl4button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 3;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl4button.Update();
                 if (lvl5button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 4;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl5button.Update();
                 if (lvl6button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 5;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl6button.Update();
                 if (lvl7button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 6;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl7button.Update();
                 if (lvl8button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 7;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl8button.Update();
                 if (lvl9button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 8;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl9button.Update();
                 if (lvl10button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 9;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl10button.Update();
                 if (lvl11button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 10;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl11button.Update();
                 if (lvl12button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 11;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl12button.Update();
                 if (lvl13button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 12;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl13button.Update();
@@ -1233,45 +1194,45 @@ namespace Platformer
 
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 4;
+                    screen = (int)Gamescreen.MainMenu;
                 }
 
             }
-            if (screen == 3)
+            if (screen == (int)Gamescreen.MainMenu)
             {
                 if (restartbutton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     //restarts here
                     lives = 100;
                     currentLevel = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
-                    Mario.Scale = Vector2.One;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Scale = Vector2.One;
                     gameisover = false;
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     MoreLives = false;
                 }
             }
-            if (screen == 4)
+            if (screen == (int)Gamescreen.MainMenu)
             {
                 ExitButton = new Button(Content.Load<Texture2D>("ExitButton"), new Vector2(400, 400), Color.White);
                 LevelSelectButton.Update();
                 if (LevelSelectButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 7;
+                    screen = (int)Gamescreen.KindOfLevelMenu;
                 }
                 ShopButton.Update();
                 if (ShopButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 5;
+                    screen = (int)Gamescreen.Shop;
                 }
                 ExitButton.Update();
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                 }
 
             }
-            if (screen == 5)
+            if (screen == (int)Gamescreen.Shop)
             {
                 ExitButton = new Button(Content.Load<Texture2D>("ExitButton"), new Vector2(400, 400), Color.White);
                 if (character != "Mario")
@@ -1320,146 +1281,144 @@ namespace Platformer
 
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                 }
                 PlayButton.Update();
                 if (BackgroundButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 9;
+                    screen = (int)Gamescreen.ChooseBackgroundMenu;
                 }
             }
-            if (screen == 6)
+            if (screen == (int)Gamescreen.StartScreen)
             {
                 if (PlayButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                 }
                 PlayButton.Update();
             }
-            if (screen == 7)
+            if (screen == (int)Gamescreen.KindOfLevelMenu)
             {
                 if (UnderwaterLevelsButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 8;
+                    screen = (int)Gamescreen.UnderwaterLevelMenu;
                 }
                 UnderwaterLevelsButton.Update();
                 if (LandLevelsButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 2;
+                    screen = (int)Gamescreen.LandLevelMenu;
                 }
                 LandLevelsButton.Update();
             }
-            if (screen == 8)
+            if (screen == (int)Gamescreen.UnderwaterLevelMenu)
             {
-
-
                 if (lvl1button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 0;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl1button.Update();
 
                 if (lvl2button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 1;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl2button.Update();
                 if (lvl3button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 2;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl3button.Update();
                 if (lvl4button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 3;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl4button.Update();
                 if (lvl5button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 4;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl5button.Update();
                 if (lvl6button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 5;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl6button.Update();
                 if (lvl7button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 6;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl7button.Update();
                 if (lvl8button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 7;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl8button.Update();
                 if (lvl9button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 8;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl9button.Update();
                 if (lvl10button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 9;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                 }
                 lvl10button.Update();
                 if (lvl11button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 10;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl11button.Update();
                 if (lvl12button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 11;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl12button.Update();
                 if (lvl13button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 1;
+                    screen = (int)Gamescreen.Maingame;
                     currentLevel = 12;
                     fireballhitcount = 0;
-                    Mario.Position = levels[currentWorld][currentLevel].startPosition;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     MoreLives = false;
                 }
                 lvl13button.Update();
@@ -1482,17 +1441,18 @@ namespace Platformer
 
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 4;
+                    screen = (int)Gamescreen.MainMenu;
                 }
             }
 
-            if (screen == 9)
+            if (screen == (int)Gamescreen.ChooseBackgroundMenu)
             {
                 if (ks.IsKeyDown(Keys.Right) && lastKS.IsKeyUp(Keys.Right))
                 {
                     if (currentMap == LevelMap.Black)
                     {
                         currentMap = LevelMap.Stars;
+
                     }
                     else
                     {
@@ -1516,7 +1476,8 @@ namespace Platformer
                 }
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = 4;
+                    screen = (int)Gamescreen.MainMenu;
+                    levels[currentWorld][currentLevel].backgroundImage = currentLevelMap;
                 }
 
                 lastKS = ks;
@@ -1536,10 +1497,10 @@ namespace Platformer
             //}
 
 
-            if (screen == 1)
+            if (screen == (int)Gamescreen.Maingame)
             {
                 levels[currentWorld][currentLevel].Draw(spriteBatch);
-                Mario.Draw(spriteBatch);
+                MainCharacter.Draw(spriteBatch);
                 /*
                 currentLevel.backgroundImage = maps[currentMap];
                 currentLevel.Draw(spriteBatch);
@@ -1619,7 +1580,7 @@ namespace Platformer
                 MenuButton.Draw(spriteBatch);
             }
 
-            if (screen == 2 || screen == 8)
+            if (screen == (int)Gamescreen.LandLevelMenu || screen == (int)Gamescreen.UnderwaterLevelMenu)
             {
                 LevelMenuBg.Draw(spriteBatch);
                 lvl1button.Draw(spriteBatch);
@@ -1637,23 +1598,23 @@ namespace Platformer
                 lvl13button.Draw(spriteBatch);
                 ExitButton.Draw(spriteBatch);
             }
-            if (screen == 3)
+            if (screen == (int)Gamescreen.GameOver)
             {
                 GameOverScreen.Draw(spriteBatch);
             }
 
-            if (screen == 1 || screen == 3)
+            if (screen == (int)Gamescreen.Maingame || screen == (int)Gamescreen.GameOver)
             {
                 restartbutton.Draw(spriteBatch);
                 spriteBatch.DrawString(font, string.Format("Lives: {0} * {1}", lives, fireballhitcount), Vector2.Zero, Color.White);
             }
-            if (screen == 4)
+            if (screen == (int)Gamescreen.MainMenu)
             {
                 LevelSelectButton.Draw(spriteBatch);
                 ShopButton.Draw(spriteBatch);
                 ExitButton.Draw(spriteBatch);
             }
-            if (screen == 5)
+            if (screen == (int)Gamescreen.Shop)
             {
                 SpongebobButton.Draw(spriteBatch);
                 MarioButton.Draw(spriteBatch);
@@ -1661,18 +1622,18 @@ namespace Platformer
                 PlayButton.Draw(spriteBatch);
                 BackgroundButton.Draw(spriteBatch);
             }
-            if (screen == 6)
+            if (screen == (int)Gamescreen.StartScreen)
             {
                 StartScreenBackground.Draw(spriteBatch);
                 PlayButton.Draw(spriteBatch);
                 spriteBatch.DrawString(font2, string.Format("Platformer Game"), new Vector2(275, 200), Color.White);
             }
-            if (screen == 7)
+            if (screen == (int)Gamescreen.KindOfLevelMenu)
             {
                 UnderwaterLevelsButton.Draw(spriteBatch);
                 LandLevelsButton.Draw(spriteBatch);
             }
-            if (screen == 9)
+            if (screen == (int)Gamescreen.ChooseBackgroundMenu)
             {
 
                 spriteBatch.Draw(currentLevelMap, new Microsoft.Xna.Framework.Rectangle(0, 0, 1000, 489), Color.White);
