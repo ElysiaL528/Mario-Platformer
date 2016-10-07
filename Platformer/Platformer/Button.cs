@@ -13,7 +13,30 @@ namespace Platformer
         public bool isclicked;
         MouseState lastms;
         public MouseState mouseState;
-
+         int levelValue = 0;
+        int UlevelValue = 0;
+        public int LevelValue
+        {
+            get
+            {
+                return levelValue;
+            }
+            set
+            {
+                levelValue = value;
+            }
+        }
+        public int ULevelValue
+        {
+            get
+            {
+                return UlevelValue;
+            }
+            set
+            {
+                UlevelValue = value;
+            }
+        }
         public Button(Texture2D img, Vector2 pos, Color color)
             : base(img, pos, color)
         {
@@ -24,10 +47,6 @@ namespace Platformer
         {
             lastms = mouseState;
             mouseState = Mouse.GetState();
-
-
-
-            
 
             if (HitBox.Contains(mouseState.X, mouseState.Y))
             {

@@ -127,11 +127,12 @@ namespace Platformer
         Button LevelSelectButton;
         Button restartbutton;
         List<Button> landLevelButtons = new List<Button>();
+        List<Button> ULevelButtons = new List<Button>();
         #endregion
 
         //Run-time variables
         int lives = 100;
-        int screen = (int)Gamescreen.StartScreen;
+        int screen = (int)Gamescreen.UnderwaterLevelMenu;
         int fireballhitcount = 0;
         string character = "Patrick";
         string leveltype = "Land";
@@ -361,57 +362,83 @@ namespace Platformer
             LevelMenuBg = new Sprite(Content.Load<Texture2D>("LevelSelectMenu"), new Vector2(0, 0), Color.White);
             restartbutton = new Button(Content.Load<Texture2D>("RestartButton"), new Vector2(960, 0), Color.White);
             lvl1button = new Button(Content.Load<Texture2D>("lvl1button"), new Vector2(150, 150), Color.White);
+            lvl1button.LevelValue = 0;
             landLevelButtons.Add(lvl1button);
             lvl2button = new Button(Content.Load<Texture2D>("lvl2button"), new Vector2(300, 150), Color.White);
+            lvl2button.LevelValue = 1;
             landLevelButtons.Add(lvl2button);
             lvl3button = new Button(Content.Load<Texture2D>("lvl3button"), new Vector2(450, 150), Color.White);
+            lvl3button.LevelValue = 2;
             landLevelButtons.Add(lvl3button);
             lvl4button = new Button(Content.Load<Texture2D>("lvl4button"), new Vector2(600, 150), Color.White);
+            lvl4button.LevelValue = 3;
             landLevelButtons.Add(lvl4button);
             lvl5button = new Button(Content.Load<Texture2D>("lvl5button"), new Vector2(150, 210), Color.White);
+            lvl5button.LevelValue = 4;
             landLevelButtons.Add(lvl5button);
             lvl6button = new Button(Content.Load<Texture2D>("lvl6button"), new Vector2(300, 210), Color.White);
+            lvl6button.LevelValue = 5;
             landLevelButtons.Add(lvl6button);
             lvl7button = new Button(Content.Load<Texture2D>("lvl7button"), new Vector2(450, 210), Color.White);
+            lvl7button.LevelValue = 6;
             landLevelButtons.Add(lvl7button);
             lvl8button = new Button(Content.Load<Texture2D>("lvl8button"), new Vector2(600, 210), Color.White);
+            lvl8button.LevelValue = 7;
             landLevelButtons.Add(lvl8button);
             lvl9button = new Button(Content.Load<Texture2D>("lvl9button"), new Vector2(150, 270), Color.White);
+            lvl9button.LevelValue = 8;
             landLevelButtons.Add(lvl9button);
             lvl10button = new Button(Content.Load<Texture2D>("lvl10button"), new Vector2(300, 270), Color.White);
+            lvl10button.LevelValue = 9;
             landLevelButtons.Add(lvl10button);
             lvl11button = new Button(Content.Load<Texture2D>("lvl11button"), new Vector2(450, 270), Color.White);
+            lvl11button.LevelValue = 10;
             landLevelButtons.Add(lvl11button);
             lvl12button = new Button(Content.Load<Texture2D>("lvl12button"), new Vector2(600, 270), Color.White);
+            lvl12button.LevelValue = 11;
             landLevelButtons.Add(lvl12button);
             lvl13button = new Button(Content.Load<Texture2D>("lvl13button"), new Vector2(150, 330), Color.White);
+            lvl13button.LevelValue = 12;
             landLevelButtons.Add(lvl13button);
             lvl01button = new Button(Content.Load<Texture2D>("lvl1button"), new Vector2(150, 150), Color.White);
-            landLevelButtons.Add(lvl01button);
+            lvl01button.ULevelValue = 0;
+            ULevelButtons.Add(lvl01button);
             lvl02button = new Button(Content.Load<Texture2D>("lvl2button"), new Vector2(300, 150), Color.White);
-            landLevelButtons.Add(lvl02button);
+            lvl02button.ULevelValue = 1;
+            ULevelButtons.Add(lvl02button);
             lvl03button = new Button(Content.Load<Texture2D>("lvl3button"), new Vector2(450, 150), Color.White);
-            landLevelButtons.Add(lvl03button);
+            lvl03button.ULevelValue = 2;
+            ULevelButtons.Add(lvl03button);
             lvl04button = new Button(Content.Load<Texture2D>("lvl4button"), new Vector2(600, 150), Color.White);
-            landLevelButtons.Add(lvl04button);
+            lvl04button.ULevelValue = 3;
+            ULevelButtons.Add(lvl04button);
             lvl05button = new Button(Content.Load<Texture2D>("lvl5button"), new Vector2(150, 210), Color.White);
-            landLevelButtons.Add(lvl05button);
+            lvl05button.ULevelValue = 4;
+            ULevelButtons.Add(lvl05button);
             lvl06button = new Button(Content.Load<Texture2D>("lvl6button"), new Vector2(300, 210), Color.White);
-            landLevelButtons.Add(lvl06button);
+            lvl6button.ULevelValue = 5;
+            ULevelButtons.Add(lvl06button);
             lvl07button = new Button(Content.Load<Texture2D>("lvl7button"), new Vector2(450, 210), Color.White);
-            landLevelButtons.Add(lvl07button);
+            lvl07button.ULevelValue = 6;
+            ULevelButtons.Add(lvl07button);
             lvl08button = new Button(Content.Load<Texture2D>("lvl8button"), new Vector2(600, 210), Color.White);
-            landLevelButtons.Add(lvl08button);
+            lvl08button.ULevelValue = 7;
+            ULevelButtons.Add(lvl08button);
             lvl09button = new Button(Content.Load<Texture2D>("lvl9button"), new Vector2(150, 270), Color.White);
-            landLevelButtons.Add(lvl09button);
+            lvl09button.ULevelValue = 8;
+            ULevelButtons.Add(lvl09button);
             lvl010button = new Button(Content.Load<Texture2D>("lvl10button"), new Vector2(300, 270), Color.White);
-            landLevelButtons.Add(lvl010button);
+            lvl010button.ULevelValue = 9;
+            ULevelButtons.Add(lvl010button);
             lvl011button = new Button(Content.Load<Texture2D>("lvl11button"), new Vector2(450, 270), Color.White);
-            landLevelButtons.Add(lvl011button);
+            lvl011button.ULevelValue = 10;
+            ULevelButtons.Add(lvl011button);
             lvl012button = new Button(Content.Load<Texture2D>("lvl12button"), new Vector2(600, 270), Color.White);
-            landLevelButtons.Add(lvl012button);
+            lvl012button.ULevelValue = 11;
+            ULevelButtons.Add(lvl012button);
             lvl013button = new Button(Content.Load<Texture2D>("lvl13button"), new Vector2(600, 330), Color.White);
-            landLevelButtons.Add(lvl013button);
+            lvl013button.ULevelValue = 12;
+            ULevelButtons.Add(lvl013button);
             MenuButton = new Button(Content.Load<Texture2D>("MenuButton"), new Vector2(960, 40), Color.White);
             LevelSelectButton = new Button(Content.Load<Texture2D>("LevelSelectButton"), new Vector2(100, 100), Color.White);
             ShopButton = new Button(Content.Load<Texture2D>("ShopButton"), new Vector2(400, 100), Color.White);
@@ -1070,7 +1097,20 @@ namespace Platformer
             if (screen == (int)Gamescreen.LandLevelMenu)
             {
                 ExitButton = new Button(Content.Load<Texture2D>("ExitButton"), new Vector2(0, 420), Color.White);
-
+                currentWorld = World.Land;
+               foreach(Button button in landLevelButtons)
+                {
+                    if(button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
+                    {
+                        screen = (int)Gamescreen.Maingame;
+                        currentLevel = button.LevelValue;
+                        fireballhitcount = 0;
+                        MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
+                    }
+                    button.Update();
+                }
+                #region old level select
+                /*
                 if (lvl1button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = (int)Gamescreen.Maingame;
@@ -1190,6 +1230,8 @@ namespace Platformer
                 {
                     LevelSelectButton = new Button(Content.Load<Texture2D>("LevelSelectButton"), new Vector2(100, 100), Color.White);
                 }
+                */
+                #endregion
                 MenuButton.Update();
 
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
@@ -1312,7 +1354,19 @@ namespace Platformer
             }
             if (screen == (int)Gamescreen.UnderwaterLevelMenu)
             {
-                if (lvl1button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
+                currentWorld = World.Underwater;
+                foreach(Button button in ULevelButtons)
+                {
+                    if (button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
+                    {
+                        screen = (int)Gamescreen.Maingame;
+                        currentLevel = button.ULevelValue;
+                        fireballhitcount = 0;
+                        MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
+                    }
+                }
+
+               /* if (lvl1button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = (int)Gamescreen.Maingame;
                     currentLevel = 0;
@@ -1430,6 +1484,7 @@ namespace Platformer
                 {
                     LevelSelectButton = new Button(Content.Load<Texture2D>("LevelSelectButton"), new Vector2(100, 100), Color.White);
                 }
+                */
                 if (MenuButton.HitBox.Contains(ms.X, ms.Y))
                 {
                     MenuButton = new Button(Content.Load<Texture2D>("MenuButton"), new Vector2(960, 40), Color.Black);
