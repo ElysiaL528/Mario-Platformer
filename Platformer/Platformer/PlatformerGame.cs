@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace Platformer
 {
-    /* To do: Is there a way to differentiate levels & ULevels? (LevelMap & ULevelMap dictionaries?)
+    /* To do: Finish making the loading logic for creating the platforms easier to read
      * - Fix game
             - Some buttons don't highlight
             - Lava platforms aren't showing up (Ulevel 3)
@@ -345,14 +345,14 @@ namespace Platformer
             Penguin = new AnimatedSprite(penguinspritesheet, penguinPosition, Color.White, strolling);
 
             //Assign main character values and fireballs
-             if (!IsTiny)
-             {
+            if (!IsTiny)
+            {
                 MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("FireBall_1"));
-             }
-             else
-             {
+            }
+            else
+            {
                 MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("Copy of Fireball_1"));
-             }
+            }
 
             //Load Starting Objects
             #region
@@ -476,70 +476,52 @@ namespace Platformer
             {
                 currentLevelMap = maps[currentMap];
             }
-            
+
             //Draws the platforms for each level. 0-1 means on land and level 1, 1-2 means underwater. First number can go from 0 to 1, second number can go from 0 to 13.
             #region level 0-0
-            List<Sprite> level0_0Platforms = new List<Sprite>();
-            level0_0Platforms.Add(new Sprite(platformImage, new Vector2(0, 429), Color.White));
-            level0_0Platforms[0].Size = new Vector2(59, 61);
-            level0_0Platforms.Add(new Sprite(platformImage, new Vector2(104, 349), Color.White));
-            level0_0Platforms[1].Size = new Vector2(20, 20);
-            level0_0Platforms.Add(new Sprite(platformImage, new Vector2(280, 297), Color.White));
-            level0_0Platforms[2].Size = new Vector2(20, 20);
-            level0_0Platforms.Add(new Sprite(platformImage, new Vector2(460, 248), Color.White));
-            level0_0Platforms[3].Size = new Vector2(20, 20);
-            level0_0Platforms.Add(new Sprite(platformImage, new Vector2(635, 207), Color.White));
-            level0_0Platforms[4].Size = new Vector2(20, 20);
-            level0_0Platforms.Add(new Sprite(platformImage, new Vector2(793, 125), Color.White));
-            level0_0Platforms[5].Size = new Vector2(20, 20);
+
+            var level0_0Platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(0, 429)) { Size = new Vector2(59, 61) },
+                new Sprite(platformImage, new Vector2(104, 349)) { Size = new Vector2(20, 20) },
+                new Sprite(platformImage, new Vector2(280, 297)) { Size = new Vector2(20, 20) },
+                new Sprite(platformImage, new Vector2(460, 248)) { Size =  new Vector2(20, 20) },
+                new Sprite(platformImage, new Vector2(635, 207)) { Size = new Vector2(20, 20)},
+                new Sprite(platformImage, new Vector2(793, 125)) {Size =  new Vector2(20, 20)}
+            };
 
             levels[World.Land].Add(new Level(level0_0Platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion            
             #region level 0-1
-            List<Sprite> level0_1Platforms = new List<Sprite>();
-            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(0, 438), Color.White));
-            level0_1Platforms[0].Size = new Vector2(112, 51);
-            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(148, 383), Color.White));
-            level0_1Platforms[1].Size = new Vector2(74, 25);
-            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(262, 437), Color.White));
-            level0_1Platforms[2].Size = new Vector2(165, 52);
-            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(487, 355), Color.White));
-            level0_1Platforms[3].Size = new Vector2(73, 25);
-            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(781, 329), Color.White));
-            level0_1Platforms[4].Size = new Vector2(74, 25);
-            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(873, 439), Color.White));
-            level0_1Platforms[5].Size = new Vector2(127, 50);
-            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(616, 439), Color.White));
-            level0_1Platforms[6].Size = new Vector2(146, 50);
 
-            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(0, 400), Color.White));
-            level0_1Platforms[7].Size = new Vector2(20, 100);
-
-            level0_1Platforms.Add(new Sprite(platformImage, new Vector2(100, 400), Color.White));
-            level0_1Platforms[8].Size = new Vector2(20, 100);
+            var level0_1Platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(0, 438)) { Size = new Vector2(112, 51) },
+                new Sprite(platformImage, new Vector2(148, 383)) { Size = new Vector2(74, 25) },
+                new Sprite(platformImage, new Vector2(262, 437)) {Size =  new Vector2(165, 52) },
+                new Sprite(platformImage, new Vector2(487, 355)) { Size = new Vector2(73, 25) },
+                new Sprite(platformImage, new Vector2(781, 329)) {Size =  new Vector2(74, 25) },
+                new Sprite(platformImage, new Vector2(873, 439)) {Size =  new Vector2(127, 50) },
+                new Sprite(platformImage, new Vector2(616, 439)) {Size =  new Vector2(146, 50) },
+                new Sprite(platformImage, new Vector2(0, 400)) {Size =  new Vector2(20, 100) },
+                new Sprite(platformImage, new Vector2(100, 400)) {Size =  new Vector2(20, 100) },
+            };
 
             levels[World.Land].Add(new Level(level0_1Platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(940, 368), Color.White) { Scale = new Vector2(.75f) }));
 
             #endregion
             #region level 0-2
-            List<Sprite> level0_2Platforms = new List<Sprite>();
 
-            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(1, 447), Color.White));
-            level0_2Platforms[0].Size = new Vector2(101, 41);
-            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(234, 445), Color.White));
-            level0_2Platforms[1].Size = new Vector2(101, 41);
-            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(380, 263), Color.White));
-            level0_2Platforms[2].Size = new Vector2(42, 226);
-            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(593, 183), Color.White));
-            level0_2Platforms[3].Size = new Vector2(40, 306);
-            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(820, 264), Color.White));
-            level0_2Platforms[4].Size = new Vector2(42, 224);
-            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(921, 150), Color.White));
-            level0_2Platforms[5].Size = new Vector2(77, 22);
-            level0_2Platforms.Add(new Sprite(platformImage, new Vector2(540, 363), Color.White));
-            level0_2Platforms[6].Size = new Vector2(156, 53);
-
-
+            var level0_2Platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(1, 447)) {Size =  new Vector2(101, 41)},
+                new Sprite(platformImage, new Vector2(234, 445)) { Size = new Vector2(101, 41)},
+                new Sprite(platformImage, new Vector2(380, 263)) {Size =  new Vector2(42, 226)},
+                new Sprite(platformImage, new Vector2(593, 183)) {Size =  new Vector2(40, 306)},
+                new Sprite(platformImage, new Vector2(820, 264)) {Size =  new Vector2(42, 224)},
+                new Sprite(platformImage, new Vector2(921, 150)) {Size =  new Vector2(77, 22)},
+                new Sprite(platformImage, new Vector2(540, 363)) {Size =  new Vector2(156, 53)}
+            };
 
             List<Item> items0_2 = new List<Item>();
             items0_2.Add(new Item(Content.Load<Texture2D>("bunny"), new Vector2(270, 400), Color.White));
@@ -547,20 +529,16 @@ namespace Platformer
             levels[World.Land].Add(new Level(level0_2Platforms, items0_2, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
             #region level 0-3
-            List<Sprite> level0_3Platforms = new List<Sprite>();
 
-            level0_3Platforms.Add(new Sprite(platformImage, new Vector2(1, 465), Color.White));
-            level0_3Platforms[0].Size = new Vector2(995, 23);
-            level0_3Platforms.Add(new Sprite(platformImage, new Vector2(177, 280), Color.White));
-            level0_3Platforms[1].Size = new Vector2(614, 56);
-            level0_3Platforms.Add(new Sprite(platformImage, new Vector2(0, 159), Color.White));
-            level0_3Platforms[2].Size = new Vector2(316, 18);
-            level0_3Platforms.Add(new Sprite(platformImage, new Vector2(775, 153), Color.White));
-            level0_3Platforms[3].Size = new Vector2(221, 18);
-            level0_3Platforms.Add(new Sprite(platformImage, new Vector2(446, 82), Color.White));
-            level0_3Platforms[4].Size = new Vector2(206, 37);
-            level0_3Platforms.Add(new Sprite(platformImage, new Vector2(33, 355), Color.White));
-            level0_3Platforms[5].Size = new Vector2(48, 16);
+            List<Sprite> level0_3Platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(1, 465)) {Size =  new Vector2(995, 23)},
+                new Sprite(platformImage, new Vector2(177, 280)) {Size =  new Vector2(614, 56)},
+                new Sprite(platformImage, new Vector2(0, 159)) {Size =  new Vector2(316, 18)},
+                new Sprite(platformImage, new Vector2(775, 153)) {Size =  new Vector2(221, 18)},
+                new Sprite(platformImage, new Vector2(446, 82)) {Size =  new Vector2(206, 37)},
+                new Sprite(platformImage, new Vector2(33, 355)) {Size =  new Vector2(48, 16)}
+            };
 
             List<Item> items0_3 = new List<Item>();
             items0_3.Add(new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(100, 100), Color.White));
@@ -568,36 +546,30 @@ namespace Platformer
             levels[World.Land].Add(new Level(level0_3Platforms, items0_3, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
             #region level 0-4
-            List<Sprite> level0_4Platforms = new List<Sprite>();
-            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(163, 261), Color.White));
-            level0_4Platforms[0].Size = new Vector2(50, 225);
-            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(307, 479), Color.White));
-            level0_4Platforms[1].Size = new Vector2(27, 7);
-            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(307, 1), Color.White));
-            level0_4Platforms[2].Size = new Vector2(38, 341);
-            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(436, 254), Color.White));
-            level0_4Platforms[3].Size = new Vector2(38, 234);
-            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(550, 0), Color.White));
-            level0_4Platforms[4].Size = new Vector2(39, 325);
-            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(569, 479), Color.White));
-            level0_4Platforms[5].Size = new Vector2(39, 6);
-            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(701, 259), Color.White));
-            level0_4Platforms[6].Size = new Vector2(38, 227);
-            level0_4Platforms.Add(new Sprite(platformImage, new Vector2(834, 173), Color.White));
-            level0_4Platforms[7].Size = new Vector2(166, 44);
+
+            List<Sprite> level0_4Platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(163, 261)) {Size =  new Vector2(50, 225)},
+                new Sprite(platformImage, new Vector2(307, 479)) {Size =  new Vector2(27, 7)},
+                new Sprite(platformImage, new Vector2(307, 1)) {Size =  new Vector2(38, 341)},
+                new Sprite(platformImage, new Vector2(436, 254)) {Size =  new Vector2(38, 234)},
+                new Sprite(platformImage, new Vector2(550, 0)) {Size =  new Vector2(39, 325)},
+                new Sprite(platformImage, new Vector2(569, 479)) {Size = new Vector2(39, 6)},
+                new Sprite(platformImage, new Vector2(701, 259)) {Size =  new Vector2(38, 227)},
+                new Sprite(platformImage, new Vector2(834, 173)) {Size =  new Vector2(166, 44)}
+            };
 
             levels[World.Land].Add(new Level(level0_4Platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
             #region level 0-5
-            List<Sprite> level0_5platforms = new List<Sprite>();
-            level0_5platforms.Add(new Sprite(platformImage, new Vector2(1, 242), Color.White));
-            level0_5platforms[0].Size = new Vector2(858, 41);
-            level0_5platforms.Add(new Sprite(platformImage, new Vector2(257, 297), Color.White));
-            level0_5platforms[1].Size = new Vector2(743, 41);
-            level0_5platforms.Add(new Sprite(platformImage, new Vector2(0, 460), Color.White));
-            level0_5platforms[2].Size = new Vector2(133, 26);
-            level0_5platforms.Add(new Sprite(platformImage, new Vector2(677, 465), Color.White));
-            level0_5platforms[3].Size = new Vector2(321, 23);
+
+            List<Sprite> level0_5platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(1, 242)) {Size =  new Vector2(858, 41)},
+                new Sprite(platformImage, new Vector2(257, 297)) {Size =  new Vector2(743, 41)},
+                new Sprite(platformImage, new Vector2(0, 460)) {Size =  new Vector2(133, 26)},
+                new Sprite(platformImage, new Vector2(677, 465)) {Size =  new Vector2(321, 23)}
+            };
 
             List<Item> items0_5 = new List<Item>();
 
@@ -610,39 +582,29 @@ namespace Platformer
             levels[World.Land].Add(new Level(level0_5platforms, items0_5, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 465), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
             #region level 0-6
-            List<Sprite> level0_6platforms = new List<Sprite>();
-            level0_6platforms.Add(new Sprite(platformImage, new Vector2(1, 440), Color.White));
-            level0_6platforms[0].Size = new Vector2(280, 45);
-            level0_6platforms.Add(new Sprite(platformImage, new Vector2(357, 349), Color.White));
-            level0_6platforms[1].Size = new Vector2(83, 16);
-            level0_6platforms.Add(new Sprite(platformImage, new Vector2(358, 229), Color.White));
-            level0_6platforms[2].Size = new Vector2(83, 16);
-            level0_6platforms.Add(new Sprite(platformImage, new Vector2(355, 142), Color.White));
-            level0_6platforms[3].Size = new Vector2(235, 12);
-            level0_6platforms.Add(new Sprite(platformImage, new Vector2(494, 229), Color.White));
-            level0_6platforms[4].Size = new Vector2(88, 15);
-            level0_6platforms.Add(new Sprite(platformImage, new Vector2(495, 350), Color.White));
-            level0_6platforms[5].Size = new Vector2(88, 15);
-            level0_6platforms.Add(new Sprite(platformImage, new Vector2(624, 439), Color.White));
-            level0_6platforms[6].Size = new Vector2(374, 46);
-            level0_6platforms.Add(new Sprite(platformImage, new Vector2(439, 141), Color.White));
-            level0_6platforms[7].Size = new Vector2(56, 347);
 
+            List<Sprite> level0_6platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(1, 440)) {Size =  new Vector2(280, 45)},
+                new Sprite(platformImage, new Vector2(357, 349)) {Size =  new Vector2(83, 16)},
+                new Sprite(platformImage, new Vector2(358, 229)) {Size = new Vector2(83, 16)},
+                new Sprite(platformImage, new Vector2(355, 142)) {Size =  new Vector2(235, 12)},
+                new Sprite(platformImage, new Vector2(494, 229)) {Size =  new Vector2(88, 15)},
+                new Sprite(platformImage, new Vector2(495, 350)) {Size =  new Vector2(88, 15)},
+                new Sprite(platformImage, new Vector2(624, 439)) {Size =  new Vector2(374, 46)},
+                new Sprite(platformImage, new Vector2(439, 141)) {Size =  new Vector2(56, 347)}
+            };
             List<Item> items0_6 = new List<Item>();
             items0_6.Add(new Platformer.Item(Content.Load<Texture2D>("Caduceus"), new Vector2(500, 290), Color.White));
 
             levels[World.Land].Add(new Level(level0_6platforms, items0_6, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 438), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
             #region level 0-7
-            List<Sprite> level0_7platforms = new List<Sprite>();
-            level0_7platforms.Add(new Sprite(platformImage, new Vector2(2, 186), Color.White));
-            level0_7platforms[0].Size = new Vector2(996, 56);
-            level0_7platforms.Add(new Sprite(platformImage, new Vector2(237, 448), Color.White));
-            level0_7platforms[1].Size = new Vector2(487, 37);
-
-
-
-
+            List<Sprite> level0_7platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(2, 186)) {Size =  new Vector2(996, 56)},
+                new Sprite(platformImage, new Vector2(237, 448)) {Size =  new Vector2(487, 37)}
+            };
 
             List<Item> items0_7 = new List<Item>();
             items0_7.Add(new Item(Content.Load<Texture2D>("invert"), new Vector2(800, 120), Color.White));
@@ -651,42 +613,33 @@ namespace Platformer
             levels[World.Land].Add(new Level(level0_7platforms, items0_7, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(500, 447), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
             #region level 0-8
-            List<Sprite> level0_8platforms = new List<Sprite>();
-            level0_8platforms.Add(new Sprite(platformImage, new Vector2(1, 452), Color.White));
-            level0_8platforms[0].Size = new Vector2(163, 36);
-            level0_8platforms.Add(new Sprite(platformImage, new Vector2(168, 334), Color.White));
-            level0_8platforms[1].Size = new Vector2(161, 36);
-            level0_8platforms.Add(new Sprite(platformImage, new Vector2(365, 244), Color.White));
-            level0_8platforms[2].Size = new Vector2(161, 36);
-            level0_8platforms.Add(new Sprite(platformImage, new Vector2(593, 177), Color.White));
-            level0_8platforms[3].Size = new Vector2(161, 36);
-            level0_8platforms.Add(new Sprite(platformImage, new Vector2(833, 111), Color.White));
-            level0_8platforms[4].Size = new Vector2(161, 36);
+            List<Sprite> level0_8platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(1, 452)) {Size =  new Vector2(163, 36)},
+                new Sprite(platformImage, new Vector2(168, 334)) {Size =  new Vector2(161, 36)},
+                new Sprite(platformImage, new Vector2(365, 244)) {Size =  new Vector2(161, 36)},
+                new Sprite(platformImage, new Vector2(593, 177)) {Size =  new Vector2(161, 36)},
+                new Sprite(platformImage, new Vector2(833, 111)) {Size =  new Vector2(161, 36)}
+            };
 
             levels[World.Land].Add(new Level(level0_8platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(940, 110), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
             #region level 0-9
-            List<Sprite> level0_9platforms = new List<Sprite>();
-            level0_9platforms.Add(new Sprite(platformImage, new Vector2(208, 135), Color.White));
-            level0_9platforms[0].Size = new Vector2(27, 75);
-            level0_9platforms.Add(new Sprite(platformImage, new Vector2(1, 2), Color.White));
-            level0_9platforms[1].Size = new Vector2(24, 488);
-            level0_9platforms.Add(new Sprite(platformImage, new Vector2(0, 1), Color.White));
-            level0_9platforms[2].Size = new Vector2(1012, 27);
-            level0_9platforms.Add(new Sprite(platformImage, new Vector2(302, 28), Color.White));
-            level0_9platforms[3].Size = new Vector2(47, 285);
-            level0_9platforms.Add(new Sprite(platformImage, new Vector2(25, 136), Color.White));
-            level0_9platforms[4].Size = new Vector2(209, 31);
-            level0_9platforms.Add(new Sprite(platformImage, new Vector2(0, 469), Color.White));
-            level0_9platforms[5].Size = new Vector2(1001, 20);
-            level0_9platforms.Add(new Sprite(platformImage, new Vector2(185, 208), Color.White));
-            level0_9platforms[6].Size = new Vector2(65, 18);
-            level0_9platforms.Add(new Sprite(platformImage, new Vector2(148, 285), Color.White));
-            level0_9platforms[7].Size = new Vector2(829, 28);
-            level0_9platforms.Add(new Sprite(platformImage, new Vector2(457, 127), Color.White));
-            level0_9platforms[8].Size = new Vector2(516, 159);
-            level0_9platforms.Add(new Sprite(platformImage, new Vector2(973, 4), Color.White));
-            level0_9platforms[9].Size = new Vector2(26, 484);
+
+            List<Sprite> level0_9platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(208, 135)) {Size =  new Vector2(27, 75)},
+                new Sprite(platformImage, new Vector2(1, 2)) {Size = new Vector2(24, 488)},
+                new Sprite(platformImage, new Vector2(0, 1)) {Size = new Vector2(1012, 27)},
+                new Sprite(platformImage, new Vector2(302, 28)) {Size =  new Vector2(47, 285)},
+                new Sprite(platformImage, new Vector2(25, 136)) {Size =  new Vector2(209, 31)},
+                new Sprite(platformImage, new Vector2(0, 469)) {Size =  new Vector2(1001, 20)},
+                new Sprite(platformImage, new Vector2(185, 208)) {Size =  new Vector2(65, 18)},
+                new Sprite(platformImage, new Vector2(148, 285)) {Size =  new Vector2(829, 28)},
+                new Sprite(platformImage, new Vector2(457, 127)) {Size = new Vector2(516, 159)},
+                new Sprite(platformImage, new Vector2(973, 4)) {Size =  new Vector2(26, 484)}
+
+            };
 
             List<Item> items0_9 = new List<Item>();
             items0_9.Add(new Item(Content.Load<Texture2D>("portal"), new Vector2(700, 380), Color.White));
@@ -696,33 +649,28 @@ namespace Platformer
             levels[World.Land].Add(new Level(level0_9platforms, items0_9, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(910, 130), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
             #region level 0-10
-            List<Sprite> level0_10platforms = new List<Sprite>();
-            level0_10platforms.Add(new Sprite(platformImage, new Vector2(0, 230), Color.White));
-            level0_10platforms[0].Size = new Vector2(193, 98);
-            level0_10platforms.Add(new Sprite(platformImage, new Vector2(281, 231), Color.White));
-            level0_10platforms[1].Size = new Vector2(17, 35);
-            level0_10platforms.Add(new Sprite(platformImage, new Vector2(387, 227), Color.White));
-            level0_10platforms[2].Size = new Vector2(17, 35);
-            level0_10platforms.Add(new Sprite(platformImage, new Vector2(500, 226), Color.White));
-            level0_10platforms[3].Size = new Vector2(17, 35);
-            level0_10platforms.Add(new Sprite(platformImage, new Vector2(611, 226), Color.White));
-            level0_10platforms[4].Size = new Vector2(17, 35);
-            level0_10platforms.Add(new Sprite(platformImage, new Vector2(721, 225), Color.White));
-            level0_10platforms[5].Size = new Vector2(17, 35);
-            level0_10platforms.Add(new Sprite(platformImage, new Vector2(814, 219), Color.White));
-            level0_10platforms[6].Size = new Vector2(103, 37);
+           
+            List<Sprite> level0_10platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(0, 230)) {Size =  new Vector2(193, 98)},
+                new Sprite(platformImage, new Vector2(281, 231)) {Size =  new Vector2(17, 35)},
+                new Sprite(platformImage, new Vector2(387, 227)) {Size =  new Vector2(17, 35)},
+                new Sprite(platformImage, new Vector2(500, 226)) {Size =  new Vector2(17, 35)},
+                new Sprite(platformImage, new Vector2(611, 226)) {Size =  new Vector2(17, 35)},
+                new Sprite(platformImage, new Vector2(721, 225)) {Size =  new Vector2(17, 35)},
+                new Sprite(platformImage, new Vector2(814, 219)) {Size =  new Vector2(103, 37)}
+            };
 
             levels[World.Land].Add(new Level(level0_10platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(880, 215), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
             #region level 0-11
-            List<Sprite> level0_11platforms = new List<Sprite>();
-            level0_11platforms.Add(new Sprite(platformImage, new Vector2(205, 320), Color.White));
-            level0_11platforms[0].Size = new Vector2(14, 14);
-            level0_11platforms.Add(new Sprite(platformImage, new Vector2(95, 213), Color.White));
-            level0_11platforms[1].Size = new Vector2(750, 29);
-            level0_11platforms.Add(new Sprite(platformImage, new Vector2(311, 140), Color.White));
-            level0_11platforms[2].Size = new Vector2(370, 345);
 
+            List<Sprite> level0_11platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(205, 320)) {Size =  new Vector2(14, 14)},
+                new Sprite(platformImage, new Vector2(95, 213)) {Size =  new Vector2(750, 29)},
+                new Sprite(platformImage, new Vector2(311, 140)) {Size =  new Vector2(370, 345)}
+            };
 
             List<Item> items0_11 = new List<Item>();
             items0_11.Add(new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(100, 100), Color.White));
@@ -730,13 +678,14 @@ namespace Platformer
             levels[World.Land].Add(new Level(level0_11platforms, items0_11, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(700, 440), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
             #region level 0-12
-            List<Sprite> level0_12platforms = new List<Sprite>();
-            level0_12platforms.Add(new Sprite(platformImage, new Vector2(1, 249), Color.White));
-            level0_12platforms[0].Size = new Vector2(132, 39);
-            level0_12platforms.Add(new Sprite(platformImage, new Vector2(159, 363), Color.White));
-            level0_12platforms[1].Size = new Vector2(659, 52);
-            level0_12platforms.Add(new Sprite(platformImage, new Vector2(873, 245), Color.White));
-            level0_12platforms[2].Size = new Vector2(132, 39);
+
+            List<Sprite> level0_12platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(1, 249)) {Size =  new Vector2(132, 39)},
+                new Sprite(platformImage, new Vector2(159, 363)) {Size =  new Vector2(659, 52)},
+                new Sprite(platformImage, new Vector2(873, 245)) {Size =  new Vector2(132, 39)}
+            };
+
 
             List<Item> items0_12 = new List<Item>();
             items0_12.Add(new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(100, 100), Color.White));
@@ -744,39 +693,27 @@ namespace Platformer
             levels[World.Land].Add(new Level(level0_12platforms, items0_12, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(900, 240), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
             #region level 0-13
-            List<Sprite> level0_13platforms = new List<Sprite>();
-            level0_13platforms.Add(new Sprite(platformImage, new Vector2(82, 463), Color.White));
-            level0_13platforms[0].Size = new Vector2(225, 21);
-            level0_13platforms.Add(new Sprite(platformImage, new Vector2(176, 53), Color.White));
-            level0_13platforms[1].Size = new Vector2(31, 431);
-            level0_13platforms.Add(new Sprite(platformImage, new Vector2(83, 313), Color.White));
-            level0_13platforms[2].Size = new Vector2(223, 26);
-            level0_13platforms.Add(new Sprite(platformImage, new Vector2(85, 187), Color.White));
-            level0_13platforms[3].Size = new Vector2(223, 26);
-            level0_13platforms.Add(new Sprite(platformImage, new Vector2(82, 54), Color.White));
-            level0_13platforms[4].Size = new Vector2(223, 26);
-            level0_13platforms.Add(new Sprite(platformImage, new Vector2(610, 0), Color.White));
-            level0_13platforms[5].Size = new Vector2(33, 388);
-            level0_13platforms.Add(new Sprite(platformImage, new Vector2(456, 123), Color.White));
-            level0_13platforms[6].Size = new Vector2(326, 29);
-            level0_13platforms.Add(new Sprite(platformImage, new Vector2(528, 231), Color.White));
-            level0_13platforms[7].Size = new Vector2(204, 37);
-            level0_13platforms.Add(new Sprite(platformImage, new Vector2(575, 369), Color.White));
-            level0_13platforms[8].Size = new Vector2(98, 22);
-            level0_13platforms.Add(new Sprite(platformImage, new Vector2(789, 326), Color.White));
-            level0_13platforms[9].Size = new Vector2(208, 22);
-            level0_13platforms.Add(new Sprite(platformImage, new Vector2(-1, -108), Color.White));
-            level0_13platforms[10].Size = new Vector2(491, 103);
-            level0_13platforms.Add(new Sprite(platformImage, new Vector2(560, 467), Color.White));
-            level0_13platforms[11].Size = new Vector2(138, 20);
 
+            List<Sprite> level0_13platforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(82, 463)) {Size =  new Vector2(225, 21)},
+                new Sprite(platformImage, new Vector2(176, 53)) {Size =  new Vector2(31, 431)},
+                new Sprite(platformImage, new Vector2(83, 313)) {Size =  new Vector2(223, 26)},
+                new Sprite(platformImage, new Vector2(85, 187)) {Size =  new Vector2(223, 26)},
+                new Sprite(platformImage, new Vector2(82, 54)) {Size =  new Vector2(223, 26)},
+                new Sprite(platformImage, new Vector2(610, 0)) {Size =  new Vector2(33, 388)},
+                new Sprite(platformImage, new Vector2(456, 123)) {Size =  new Vector2(326, 29)},
+                new Sprite(platformImage, new Vector2(528, 231)) {Size =  new Vector2(204, 37)},
+                new Sprite(platformImage, new Vector2(575, 369)) {Size =  new Vector2(98, 22)},
+                new Sprite(platformImage, new Vector2(789, 326)) {Size =  new Vector2(208, 22)},
+                new Sprite(platformImage, new Vector2(-1, -108)) {Size =  new Vector2(491, 103)},
+                new Sprite(platformImage, new Vector2(560, 467)) {Size =  new Vector2(138, 20)}
+            };
 
             levels[World.Land].Add(new Level(level0_13platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(660, 120), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
             #region level 1-0
             List<Sprite> level1_0platforms = new List<Sprite>();
-            level1_0platforms.Add(new Sprite(platformImage, new Vector2(18, 473), Color.White));
-            level1_0platforms[0].Size = new Vector2(968, 19);
             /*level01platforms.Add(new Sprite(lavaPlatformImage, new Vector2(0, 0), Color.White));
             level01platforms[1].Size = new Vector2(19, 490);
             level01platforms.Add(new Sprite(lavaPlatformImage, new Vector2(18, 0), Color.White));
@@ -790,17 +727,17 @@ namespace Platformer
             */
 
 
-            List<Sprite> level1_0lavaplatforms = new List<Sprite>();
-            level1_0lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(0, 0), Color.White));
-            level1_0lavaplatforms[0].Size = new Vector2(19, 490);
-            level1_0lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(18, 0), Color.White));
-            level1_0lavaplatforms[1].Size = new Vector2(968, 19);
-            level1_0lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(985, 1), Color.White));
-            level1_0lavaplatforms[2].Size = new Vector2(15, 488);
-            level1_0lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(207, 321), Color.White));
-            level1_0lavaplatforms[3].Size = new Vector2(779, 22);
-            level1_0lavaplatforms.Add(new Sprite(lavaPlatformImage, new Vector2(17, 157), Color.White));
-            level1_0lavaplatforms[4].Size = new Vector2(802, 22);
+
+            List<Sprite> level1_0lavaplatforms = new List<Sprite>()
+            {
+                new Sprite(platformImage, new Vector2(18, 473)) {Size =  new Vector2(968, 19)},
+                new Sprite(lavaPlatformImage, new Vector2(0, 0)) {Size =  new Vector2(19, 490)},
+                new Sprite(lavaPlatformImage, new Vector2(18, 0)) {Size =  new Vector2(968, 19)},
+                new Sprite(lavaPlatformImage, new Vector2(985, 1)) {Size =  new Vector2(15, 488)},
+                new Sprite(lavaPlatformImage, new Vector2(207, 321)) {Size =  new Vector2(779, 22)},
+                new Sprite(lavaPlatformImage, new Vector2(17, 157)) {Size =  new Vector2(802, 22)}
+            };
+
 
             levels[World.Underwater].Add(new ULevels(level1_0platforms, level1_0lavaplatforms, new List<Item>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(660, 120), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
 
@@ -961,7 +898,7 @@ namespace Platformer
                     lives--;
                 }
 
-                if (MainCharacter.HitBox.Intersects(levels[currentWorld][currentLevel].Door.HitBox) && ks.IsKeyDown(Keys.O))
+                if (MainCharacter.HitBox.Intersects(levels[currentWorld][currentLevel].Door.HitBox) && ks.IsKeyDown(Keys.O) && currentLevel != 13)
                 {
                     if (currentLevel < levels[currentWorld].Count)
                     {
@@ -1007,6 +944,7 @@ namespace Platformer
                     currentLevel.Door.Y++;
                 }*/
 
+                
                 if (restartbutton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     //restarts here
@@ -1043,9 +981,9 @@ namespace Platformer
                 //loop through all marios fireballs and check if any of them collide with enemies
                 //if collide remove both
 
-                for (int i = 0; i < MainCharacter.Fireballs.Count; i++)
+                for (int i = 0; i < MainCharacter.fireballs.Count; i++)
                 {
-                    if (MainCharacter.Fireballs[i].HitBox.Intersects(Penguin.HitBox) && canShootEnemy == true)
+                    if (MainCharacter.fireballs[i].HitBox.Intersects(Penguin.HitBox) && canShootEnemy == true)
                     {
                         fireballhitcount++;
 
@@ -1240,7 +1178,7 @@ namespace Platformer
                 }
 
             }
-            if (screen == (int)Gamescreen.MainMenu)
+            if (screen == (int)Gamescreen.GameOver)
             {
                 if (restartbutton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {

@@ -10,59 +10,59 @@ namespace Platformer
 {
     public class Character : AnimatedSprite
     {
-        CharacterName currentCharacterName;
-        public CharacterName getCharacterName
+        public CharacterName currentCharacterName { get; }
+       /* public CharacterName getCharacterName
         {
             get
             {
                 return currentCharacterName;
             }
-        }
+        }*/
 
-        Rectangle feetHitBox;
-        public Rectangle FeetHitBox
+        public Rectangle feetHitBox { get; set; }
+        /*public Rectangle FeetHitBox
         {
             get
             {
                 return feetHitBox;
             }
-        }        
+        } */       
         
-        Rectangle groundHitBox;
-        public Rectangle GroundHitBox
+        public Rectangle groundHitBox { get; set; }
+        /*public Rectangle GroundHitBox
         {
             get
             {
                 return groundHitBox;
             }
-        }        
+        } */       
         
-        Rectangle rightHitBox;
-        public Rectangle RightHitBox
+        Rectangle rightHitBox { get; set; }
+        /*public Rectangle RightHitBox
         {
             get
             {
                 return rightHitBox;
             }
-        }        
+        }  */      
         
-        Rectangle leftHitBox;
-        public Rectangle LeftHitBox
+        Rectangle leftHitBox { get; set; }
+        /* public Rectangle LeftHitBox
         {
             get
             {
                 return leftHitBox;
             }
-        }        
+        }  */      
         
-        Rectangle topHitBox;
-        public Rectangle TopHitBox
+        Rectangle topHitBox { get; set; }
+        /*public Rectangle TopHitBox
         {
             get
             {
                 return topHitBox;
             }
-        }
+        } */
         public float gravity = 5.18f;
         public float jumpPower = 5;
         public bool isLevel13 = false;
@@ -78,16 +78,17 @@ namespace Platformer
 
         public TimeSpan elapsedFallTime = new TimeSpan();
 
-        List<Fireball> fireballs;
+        public List<Fireball> fireballs { get; }
 
-        public List<Fireball> Fireballs
+       /* public List<Fireball> Fireballs
         {
             get
             {
                 return fireballs;
             }
-        }
-        public Texture2D Image
+        }*/
+        
+        public Texture2D Image 
         {
             get
             {
@@ -279,7 +280,7 @@ namespace Platformer
             if (keyboard.IsKeyDown(Keys.Space) && canShoot == true)
             {
                 Fireball newFireball = new Fireball(_fireballImage, new Vector2(_location.X, _location.Y - HitBox.Height), Color.White, new Vector2(10, 0));
-                newFireball.Scale = _scale;
+                newFireball.Scale = Scale;
                 if (_effects == SpriteEffects.None)
                 {
                     fireballs.Add(newFireball);

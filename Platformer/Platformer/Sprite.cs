@@ -50,30 +50,11 @@ namespace Platformer
         protected Rectangle _sourceRectangle;
         protected Color _color;
         protected float _rotation;
-        protected Vector2 _origin;
-        public Vector2 Origin
-        {
-            get
-            {
-                return _origin;
-            }
-            set
-            {
-                _origin = value;
-            }
-        }
-        protected Vector2 _scale;
-        public Vector2 Scale
-        {
-            get
-            {
-                return _scale;
-            }
-            set
-            {
-                _scale = value;
-            }
-        }
+
+        public Vector2 Origin { get; set; }
+
+        public Vector2 Scale { get; set; }
+
         protected SpriteEffects _effects;
         public SpriteEffects Effects
         {
@@ -92,10 +73,10 @@ namespace Platformer
         {
             get
             {
-                int positionx = (int)(_location.X - _origin.X*_scale.X);
-                int positiony = (int)(_location.Y - _origin.Y*_scale.Y);
-                int width = (int)(_sourceRectangle.Width *_scale.X);
-                int height = (int)(_sourceRectangle.Height * _scale.Y);
+                int positionx = (int)(_location.X - Origin.X*Scale.X);
+                int positiony = (int)(_location.Y - Origin.Y*Scale.Y);
+                int width = (int)(_sourceRectangle.Width *Scale.X);
+                int height = (int)(_sourceRectangle.Height * Scale.Y);
                 return new Rectangle(positionx, positiony, width, height);
             }
         }
@@ -103,10 +84,10 @@ namespace Platformer
         {
             get
             {
-                int positionx = (int)(_location.X - _origin.X * _scale.X);
-                int positiony = (int)(_location.Y - _origin.Y * _scale.Y);
-                int width = (int)(_sourceRectangle.Width * _scale.X);
-                int height = (int)(_sourceRectangle.Height * _scale.Y);
+                int positionx = (int)(_location.X - Origin.X * Scale.X);
+                int positiony = (int)(_location.Y - Origin.Y * Scale.Y);
+                int width = (int)(_sourceRectangle.Width * Scale.X);
+                int height = (int)(_sourceRectangle.Height * Scale.Y);
                 if (width < 0)
                 {
                     positionx += width;
@@ -125,18 +106,21 @@ namespace Platformer
         {
             get
             {
-                return _scale * new Vector2(_sourceRectangle.Width, _sourceRectangle.Height);
+                return Scale * new Vector2(_sourceRectangle.Width, _sourceRectangle.Height);
             }
             set
-            { 
-                _scale.X = value.X / _sourceRectangle.Width;
-                _scale.Y = value.Y / _sourceRectangle.Height;
+            {
+                Scale = new Vector2(value.X / _sourceRectangle.Width, value.Y / _sourceRectangle.Height);
             }
         }
         
+        public Sprite(Texture2D img, Vector2 pos)
+            : this(img, pos, Color.White)
+        { }
+
         public Sprite(Texture2D img, Vector2 pos, Color color)
-            :this(img, pos, new Rectangle(0, 0, img.Width, img.Height), color)
-        {}
+            : this(img, pos, new Rectangle(0, 0, img.Width, img.Height), color)
+        { }
         
         public Sprite(Texture2D img, Vector2 pos, Rectangle sourceRectangle, Color color)
         {
@@ -145,15 +129,15 @@ namespace Platformer
             _color = color;
             _sourceRectangle = sourceRectangle;
             _rotation = 0;
-            _origin = Vector2.Zero;
-            _scale = Vector2.One;
+            Origin = Vector2.Zero;
+            Scale = Vector2.One;
             _effects = SpriteEffects.None;
             _layerDepth = 0f;
         }
 
         public virtual void Draw(SpriteBatch spritebatch)
         {
-            spritebatch.Draw(_texture, _location, _sourceRectangle, _color, _rotation, _origin, _scale, _effects, _layerDepth);
+            spritebatch.Draw(_texture, _location, _sourceRectangle, _color, _rotation, Origin, Scale, _effects, _layerDepth);
             //spritebatch.Draw(_texture, HitBox, Color.Red);
         }
     }
