@@ -15,8 +15,8 @@ namespace Platformer
         public MouseState mouseState;
          int levelValue = 0;
         int UlevelValue = 0;
-        public int LevelValue
-        {
+        public int LevelValue { get; set; }
+        /*{
             get
             {
                 return levelValue;
@@ -25,9 +25,9 @@ namespace Platformer
             {
                 levelValue = value;
             }
-        }
-        public int ULevelValue
-        {
+        }*/
+        public int ULevelValue { get; set; }
+        /*{
             get
             {
                 return UlevelValue;
@@ -36,7 +36,7 @@ namespace Platformer
             {
                 UlevelValue = value;
             }
-        }
+        }*/
         public Button(Texture2D img, Vector2 pos, Color color)
             : base(img, pos, color)
         {
