@@ -31,6 +31,7 @@ namespace Platformer
             - Create & animate coins
             - Be able to choose & unlock maps
             - Title game (& change title screen)
+            - Only be able to jump once (not in midair)
 
         COMPRESS CODE
 
@@ -469,7 +470,7 @@ namespace Platformer
             levels = new Dictionary<World, List<Level>>();
             levels.Add(World.Land, new List<Level>());
             levels.Add(World.Underwater, new List<Level>());
-            Ulevels.Add(World.Underwater, new List<ULevels>());
+            //Ulevels.Add(World.Underwater, new List<ULevels>());
 
             //Sets the level background to the map selected
             currentLevelMap = maps[currentMap];
@@ -803,7 +804,6 @@ namespace Platformer
 
             #endregion
 
-
             pixel = new Texture2D(GraphicsDevice, 1, 1);
             pixel.SetData<Color>(new Color[] { Color.White });
         }
@@ -831,9 +831,9 @@ namespace Platformer
                 MainCharacter.Update(gameTime);
                 levels[currentWorld][currentLevel].Update(MainCharacter);
                 MainCharacter.CheckCollision(levels[currentWorld][currentLevel].platforms);
-                MainCharacter.CheckLavaCollision(levels[World.Underwater][currentLevel].lavaPlatforms);
+                //MainCharacter.CheckLavaCollision(levels[World.Underwater][currentLevel]._lavaPlatform);
 
-                //Assign character traits
+                //Assign character traits>
                 if (character == "Mario")
                 {
                     MainCharacter.Image = spriteSheet;
@@ -906,7 +906,6 @@ namespace Platformer
                         //make them go to main menu
                     }
                 }
-                
 
 
                 base.Update(gameTime);
@@ -1292,126 +1291,7 @@ namespace Platformer
                         MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     }
                 }
-
-               /* if (lvl1button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = (int)Gamescreen.Maingame;
-                    currentLevel = 0;
-                    fireballhitcount = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
-                }
-                lvl1button.Update();
-
-                if (lvl2button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = (int)Gamescreen.Maingame;
-                    currentLevel = 1;
-                    fireballhitcount = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
-                }
-                lvl2button.Update();
-                if (lvl3button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = (int)Gamescreen.Maingame;
-                    currentLevel = 2;
-                    fireballhitcount = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
-                    MoreLives = false;
-                }
-                lvl3button.Update();
-                if (lvl4button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = (int)Gamescreen.Maingame;
-                    currentLevel = 3;
-                    fireballhitcount = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
-                }
-                lvl4button.Update();
-                if (lvl5button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = (int)Gamescreen.Maingame;
-                    currentLevel = 4;
-                    fireballhitcount = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
-                }
-                lvl5button.Update();
-                if (lvl6button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = (int)Gamescreen.Maingame;
-                    currentLevel = 5;
-                    fireballhitcount = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
-                    MoreLives = false;
-                }
-                lvl6button.Update();
-                if (lvl7button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = (int)Gamescreen.Maingame;
-                    currentLevel = 6;
-                    fireballhitcount = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
-                }
-                lvl7button.Update();
-                if (lvl8button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = (int)Gamescreen.Maingame;
-                    currentLevel = 7;
-                    fireballhitcount = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
-                }
-                lvl8button.Update();
-                if (lvl9button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = (int)Gamescreen.Maingame;
-                    currentLevel = 8;
-                    fireballhitcount = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
-                }
-                lvl9button.Update();
-                if (lvl10button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = (int)Gamescreen.Maingame;
-                    currentLevel = 9;
-                    fireballhitcount = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
-                }
-                lvl10button.Update();
-                if (lvl11button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = (int)Gamescreen.Maingame;
-                    currentLevel = 10;
-                    fireballhitcount = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
-                    MoreLives = false;
-                }
-                lvl11button.Update();
-                if (lvl12button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = (int)Gamescreen.Maingame;
-                    currentLevel = 11;
-                    fireballhitcount = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
-                    MoreLives = false;
-                }
-                lvl12button.Update();
-                if (lvl13button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = (int)Gamescreen.Maingame;
-                    currentLevel = 12;
-                    fireballhitcount = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
-                    MoreLives = false;
-                }
-                lvl13button.Update();
-                if (LevelSelectButton.HitBox.Contains(ms.X, ms.Y))
-                {
-                    LevelSelectButton = new Button(Content.Load<Texture2D>("LevelSelectButton"), new Vector2(100, 100), Color.Black);
-                }
-                else
-                {
-                    LevelSelectButton = new Button(Content.Load<Texture2D>("LevelSelectButton"), new Vector2(100, 100), Color.White);
-                }
-                */
+                
                 if (MenuButton.HitBox.Contains(ms.X, ms.Y))
                 {
                     MenuButton = new Button(Content.Load<Texture2D>("MenuButton"), new Vector2(960, 40), Color.Black);

@@ -72,6 +72,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AllLevels.cs" />
     <Compile Include="AnimatedSprite.cs" />
     <Compile Include="Button.cs" />
     <Compile Include="Character.cs" />

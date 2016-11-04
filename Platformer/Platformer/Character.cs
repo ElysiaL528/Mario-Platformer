@@ -362,13 +362,13 @@ namespace Platformer
                 else
                 {
                     elapsedFallTime += gameTime.ElapsedGameTime;
-                    Y += gravity * elapsedFallTime.Milliseconds / 1000;
+                    Y += gravity * elapsedFallTime.Milliseconds / 500; //old value: 1000
                 }
             }
             else if (isGrounded == false)
             {
                 elapsedFallTime += gameTime.ElapsedGameTime;
-                Y += gravity * elapsedFallTime.Milliseconds / 1000;
+                Y += gravity * elapsedFallTime.Milliseconds / 500;
             }
             if (keyboard.IsKeyDown(Keys.B))
             {
