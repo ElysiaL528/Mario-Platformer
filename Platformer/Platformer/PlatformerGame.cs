@@ -11,10 +11,10 @@ using Microsoft.Xna.Framework.Media;
 
 namespace Platformer
 {
-    /* To do: Fix Lava Collision
-     * - Fix game
+    /* To do: 
+     * - The MC is constantly in the falling phase in ULevels
+            - Restore powerups & enemies
             - Some buttons don't highlight
-            - Lava platforms aren't showing up (Ulevel 3)
             - Moving Platforms
             - Create a buttons list
             - Be able to fall smoothly
@@ -24,16 +24,21 @@ namespace Platformer
             - The penguin should move
             - Rearrange the level menus
             - Make fireballs disappear when intersecting w/penguin hitbox
-            - Mario should die after touching lava
             - Slow shift function in ULevels
             - Load & animate underwater level characters
             - Create more enemies
             - Create & animate coins
-            - Be able to choose & unlock maps
-            - Title game (& change title screen)
+            - Be able to unlock maps
             - Only be able to jump once (not in midair)
+            - Add level 14 to Land Level Menu
+            - The background changes back to default every time you advance levels (even if you changed the background in the level menu)
 
         COMPRESS CODE
+
+        Done today:
+        - Fixed lava platform bug
+        - Manually set all startPositions for each level
+        - Edited Exit Button
 
             */
 
@@ -60,10 +65,11 @@ namespace Platformer
         bool gameisover = false;
         bool hasJumpBoost;
         bool MoreLives = false;
-        bool isUnderwaterLevel = false;
+        bool isUnderwaterLevel = true;
         bool lostlife = false;
         bool canShootEnemy = false;
         bool setLevelMap = false;
+        bool hasDied = false;
         MouseState ms;
         KeyboardState lastKS;
         SpriteFont font;
@@ -133,8 +139,9 @@ namespace Platformer
         #endregion
 
         //Run-time variables
-        int lives = 100;
-        int screen = (int)Gamescreen.UnderwaterLevelMenu;
+        #region
+        int lives = 10000000;
+        int screen = (int)Gamescreen.StartScreen;
         int fireballhitcount = 0;
         string character = "Patrick";
         string leveltype = "Land";
@@ -144,14 +151,13 @@ namespace Platformer
         TimeSpan TimeSinceLastShot = TimeSpan.Zero;
         World currentWorld = World.Land;
         int currentLevel = 0;
-        int currentULevel = 0;
-
+        #endregion
         public PlatformerGame()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
-
+        
         protected override void Initialize()
         {
             IsMouseVisible = true;
@@ -744,7 +750,6 @@ namespace Platformer
                 new Sprite(lavaPlatformImage, new Vector2(17, 157)) {Size =  new Vector2(802, 22)}
             };
 
-
             levels[World.Underwater].Add(new ULevels(level1_0platforms, level1_0lavaplatforms, new List<Item>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(660, 120), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
 
 
@@ -756,11 +761,11 @@ namespace Platformer
             };
             var level1_1lavaplatforms = new List<Sprite>()
             {
-                new Sprite(lavaPlatformImage, new Vector2(227, 0)) { Size = new Vector2(25, 169) },
+                new Sprite(lavaPlatformImage, new Vector2(227, 0)) { Size = new Vector2(25, 160) },
                 new Sprite(lavaPlatformImage, new Vector2(227, 251)) { Size = new Vector2(25, 237) },
                 new Sprite(lavaPlatformImage, new Vector2(353, 0)) { Size = new Vector2(25, 240) },
                 new Sprite(lavaPlatformImage, new Vector2(354, 327)) { Size = new Vector2(25, 162) },
-                new Sprite(lavaPlatformImage, new Vector2(481, 0)) { Size = new Vector2(25, 379) },
+                new Sprite(lavaPlatformImage, new Vector2(481, 0)) { Size = new Vector2(25, 370) },
                 new Sprite(lavaPlatformImage, new Vector2(483, 461)) { Size = new Vector2(25, 27) },
                 new Sprite(lavaPlatformImage, new Vector2(594, 0)) { Size = new Vector2(25, 96) },
                 new Sprite(lavaPlatformImage, new Vector2(596, 228)) { Size = new Vector2(26, 260) },
@@ -831,7 +836,13 @@ namespace Platformer
                 MainCharacter.Update(gameTime);
                 levels[currentWorld][currentLevel].Update(MainCharacter);
                 MainCharacter.CheckCollision(levels[currentWorld][currentLevel].platforms);
-                //MainCharacter.CheckLavaCollision(levels[World.Underwater][currentLevel]._lavaPlatform);
+
+                if (levels[currentWorld][currentLevel] is ULevels)
+                {
+                    ULevels currentUnderwaterLevel = levels[World.Underwater][currentLevel] as ULevels;
+                    MainCharacter.CheckLavaCollision(currentUnderwaterLevel.LavaPlatform);
+                }
+                
 
                 //Assign character traits>
                 if (character == "Mario")
@@ -850,7 +861,7 @@ namespace Platformer
                     MainCharacter.Image = PatrickSpritesheet;
                     MainCharacter.Animations = PatrickAnimations;
                 }
-
+                
 
                 if (currentLevelMap == maps[currentMap])
                 {
@@ -864,9 +875,8 @@ namespace Platformer
                 {
                     currentLevel = 0;
                 }
-                
 
-                if (MainCharacter.touchedLava == true)
+                /*if (MainCharacter.Y >= 489 || MainCharacter.touchedLava)
                 {
                     MainCharacter.Position = levels[currentWorld][currentLevel].startPosition - Vector2.UnitY * 50;
                     enemyisdead = false;
@@ -874,16 +884,42 @@ namespace Platformer
                     enemyisdead = false;
                     MoreLives = false;
                     lives--;
+
+                }*/
+                if(currentWorld == World.Underwater)
+                {
+                    isUnderwaterLevel = true;
+                }
+                else if(currentWorld == World.Land)
+                {
+                    isUnderwaterLevel = false;
                 }
 
-                //setting your keyboardstate = what is happening with the keyboard
-                if (MainCharacter.Y >= 489)
+                levels[World.Land][0].startPosition = new Vector2(27, 404);
+                levels[World.Land][1].startPosition = new Vector2(50, 413);
+                levels[World.Land][2].startPosition = new Vector2(45, 422);
+                levels[World.Land][3].startPosition = new Vector2(51, 440);
+                levels[World.Land][4].startPosition = new Vector2(180, 236);
+                levels[World.Land][5].startPosition = new Vector2(26, 217);
+                levels[World.Land][6].startPosition = new Vector2(44, 415);
+                levels[World.Land][7].startPosition = new Vector2(32, 161);
+                levels[World.Land][8].startPosition = new Vector2(19, 427);
+                levels[World.Land][9].startPosition = new Vector2(95, 111);
+                levels[World.Land][10].startPosition = new Vector2(29, 205);
+                levels[World.Land][11].startPosition = new Vector2(209, 295);
+                levels[World.Land][12].startPosition = new Vector2(30, 224);
+                levels[World.Land][13].startPosition = new Vector2(111, 438);
+
+                levels[World.Underwater][0].startPosition = new Vector2(913, 448);
+                levels[World.Underwater][1].startPosition = new Vector2(27, 410);
+                levels[World.Underwater][2].startPosition = new Vector2(34, 45);
+
+                if (MainCharacter.Y >= 489 || MainCharacter.touchedLava)
                 {
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition - Vector2.UnitY * 50;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition;
                     enemyisdead = false;
                     hasfirepower = false;
                     enemyisdead = false;
-                    MoreLives = false;
                     lives--;
                 }
 
@@ -1488,7 +1524,7 @@ namespace Platformer
             {
                 StartScreenBackground.Draw(spriteBatch);
                 PlayButton.Draw(spriteBatch);
-                spriteBatch.DrawString(font2, string.Format("Platformer Game"), new Vector2(275, 200), Color.White);
+                spriteBatch.DrawString(font2, string.Format("Mario Platformer"), new Vector2(275, 200), Color.White);
             }
             if (screen == (int)Gamescreen.KindOfLevelMenu)
             {

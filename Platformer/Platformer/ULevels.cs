@@ -9,27 +9,25 @@ namespace Platformer
 {
     class ULevels : Level
     {
-        public List<Sprite> _lavaPlatform = new List<Sprite>();
+        public List<Sprite> LavaPlatform = new List<Sprite>();
 
         public ULevels(List<Sprite> platform, List<Sprite> lavaPlatforms, List<Item> items, Texture2D background, Sprite door)
               : base(platform, items, background, door)
         {
-            _lavaPlatform = lavaPlatforms;
+            LavaPlatform = lavaPlatforms;
         }
 
         public override void Update(Character character)
         {
             base.Update(character);
-
-
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
-            for (int i = 0; i < _lavaPlatform.Count; i++)
+            for (int i = 0; i < LavaPlatform.Count; i++)
             {
-                _lavaPlatform[i].Draw(spriteBatch);
+                LavaPlatform[i].Draw(spriteBatch);
             }
         }
     }

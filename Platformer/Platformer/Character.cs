@@ -11,58 +11,17 @@ namespace Platformer
     public class Character : AnimatedSprite
     {
         public CharacterName currentCharacterName { get; }
-       /* public CharacterName getCharacterName
-        {
-            get
-            {
-                return currentCharacterName;
-            }
-        }*/
 
         public Rectangle feetHitBox { get; set; }
-        /*public Rectangle FeetHitBox
-        {
-            get
-            {
-                return feetHitBox;
-            }
-        } */       
-        
+
         public Rectangle groundHitBox { get; set; }
-        /*public Rectangle GroundHitBox
-        {
-            get
-            {
-                return groundHitBox;
-            }
-        } */       
-        
+
         Rectangle rightHitBox { get; set; }
-        /*public Rectangle RightHitBox
-        {
-            get
-            {
-                return rightHitBox;
-            }
-        }  */      
-        
+
         Rectangle leftHitBox { get; set; }
-        /* public Rectangle LeftHitBox
-        {
-            get
-            {
-                return leftHitBox;
-            }
-        }  */      
-        
+
         Rectangle topHitBox { get; set; }
-        /*public Rectangle TopHitBox
-        {
-            get
-            {
-                return topHitBox;
-            }
-        } */
+
         public float gravity = 5.18f;
         public float jumpPower = 5;
         public bool isLevel13 = false;
@@ -189,6 +148,7 @@ namespace Platformer
                 }
             }
         }
+        
         public void CheckLavaCollision(List<Sprite> randomLavaStuff)
         {
             feetHitBox = new Rectangle(HitBox.X + 5, HitBox.Y + HitBox.Height - 1, HitBox.Width - 10, 1);
@@ -205,6 +165,7 @@ namespace Platformer
             {
                 if (groundHitBox.Intersects(randomLavaStuff[i].HitBox))
                 {
+
                     isGrounded = true;
                     while (feetHitBox.Intersects(randomLavaStuff[i].HitBox))
                     {
@@ -242,7 +203,8 @@ namespace Platformer
                         topHitBox = new Rectangle(HitBox.X + 5, HitBox.Y, HitBox.Width - 10, 1);
                     }
                 }
-                if(HitBox.Intersects(randomLavaStuff[i].HitBox))
+
+                if(randomLavaStuff[i].HitBox.Intersects(new Rectangle(HitBox.X - 2, HitBox.Y + 1, HitBox.Width, HitBox.Height)) || randomLavaStuff[i].HitBox.Intersects(new Rectangle(HitBox.X + 2, HitBox.Y - 1, HitBox.Width, HitBox.Height)))
                 {
                     touchedLava = true;
                 }
@@ -250,6 +212,12 @@ namespace Platformer
                 {
                     touchedLava = false;
                 }
+
+                if (touchedLava)
+                {
+                    break;
+                }
+
             }
         } 
 
@@ -305,7 +273,6 @@ namespace Platformer
                     fireballs.RemoveAt(i);
                 }
             }
-
             
 
             if (keyboard.IsKeyDown(Keys.LeftShift) && isLevel13 == false|| keyboard.IsKeyDown(Keys.RightShift) && isLevel13 == false)
@@ -362,7 +329,7 @@ namespace Platformer
                 else
                 {
                     elapsedFallTime += gameTime.ElapsedGameTime;
-                    Y += gravity * elapsedFallTime.Milliseconds / 500; //old value: 1000
+                    Y += gravity * elapsedFallTime.Milliseconds / 1000; //old value: 1000
                 }
             }
             else if (isGrounded == false)
