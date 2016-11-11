@@ -9,46 +9,45 @@ namespace Platformer
 {
     public class Level
     {
-        public Vector2 startPosition;
-        public List<Sprite> platforms = new List<Sprite>();
-        public List<Item> items = new List<Item>();
-        public Texture2D backgroundImage;
-        public Sprite Door;
+        /// <summary>
+        /// Starting position of character in the level.
+        /// </summary>
+        public Vector2 StartPosition { get; set; }
 
-        public Level(List<Sprite> platform, List<Item> items, Texture2D background, Sprite door)
+        /// <summary>
+        /// List of platforms for the level. These are safe to stand on.
+        /// </summary>
+        public List<Platform> Platforms { get; set; }
+
+        /// <summary>
+        /// List of power-ups for the level.
+        /// </summary>
+        public List<Item> Items { get; set; } = new List<Item>();
+
+        /// <summary>
+        /// Background image for the level.
+        /// </summary>
+        public Texture2D BackgroundImage { get; set; }
+
+        /// <summary>
+        /// The sprite representing the goal to reach (exit door) in the level.
+        /// </summary>
+        public Sprite Door { get; set; }
+
+        public Level(List<Platform> platform, List<Item> items, Texture2D background, Sprite door)
         {
-            platforms = platform;
-            backgroundImage = background;
+            Platforms = platform;
+            BackgroundImage = background;
             Door = door;
-            this.items = items;
-        }
-
-        public virtual void Update(Character character)
-        {
-          /*  if (Mario.HitBox.Intersects(Penguin.HitBox))
-            {
-                if (enemyisdead == false)
-                {
-                    if (currentLevel == level3 || currentLevel == level12)
-                    {
-                        lives -= 10;
-                        lostlife = true;
-
-                        if (lives == 0)
-                        {
-
-                        }
-                    }
-                }
-            }*/
+            Items = items;
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(backgroundImage, new Rectangle(0, 0, spriteBatch.GraphicsDevice.Viewport.Width, spriteBatch.GraphicsDevice.Viewport.Height), Color.White);
-            for (int i = 0; i < platforms.Count; i++)
+            spriteBatch.Draw(BackgroundImage, new Rectangle(0, 0, spriteBatch.GraphicsDevice.Viewport.Width, spriteBatch.GraphicsDevice.Viewport.Height), Color.White);
+            for (int i = 0; i < Platforms.Count; i++)
             {
-                platforms[i].Draw(spriteBatch);
+                Platforms[i].Draw(spriteBatch);
             }
             Door.Draw(spriteBatch);
         }

@@ -10,6 +10,17 @@ namespace Platformer
 {
     public class AnimatedSprite : Sprite
     {
+        public enum AnimationType
+        {
+            Idle = 0,
+            Walking,
+            Jumping,
+            Falling,
+            Crouching,
+            Punching,
+            Turning
+        }
+
         public List<Frame> _animation;
         protected TimeSpan _animationtime;
         private TimeSpan elapsedAnimateTime;

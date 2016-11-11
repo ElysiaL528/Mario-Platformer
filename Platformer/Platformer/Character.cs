@@ -25,7 +25,8 @@ namespace Platformer
         public float gravity = 5.18f;
         public float jumpPower = 5;
         public bool isLevel13 = false;
-        public bool touchedLava = false;
+        public bool Died = false;
+
         Dictionary<AnimationType, List<Frame>> _animations;
         AnimationType currentAnimation;
 
@@ -39,15 +40,15 @@ namespace Platformer
 
         public List<Fireball> fireballs { get; }
 
-       /* public List<Fireball> Fireballs
-        {
-            get
-            {
-                return fireballs;
-            }
-        }*/
-        
-        public Texture2D Image 
+        /* public List<Fireball> Fireballs
+         {
+             get
+             {
+                 return fireballs;
+             }
+         }*/
+
+        public Texture2D Image
         {
             get
             {
@@ -63,17 +64,17 @@ namespace Platformer
         {
             get
             {
-               return _animations;
+                return _animations;
             }
             set
             {
                 _animations = value;
             }
         }
-        
+
 
         public Character(Texture2D texture, Vector2 position, Dictionary<AnimationType, List<Frame>> animations, Texture2D fireballImage)
-            :base(texture, position, Color.White, animations[AnimationType.Idle])
+            : base(texture, position, Color.White, animations[AnimationType.Idle])
         {
             fireballs = new List<Fireball>();
             pixel = new Texture2D(texture.GraphicsDevice, 1, 1);
@@ -93,7 +94,7 @@ namespace Platformer
         bool canWalkRight = true;
         bool canGoUp = true;
 
-        public void CheckCollision(List<Sprite> randomStuff)
+        public void CheckCollision(List<Platform> platforms)
         {
             feetHitBox = new Rectangle(HitBox.X + 5, HitBox.Y + HitBox.Height - 1, HitBox.Width - 10, 1);
             groundHitBox = new Rectangle(HitBox.X + 5, HitBox.Y + HitBox.Height, HitBox.Width - 10, 1);
@@ -105,42 +106,55 @@ namespace Platformer
             canWalkLeft = true;
             canWalkRight = true;
             canGoUp = true;
-            for (int i = 0; i < randomStuff.Count; i++)
+
+            for (int i = 0; i < platforms.Count; i++)
             {
-                if(groundHitBox.Intersects(randomStuff[i].HitBox))
+                //Did we die?
+                if (platforms[i].IsDeadly)
+                {
+                    Died = (platforms[i].HitBox.Intersects(new Rectangle(HitBox.X - 2, HitBox.Y + 1, HitBox.Width, HitBox.Height)) 
+                                    || platforms[i].HitBox.Intersects(new Rectangle(HitBox.X + 2, HitBox.Y - 1, HitBox.Width, HitBox.Height)));
+
+                    if (Died)
+                    {
+                        break;
+                    }
+                }
+
+                if (groundHitBox.Intersects(platforms[i].HitBox))
                 {
                     isGrounded = true;
-                    while (feetHitBox.Intersects(randomStuff[i].HitBox))
+                    while (feetHitBox.Intersects(platforms[i].HitBox))
                     {
                         Y--;
                         feetHitBox = new Rectangle(HitBox.X, HitBox.Y + HitBox.Height - 1, HitBox.Width, 1);
                     }
                 }
 
-                if (leftHitBox.Intersects(randomStuff[i].HitBox))
+                if (leftHitBox.Intersects(platforms[i].HitBox))
                 {
                     canWalkLeft = false;
-                    while (leftHitBox.Intersects(randomStuff[i].HitBox))
+                    while (leftHitBox.Intersects(platforms[i].HitBox))
                     {
                         X++;
                         leftHitBox = new Rectangle(HitBox.X - 1, HitBox.Y + 5, 1, HitBox.Height - 10);
                     }
                 }
 
-                if (rightHitBox.Intersects(randomStuff[i].HitBox))
+                if (rightHitBox.Intersects(platforms[i].HitBox))
                 {
                     canWalkRight = false;
-                    while (rightHitBox.Intersects(randomStuff[i].HitBox))
+                    while (rightHitBox.Intersects(platforms[i].HitBox))
                     {
                         X--;
                         rightHitBox = new Rectangle(HitBox.X + HitBox.Width, HitBox.Y + 5, 1, HitBox.Height - 10);
                     }
                 }
 
-                if (topHitBox.Intersects(randomStuff[i].HitBox))
+                if (topHitBox.Intersects(platforms[i].HitBox))
                 {
                     canGoUp = false;
-                    while (topHitBox.Intersects(randomStuff[i].HitBox))
+                    while (topHitBox.Intersects(platforms[i].HitBox))
                     {
                         Y++;
                         topHitBox = new Rectangle(HitBox.X + 5, HitBox.Y, HitBox.Width - 10, 1);
@@ -148,84 +162,12 @@ namespace Platformer
                 }
             }
         }
-        
-        public void CheckLavaCollision(List<Sprite> randomLavaStuff)
-        {
-            feetHitBox = new Rectangle(HitBox.X + 5, HitBox.Y + HitBox.Height - 1, HitBox.Width - 10, 1);
-            groundHitBox = new Rectangle(HitBox.X + 5, HitBox.Y + HitBox.Height, HitBox.Width - 10, 1);
-            topHitBox = new Rectangle(HitBox.X + 5, HitBox.Y, HitBox.Width - 10, 1);
-            leftHitBox = new Rectangle(HitBox.X - 1, HitBox.Y + 5, 1, HitBox.Height - 10);
-            rightHitBox = new Rectangle(HitBox.X + HitBox.Width, HitBox.Y + 5, 1, HitBox.Height - 10);
-
-            isGrounded = false;
-            canWalkLeft = true;
-            canWalkRight = true;
-            canGoUp = true;
-            for (int i = 0; i < randomLavaStuff.Count; i++)
-            {
-                if (groundHitBox.Intersects(randomLavaStuff[i].HitBox))
-                {
-
-                    isGrounded = true;
-                    while (feetHitBox.Intersects(randomLavaStuff[i].HitBox))
-                    {
-                        Y--;
-                        feetHitBox = new Rectangle(HitBox.X, HitBox.Y + HitBox.Height - 1, HitBox.Width, 1);
-                    }
-                }
-
-                if (leftHitBox.Intersects(randomLavaStuff[i].HitBox))
-                {
-                    canWalkLeft = false;
-                    while (leftHitBox.Intersects(randomLavaStuff[i].HitBox))
-                    {
-                        X++;
-                        leftHitBox = new Rectangle(HitBox.X - 1, HitBox.Y + 5, 1, HitBox.Height - 10);
-                    }
-                }
-
-                if (rightHitBox.Intersects(randomLavaStuff[i].HitBox))
-                {
-                    canWalkRight = false;
-                    while (rightHitBox.Intersects(randomLavaStuff[i].HitBox))
-                    {
-                        X--;
-                        rightHitBox = new Rectangle(HitBox.X + HitBox.Width, HitBox.Y + 5, 1, HitBox.Height - 10);
-                    }
-                }
-
-                if (topHitBox.Intersects(randomLavaStuff[i].HitBox))
-                {
-                    canGoUp = false;
-                    while (topHitBox.Intersects(randomLavaStuff[i].HitBox))
-                    {
-                        Y++;
-                        topHitBox = new Rectangle(HitBox.X + 5, HitBox.Y, HitBox.Width - 10, 1);
-                    }
-                }
-
-                if(randomLavaStuff[i].HitBox.Intersects(new Rectangle(HitBox.X - 2, HitBox.Y + 1, HitBox.Width, HitBox.Height)) || randomLavaStuff[i].HitBox.Intersects(new Rectangle(HitBox.X + 2, HitBox.Y - 1, HitBox.Width, HitBox.Height)))
-                {
-                    touchedLava = true;
-                }
-                else
-                {
-                    touchedLava = false;
-                }
-
-                if (touchedLava)
-                {
-                    break;
-                }
-
-            }
-        } 
 
 
         public bool canShoot = true;
         public TimeSpan ShotDelay = TimeSpan.FromMilliseconds(200);
         public TimeSpan TimeSinceLastShot = TimeSpan.Zero;
-        
+
 
         public override void Update(GameTime gameTime)
         {
@@ -259,7 +201,7 @@ namespace Platformer
                     fireballs.Add(newFireball);
                     fireballs[fireballs.Count - 1].Effects = SpriteEffects.FlipHorizontally;
                     fireballs[fireballs.Count - 1].Speed = new Vector2(-10, 0);
-                    
+
                 }
                 canShoot = false;
                 TimeSinceLastShot = TimeSpan.Zero;
@@ -268,16 +210,16 @@ namespace Platformer
             for (int i = 0; i < fireballs.Count; i++)
             {
                 fireballs[i].Update();
-                if(fireballs[i].X > Global.Screen.X)
+                if (fireballs[i].X > Global.Screen.X)
                 {
                     fireballs.RemoveAt(i);
                 }
             }
-            
 
-            if (keyboard.IsKeyDown(Keys.LeftShift) && isLevel13 == false|| keyboard.IsKeyDown(Keys.RightShift) && isLevel13 == false)
+
+            if (keyboard.IsKeyDown(Keys.LeftShift) && isLevel13 == false || keyboard.IsKeyDown(Keys.RightShift) && isLevel13 == false)
             {
-                    isRunning = true;
+                isRunning = true;
             }
             if (keyboard.IsKeyDown(Keys.Right) && canWalkRight == true)
             {
@@ -347,7 +289,7 @@ namespace Platformer
             }
 
 
-            
+
             _animation = _animations[currentAnimation];
             base.Update(gameTime);
         }

@@ -10,10 +10,10 @@ namespace Platformer
 {
     class Button : Sprite
     {
-        public bool isclicked;
+        public bool IsClicked;
         MouseState lastms;
         public MouseState mouseState;
-         int levelValue = 0;
+        int levelValue = 0;
         int UlevelValue = 0;
         public int LevelValue { get; set; }
         /*{
@@ -51,18 +51,11 @@ namespace Platformer
             if (HitBox.Contains(mouseState.X, mouseState.Y))
             {
                 _color = Color.DarkGray;
-                if (mouseState.LeftButton == ButtonState.Pressed && lastms.LeftButton == ButtonState.Released)
-                {
-                    isclicked = true;
-                }
-                else
-                {
-                    isclicked = false;
-                }
+                IsClicked = mouseState.LeftButton == ButtonState.Pressed && lastms.LeftButton == ButtonState.Released;
             }
             else
             {
-                isclicked = false;
+                IsClicked = false;
                 _color = Color.White;
             }
 
