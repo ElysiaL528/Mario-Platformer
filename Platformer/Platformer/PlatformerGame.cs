@@ -17,11 +17,8 @@ namespace Platformer
             - Restore powerups & enemies
             - Some buttons don't highlight
             - Moving Platforms
-            - Create a buttons list
             - Be able to fall smoothly
             - Door animations??
-            - Door scale = Mario scale
-            - Teleporting door
             - The penguin should move
             - Rearrange the level menus
             - Make fireballs disappear when intersecting w/penguin hitbox
@@ -32,9 +29,15 @@ namespace Platformer
             - Be able to unlock maps
             - Only be able to jump once (not in midair)
             - Add level 14 to Land Level Menu
-            - The background changes back to default every time you advance levels (even if you changed the background in the level menu)
+            - Add more platforms (i.e. trampoline, moving, disappearing, triggering)
+            - Add a COMPLETELY new game mode: Shapes
+            - Use arrows to advance maps when choosing them
 
         COMPRESS CODE
+
+        Done:
+        - You no longer need to press O to open the door
+        - Fixed map change glitch
 
             */
 
@@ -64,7 +67,6 @@ namespace Platformer
         bool isUnderwaterLevel = true;
         bool lostlife = false;
         bool canShootEnemy = false;
-        bool setLevelMap = false;
         bool hasDied = false;
         MouseState ms;
         KeyboardState lastKS;
@@ -477,10 +479,10 @@ namespace Platformer
             currentLevelMap = maps[currentMap];
 
             //If background is changed, change map
-            if (setLevelMap)
-            {
-                currentLevelMap = maps[currentMap];
-            }
+            //if (setLevelMap)
+            //{
+            //    currentLevelMap = maps[currentMap];
+            //}
 
             //Draws the platforms for each level. 0-1 means on land and level 1, 1-2 means underwater. First number can go from 0 to 1, second number can go from 0 to 13.
             #region level 0-0
@@ -796,7 +798,6 @@ namespace Platformer
             pixel = new Texture2D(GraphicsDevice, 1, 1);
             pixel.SetData<Color>(new Color[] { Color.White });
 
-            screen = Gamescreen.KindOfLevelMenu;
         }
 
         protected override void UnloadContent()
@@ -874,6 +875,8 @@ namespace Platformer
                     isUnderwaterLevel = false;
                 }
 
+                //Set start positions
+                #region
                 levels[World.Land][0].StartPosition = new Vector2(27, 404);
                 levels[World.Land][1].StartPosition = new Vector2(50, 413);
                 levels[World.Land][2].StartPosition = new Vector2(45, 422);
@@ -892,6 +895,7 @@ namespace Platformer
                 levels[World.Underwater][0].StartPosition = new Vector2(913, 448);
                 levels[World.Underwater][1].StartPosition = new Vector2(27, 410);
                 levels[World.Underwater][2].StartPosition = new Vector2(34, 45);
+                #endregion
 
                 if (MainCharacter.Y >= 489 || MainCharacter.Died)
                 {
@@ -902,7 +906,7 @@ namespace Platformer
                     lives--;
                 }
 
-                if (MainCharacter.HitBox.Intersects(levels[currentWorld][currentLevel].Door.HitBox) && ks.IsKeyDown(Keys.O) && currentLevel != 13)
+                if (MainCharacter.HitBox.Intersects(levels[currentWorld][currentLevel].Door.HitBox))
                 {
                     if (currentLevel < levels[currentWorld].Count)
                     {
@@ -914,6 +918,7 @@ namespace Platformer
                         hasfirepower = false;
                         enemyisdead = false;
                         MoreLives = false;
+                        levels[currentWorld][currentLevel].BackgroundImage = currentLevelMap;
                     }
                     else
                     {
@@ -1330,14 +1335,12 @@ namespace Platformer
                     if (currentMap == LevelMap.Black)
                     {
                         currentMap = LevelMap.Stars;
-
                     }
                     else
                     {
                         currentMap++;
                     }
                     currentLevelMap = maps[currentMap];
-                    setLevelMap = true;
                 }
                 else if (ks.IsKeyDown(Keys.Left) && lastKS.IsKeyUp(Keys.Left))
                 {
@@ -1350,7 +1353,6 @@ namespace Platformer
                         currentMap--;
                     }
                     currentLevelMap = maps[currentMap];
-                    setLevelMap = true;
                 }
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
