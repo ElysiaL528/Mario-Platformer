@@ -22,7 +22,7 @@ namespace Platformer
         /// <summary>
         /// List of power-ups for the level.
         /// </summary>
-        public List<Item> Items { get; set; } = new List<Item>();
+        public List<Item> Items { get; set; }
 
         /// <summary>
         /// Background image for the level.
@@ -50,6 +50,11 @@ namespace Platformer
                 Platforms[i].Draw(spriteBatch);
             }
             Door.Draw(spriteBatch);
+
+            foreach (var item in Items)
+            {
+                item.Draw(spriteBatch);
+            }
         }
     }
 }

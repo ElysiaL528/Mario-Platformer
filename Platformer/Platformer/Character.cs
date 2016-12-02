@@ -26,6 +26,13 @@ namespace Platformer
         public float jumpPower = 5;
         public bool isLevel13 = false;
         public bool Died = false;
+        public bool isHealthPowerup = false;
+        public bool isShrinkPowerup = false;
+        public bool isJumpBoostPowerup = false;
+        public bool isPortal1Powerup = false;
+        public bool isPortal2Powerup = false;
+        public bool isInvertPowerup = false;
+
 
         Dictionary<AnimationType, List<Frame>> _animations;
         AnimationType currentAnimation;
@@ -306,6 +313,31 @@ namespace Platformer
             for (int i = 0; i < fireballs.Count; i++)
             {
                 fireballs[i].Draw(spritebatch);
+            }
+        }
+
+        public void CheckPowerup()
+        {
+
+            if (isInvertPowerup)
+            {
+                Scale -= new Vector2(1.5f, 3);
+            }
+            if(isJumpBoostPowerup)
+            {
+                jumpPower = 2;
+            }
+            if(isPortal1Powerup)
+            {
+               
+            }
+            if(isPortal2Powerup)
+            {
+
+            }
+            if(isShrinkPowerup)
+            {
+
             }
         }
 

@@ -9,11 +9,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using static Platformer.AnimatedSprite;
+using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: 
-     * - The MC is constantly in the falling phase in ULevels
+    /* To do: Check if Mario intersects with any powerups (a list of a list of items is in the load function)
+     * - 
             - Restore powerups & enemies
             - Some buttons don't highlight
             - Moving Platforms
@@ -31,13 +32,9 @@ namespace Platformer
             - Add level 14 to Land Level Menu
             - Add more platforms (i.e. trampoline, moving, disappearing, triggering)
             - Add a COMPLETELY new game mode: Shapes
-            - Use arrows to advance maps when choosing them
+            - Add music
 
         COMPRESS CODE
-
-        Done:
-        - You no longer need to press O to open the door
-        - Fixed map change glitch
 
             */
 
@@ -74,6 +71,13 @@ namespace Platformer
         SpriteFont font2;
         Sprite GameOverScreen;
         Sprite LevelMenuBg;
+        Item pizza;
+        Item portal1;
+        Item portal2;
+        Item bunnyPowerup;
+        Item invert;
+        Item reInvert;
+        Item HealthPowerup;
         Dictionary<AnimationType, List<Frame>> marioAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<AnimationType, List<Frame>> penguinAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<AnimationType, List<Frame>> luigiAnimations = new Dictionary<AnimationType, List<Frame>>();
@@ -88,6 +92,7 @@ namespace Platformer
         Sprite StartScreenBackground;
         Sprite flower;
         MouseState lastMs;
+
         //bool setLevelMap = false;
         #endregion
 
@@ -144,6 +149,7 @@ namespace Platformer
         string leveltype = "Land";
         int maxFireballHits = 1;
         TimeSpan timeToMove = new TimeSpan(0, 0, 0, 0, 2000);
+        TimeSpan movingTime = new TimeSpan(0, 0, 0, 0, 2000);
         TimeSpan ShotDelay = TimeSpan.FromMilliseconds(300);
         TimeSpan TimeSinceLastShot = TimeSpan.Zero;
         World currentWorld = World.Land;
@@ -485,6 +491,15 @@ namespace Platformer
             //}
 
             //Draws the platforms for each level. 0-1 means on land and level 1, 1-2 means underwater. First number can go from 0 to 1, second number can go from 0 to 13.
+
+            Item pizza = new Item(Content.Load<Texture2D>("pizza"), new Vector2(870, 210), Color.White, PowerupType.Shrink);
+            Item portal1 = new Item(Content.Load<Texture2D>("portal"), new Vector2(700, 380), Color.White, PowerupType.Portal1);
+            Item portal2 = new Item(Content.Load<Texture2D>("portal"), new Vector2(95, 380), Color.White, PowerupType.Portal2);
+            Item bunnyPowerup = new Item(Content.Load<Texture2D>("bunny"), new Vector2(270, 400), Color.White, PowerupType.JumpBoost);
+            Item invert = new Item(Content.Load<Texture2D>("invert"), new Vector2(800, 120), Color.White, PowerupType.Invert);
+            Item reInvert = new Item(Content.Load<Texture2D>("re-invert"), new Vector2(500, 189), Color.White, PowerupType.ReInvert);
+            Item HealthPowerup = new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(500, 290), Color.White, PowerupType.Health);
+
             #region level 0-0
 
             var level0_0Platforms = new List<Platform>()
@@ -530,8 +545,11 @@ namespace Platformer
                 new Platform(platformImage, new Vector2(540, 363)) {Size =  new Vector2(156, 53)}
             };
 
+            bunnyPowerup.Position = new Vector2(270, 400);
+
             List<Item> items0_2 = new List<Item>();
-            items0_2.Add(new Item(Content.Load<Texture2D>("bunny"), new Vector2(270, 400), Color.White));
+            items0_2.Add(bunnyPowerup);
+
 
             levels[World.Land].Add(new Level(level0_2Platforms, items0_2, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 150)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
@@ -547,8 +565,10 @@ namespace Platformer
                 new Platform(platformImage, new Vector2(33, 355)) {Size =  new Vector2(48, 16)}
             };
 
+            HealthPowerup.Position = new Vector2(100, 100);
+
             var items0_3 = new List<Item>();
-            items0_3.Add(new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(100, 100), Color.White));
+            items0_3.Add(HealthPowerup);
 
             levels[World.Land].Add(new Level(level0_3Platforms, items0_3, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 150)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
@@ -578,12 +598,21 @@ namespace Platformer
                 new Platform(platformImage, new Vector2(677, 465)) {Size =  new Vector2(321, 23)}
             };
 
+            /*Item pizza = new Item(Content.Load<Texture2D>("pizza"), new Vector2(870, 210), Color.White), Item.PowerupType.Shrink);
+            
+            Item portal1 = new Item(Content.Load<Texture2D>("portal"), new Vector2(700, 380), Color.White), Item.PowerupType.Portal1);
+            Item portal2 = new Item(Content.Load<Texture2D>("portal"), new Vector2(95, 380), Color.White), Item.PowerupType.Portal2);
+            */
+
+            pizza.Position = new Vector2(870, 210);
+            portal1.Position = new Vector2(700, 380);
+            portal2.Position = new Vector2(95, 380);
+
             var items0_5 = new List<Item>();
 
-
-            items0_5.Add(new Item(Content.Load<Texture2D>("pizza"), new Vector2(870, 210), Color.White));
-            items0_5.Add(new Item(Content.Load<Texture2D>("portal"), new Vector2(700, 380), Color.White));
-            items0_5.Add(new Item(Content.Load<Texture2D>("portal"), new Vector2(95, 380), Color.White));
+            items0_5.Add(pizza);
+            items0_5.Add(portal1);
+            items0_5.Add(portal2);
 
 
             levels[World.Land].Add(new Level(level0_5platforms, items0_5, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 465)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
@@ -601,8 +630,10 @@ namespace Platformer
                 new Platform(platformImage, new Vector2(624, 439)) {Size =  new Vector2(374, 46)},
                 new Platform(platformImage, new Vector2(439, 141)) {Size =  new Vector2(56, 347)}
             };
+
+            //HealthPowerup = new Platformer.Item(Content.Load<Texture2D>("Caduceus"), new Vector2(500, 290), Color.White);
             var items0_6 = new List<Item>();
-            items0_6.Add(new Platformer.Item(Content.Load<Texture2D>("Caduceus"), new Vector2(500, 290), Color.White));
+
 
             levels[World.Land].Add(new Level(level0_6platforms, items0_6, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 438)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
@@ -613,9 +644,11 @@ namespace Platformer
                 new Platform(platformImage, new Vector2(237, 448)) {Size =  new Vector2(487, 37)}
             };
 
+            invert.Position = new Vector2(800, 120);
+            reInvert.Position = new Vector2(500, 190);
             var items0_7 = new List<Item>();
-            items0_7.Add(new Item(Content.Load<Texture2D>("invert"), new Vector2(800, 120), Color.White));
-            items0_7.Add(new Item(Content.Load<Texture2D>("re-invert"), new Vector2(500, 189), Color.White));
+            items0_7.Add(invert);
+            items0_7.Add(reInvert);
 
             levels[World.Land].Add(new Level(level0_7platforms, items0_7, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(500, 447)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
@@ -648,10 +681,12 @@ namespace Platformer
 
             };
 
-            var items0_9 = new List<Item>();
-            items0_9.Add(new Item(Content.Load<Texture2D>("portal"), new Vector2(700, 380), Color.White));
-            items0_9.Add(new Item(Content.Load<Texture2D>("portal"), new Vector2(375, 175), Color.White));
+            portal1.Position = new Vector2(700, 380);
+            portal2.Position = new Vector2(375, 175);
 
+            var items0_9 = new List<Item>();
+            items0_9.Add(portal1);
+            items0_9.Add(portal2);
 
             levels[World.Land].Add(new Level(level0_9platforms, items0_9, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(910, 130)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
@@ -679,8 +714,8 @@ namespace Platformer
                 new Platform(platformImage, new Vector2(311, 140)) {Size =  new Vector2(370, 345)}
             };
 
+            //HealthPowerup = new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(100, 100), Color.White));
             var items0_11 = new List<Item>();
-            items0_11.Add(new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(100, 100), Color.White));
 
             levels[World.Land].Add(new Level(level0_11platforms, items0_11, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(700, 440)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
@@ -693,9 +728,9 @@ namespace Platformer
                 new Platform(platformImage, new Vector2(873, 245)) {Size =  new Vector2(132, 39)}
             };
 
-
+            HealthPowerup.Position = new Vector2(100, 100);
             var items0_12 = new List<Item>();
-            items0_12.Add(new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(100, 100), Color.White));
+            items0_12.Add(HealthPowerup);
 
             levels[World.Land].Add(new Level(level0_12platforms, items0_12, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(900, 240)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion
@@ -798,6 +833,15 @@ namespace Platformer
             pixel = new Texture2D(GraphicsDevice, 1, 1);
             pixel.SetData<Color>(new Color[] { Color.White });
 
+            List<List<Item>> allItems = new List<List<Item>>();
+            allItems.Add(items0_2);
+            allItems.Add(items0_3);
+            allItems.Add(items0_5);
+            allItems.Add(items0_6);
+            allItems.Add(items0_7);
+            allItems.Add(items0_9);
+            allItems.Add(items0_11);
+            allItems.Add(items0_12);
         }
 
         protected override void UnloadContent()
@@ -873,6 +917,41 @@ namespace Platformer
                 else if (currentWorld == World.Land)
                 {
                     isUnderwaterLevel = false;
+                }
+
+                if (MainCharacter.isHealthPowerup)
+                {
+                    lives += 10;
+                }
+
+                if (MainCharacter.isJumpBoostPowerup)
+                {
+                    hasJumpBoost = true;
+                }
+
+                if (MainCharacter.isPortal1Powerup)
+                {
+                    movingTime += gameTime.ElapsedGameTime;
+                    if (movingTime >= timeToMove)
+                    {
+                        MainCharacter.X = portal2.X;
+                        MainCharacter.Scale -= new Vector2(0.05f, .1f);
+                        MainCharacter.Y = portal2.Y;
+                        MainCharacter.Scale += new Vector2(0.05f, .1f);
+                        movingTime = TimeSpan.Zero;
+                    }
+                }
+                if (MainCharacter.isPortal2Powerup)
+                {
+                    movingTime += gameTime.ElapsedGameTime;
+                    if (movingTime >= timeToMove)
+                    {
+                        MainCharacter.X = portal1.X;
+                        MainCharacter.Scale -= new Vector2(0.05f, .1f);
+                        MainCharacter.Y = portal1.Y;
+                        MainCharacter.Scale += new Vector2(0.05f, .1f);
+                        movingTime = TimeSpan.Zero;
+                    }
                 }
 
                 //Set start positions
@@ -1038,7 +1117,10 @@ namespace Platformer
                     canShootEnemy = false;
                 }
 
-
+                if (MainCharacter.HitBox.Intersects())
+                {
+                    MainCharacter.CheckPowerup();
+                }
             }
             if (screen == Gamescreen.LandLevelMenu)
             {
@@ -1383,6 +1465,7 @@ namespace Platformer
             {
                 levels[currentWorld][currentLevel].Draw(spriteBatch);
                 MainCharacter.Draw(spriteBatch);
+
                 /*
                 currentLevel.backgroundImage = maps[currentMap];
                 currentLevel.Draw(spriteBatch);

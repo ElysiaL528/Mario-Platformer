@@ -9,7 +9,7 @@ namespace Platformer
 {
     public class Item : Sprite
     {
-        public Item(Texture2D img, Vector2 pos, Color color)
+        public Item(Texture2D img, Vector2 pos, Color color, PowerupType powerupType)
             :base(img, pos, color)
         {
 
@@ -18,7 +18,7 @@ namespace Platformer
                 hasJumpBoost = true;
                 Mario.jumpPower = 2;
             }
-                
+
             if (Mario.HitBox.Intersects(pizza.HitBox) && currentLevel == level5)
                 {
                     if (IsTiny == false)
@@ -83,5 +83,15 @@ namespace Platformer
 
                 */
         }
-    }
+        public enum PowerupType
+        {
+            Health,
+            Shrink,
+            JumpBoost,
+            Portal1,
+            Portal2,
+            Invert,
+            ReInvert,
+        }
+}
 }
