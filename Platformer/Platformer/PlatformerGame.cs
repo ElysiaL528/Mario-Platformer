@@ -33,6 +33,8 @@ namespace Platformer
             - Add more platforms (i.e. trampoline, moving, disappearing, triggering)
             - Add a COMPLETELY new game mode: Shapes
             - Add music
+            - Player loses lives when touching platforms in ULevel3
+            - The ULevel background changes when you advance to Ulevel 2
 
         COMPRESS CODE
 
@@ -84,6 +86,7 @@ namespace Platformer
         Dictionary<AnimationType, List<Frame>> SpongebobAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<AnimationType, List<Frame>> PatrickAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<AnimationType, List<Frame>> CoinAnimations = new Dictionary<AnimationType, List<Frame>>();
+        Dictionary<Level, List<Item>> LevelPowerups = new Dictionary<Level, List<Item>>();
         LevelMap currentMap;
         Dictionary<LevelMap, Texture2D> maps;
         Dictionary<World, List<Level>> levels;
@@ -500,6 +503,8 @@ namespace Platformer
             Item reInvert = new Item(Content.Load<Texture2D>("re-invert"), new Vector2(500, 189), Color.White, PowerupType.ReInvert);
             Item HealthPowerup = new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(500, 290), Color.White, PowerupType.Health);
 
+            
+
             #region level 0-0
 
             var level0_0Platforms = new List<Platform>()
@@ -515,6 +520,8 @@ namespace Platformer
             levels[World.Land].Add(new Level(level0_0Platforms, new List<Item>(), currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             #endregion            
             #region level 0-1
+
+            
 
             var level0_1Platforms = new List<Platform>()
             {
@@ -550,8 +557,8 @@ namespace Platformer
             List<Item> items0_2 = new List<Item>();
             items0_2.Add(bunnyPowerup);
 
-
             levels[World.Land].Add(new Level(level0_2Platforms, items0_2, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 150)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            LevelPowerups.Add(levels[World.Land][2], items0_2);
             #endregion
             #region level 0-3
 
@@ -571,6 +578,7 @@ namespace Platformer
             items0_3.Add(HealthPowerup);
 
             levels[World.Land].Add(new Level(level0_3Platforms, items0_3, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 150)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            LevelPowerups.Add(levels[World.Land][3], items0_3);
             #endregion
             #region level 0-4
 
@@ -614,8 +622,8 @@ namespace Platformer
             items0_5.Add(portal1);
             items0_5.Add(portal2);
 
-
             levels[World.Land].Add(new Level(level0_5platforms, items0_5, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 465)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            LevelPowerups.Add(levels[World.Land][5], items0_5);
             #endregion
             #region level 0-6
 
@@ -631,11 +639,12 @@ namespace Platformer
                 new Platform(platformImage, new Vector2(439, 141)) {Size =  new Vector2(56, 347)}
             };
 
-            //HealthPowerup = new Platformer.Item(Content.Load<Texture2D>("Caduceus"), new Vector2(500, 290), Color.White);
+            HealthPowerup.Position = new Vector2(500, 290);
             var items0_6 = new List<Item>();
-
+            items0_6.Add(HealthPowerup);
 
             levels[World.Land].Add(new Level(level0_6platforms, items0_6, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 438)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            LevelPowerups.Add(levels[World.Land][6], items0_6);
             #endregion
             #region level 0-7
             var level0_7platforms = new List<Platform>()
@@ -651,6 +660,7 @@ namespace Platformer
             items0_7.Add(reInvert);
 
             levels[World.Land].Add(new Level(level0_7platforms, items0_7, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(500, 447)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            LevelPowerups.Add(levels[World.Land][7], items0_7);
             #endregion
             #region level 0-8
             var level0_8platforms = new List<Platform>()
@@ -689,6 +699,7 @@ namespace Platformer
             items0_9.Add(portal2);
 
             levels[World.Land].Add(new Level(level0_9platforms, items0_9, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(910, 130)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            LevelPowerups.Add(levels[World.Land][9], items0_9);
             #endregion
             #region level 0-10
 
@@ -715,9 +726,14 @@ namespace Platformer
             };
 
             //HealthPowerup = new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(100, 100), Color.White));
+
+            HealthPowerup.Position = new Vector2(100, 100);
+
             var items0_11 = new List<Item>();
+            items0_11.Add(HealthPowerup);
 
             levels[World.Land].Add(new Level(level0_11platforms, items0_11, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(700, 440)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            LevelPowerups.Add(levels[World.Land][11], items0_11);
             #endregion
             #region level 0-12
 
@@ -733,6 +749,7 @@ namespace Platformer
             items0_12.Add(HealthPowerup);
 
             levels[World.Land].Add(new Level(level0_12platforms, items0_12, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(900, 240)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            LevelPowerups.Add(levels[World.Land][12], items0_12);
             #endregion
             #region level 0-13
 
@@ -885,7 +902,7 @@ namespace Platformer
                     MainCharacter.Animations = PatrickAnimations;
                 }
 
-
+                
                 if (currentLevelMap == maps[currentMap])
                 {
                     leveltype = "Land";
@@ -909,7 +926,7 @@ namespace Platformer
                     lives--;
 
                 }*/
-
+                
                 if (currentWorld == World.Underwater)
                 {
                     isUnderwaterLevel = true;
@@ -922,6 +939,7 @@ namespace Platformer
                 if (MainCharacter.isHealthPowerup)
                 {
                     lives += 10;
+                    MainCharacter.isHealthPowerup = false;
                 }
 
                 if (MainCharacter.isJumpBoostPowerup)
@@ -1117,9 +1135,9 @@ namespace Platformer
                     canShootEnemy = false;
                 }
 
-                if (MainCharacter.HitBox.Intersects())
+                foreach (Item item in LevelPowerups[levels[World.Land][2]])
                 {
-                    MainCharacter.CheckPowerup();
+                    MainCharacter.CheckPowerup(item);
                 }
             }
             if (screen == Gamescreen.LandLevelMenu)

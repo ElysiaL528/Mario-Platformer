@@ -9,9 +9,12 @@ namespace Platformer
 {
     public class Item : Sprite
     {
+        public PowerupType Type { get; set; }
         public Item(Texture2D img, Vector2 pos, Color color, PowerupType powerupType)
             :base(img, pos, color)
         {
+
+            Type = powerupType;
 
             /*if (Mario.HitBox.Intersects(bunny.HitBox) && currentLevel == level2)
             {

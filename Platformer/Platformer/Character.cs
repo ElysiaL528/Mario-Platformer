@@ -32,6 +32,7 @@ namespace Platformer
         public bool isPortal1Powerup = false;
         public bool isPortal2Powerup = false;
         public bool isInvertPowerup = false;
+        public bool isReInvertPowerup = false;
 
 
         Dictionary<AnimationType, List<Frame>> _animations;
@@ -127,7 +128,7 @@ namespace Platformer
                         break;
                     }
                 }
-
+                
                 if (groundHitBox.Intersects(platforms[i].HitBox))
                 {
                     isGrounded = true;
@@ -316,20 +317,20 @@ namespace Platformer
             }
         }
 
-        public void CheckPowerup()
+        public void CheckPowerup(Item item)
         {
 
-            if (isInvertPowerup)
+            /*if (isInvertPowerup)
             {
                 Scale -= new Vector2(1.5f, 3);
             }
             if(isJumpBoostPowerup)
             {
-                jumpPower = 2;
+                jumpPower = 10;
             }
             if(isPortal1Powerup)
             {
-               
+                   
             }
             if(isPortal2Powerup)
             {
@@ -338,7 +339,45 @@ namespace Platformer
             if(isShrinkPowerup)
             {
 
+            }*/
+
+            if(HitBox.Intersects(item.HitBox))
+            {
+                if (item.Type == Item.PowerupType.JumpBoost)
+                {
+                    jumpPower = 10;
+                    isJumpBoostPowerup = true;
+                }
+                else if (item.Type == Item.PowerupType.Health)
+                {
+                    isHealthPowerup = true;
+                }
+                else if(item.Type == Item.PowerupType.Invert)
+                {
+                    Scale -= new Vector2(1.5f, 3);
+                    isInvertPowerup = true;
+                }
+                else if(item.Type == Item.PowerupType.Portal1)
+                {
+
+                    isPortal1Powerup = true;
+                }
+                else if(item.Type == Item.PowerupType.Portal2)
+                {
+                    isPortal2Powerup = true;
+                }
+                else if(item.Type == Item.PowerupType.ReInvert)
+                {
+                    Scale = Vector2.One;
+                    Y = 300;
+                    isReInvertPowerup = true;
+                }
+                else if(item.Type == Item.PowerupType.Shrink)
+                {
+                    isShrinkPowerup = true;
+                }
             }
+
         }
 
         public enum CharacterName
