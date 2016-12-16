@@ -341,40 +341,46 @@ namespace Platformer
 
             }*/
 
-            if(HitBox.Intersects(item.HitBox))
+            if(HitBox.Intersects(item.HitBox) &!item.IsSelected)
             {
                 if (item.Type == Item.PowerupType.JumpBoost)
                 {
                     jumpPower = 10;
                     isJumpBoostPowerup = true;
+                    item.IsSelected = true;
                 }
                 else if (item.Type == Item.PowerupType.Health)
                 {
                     isHealthPowerup = true;
+                    item.IsSelected = true;
                 }
                 else if(item.Type == Item.PowerupType.Invert)
                 {
                     Scale -= new Vector2(1.5f, 3);
                     isInvertPowerup = true;
+                    item.IsSelected = true;
                 }
                 else if(item.Type == Item.PowerupType.Portal1)
                 {
-
                     isPortal1Powerup = true;
+                    item.IsSelected = true;
                 }
                 else if(item.Type == Item.PowerupType.Portal2)
                 {
                     isPortal2Powerup = true;
+                    item.IsSelected = true;
                 }
                 else if(item.Type == Item.PowerupType.ReInvert)
                 {
                     Scale = Vector2.One;
                     Y = 300;
                     isReInvertPowerup = true;
+                    item.IsSelected = true;
                 }
                 else if(item.Type == Item.PowerupType.Shrink)
                 {
                     isShrinkPowerup = true;
+                    item.IsSelected = true;
                 }
             }
 

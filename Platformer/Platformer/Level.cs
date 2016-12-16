@@ -34,6 +34,8 @@ namespace Platformer
         /// </summary>
         public Sprite Door { get; set; }
 
+        public bool hasPowerup = false;
+
         public Level(List<Platform> platform, List<Item> items, Texture2D background, Sprite door)
         {
             Platforms = platform;

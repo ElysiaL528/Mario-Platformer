@@ -10,6 +10,9 @@ namespace Platformer
     public class Item : Sprite
     {
         public PowerupType Type { get; set; }
+
+        public bool IsSelected = false;
+
         public Item(Texture2D img, Vector2 pos, Color color, PowerupType powerupType)
             :base(img, pos, color)
         {
@@ -86,6 +89,16 @@ namespace Platformer
 
                 */
         }
+
+        public override void Draw(SpriteBatch spritebatch)
+        {
+            if (!IsSelected)
+            {
+                spritebatch.Draw(_texture, _location, _sourceRectangle, _color, _rotation, Origin, Scale, _effects, _layerDepth);
+            }
+            
+            //spritebatch.Draw(_texture, HitBox, Color.Red);
+        }
         public enum PowerupType
         {
             Health,
@@ -98,3 +111,4 @@ namespace Platformer
         }
 }
 }
+       
