@@ -24,6 +24,7 @@ namespace Platformer
         public List<Frame> _animation;
         protected TimeSpan _animationtime;
         private TimeSpan elapsedAnimateTime;
+        public bool IsEnemy { get; set; }
         int _currentframe;
         public AnimatedSprite(Texture2D img, Vector2 pos, Color color, List<Frame> animation)
             : base(img, pos, animation[0].SourceRectangle, color)

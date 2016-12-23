@@ -80,7 +80,7 @@ namespace Platformer
             }
         }
 
-
+        
         public Character(Texture2D texture, Vector2 position, Dictionary<AnimationType, List<Frame>> animations, Texture2D fireballImage)
             : base(texture, position, Color.White, animations[AnimationType.Idle])
         {
@@ -319,7 +319,7 @@ namespace Platformer
 
         public void CheckPowerup(Item item)
         {
-            if (HitBox.Intersects(item.HitBox) & !item.isSelected)
+            if (HitBox.Intersects(item.HitBox) && !item.isSelected)
             {
                 switch (item.Type)
                 {
@@ -337,25 +337,14 @@ namespace Platformer
                     case Item.PowerupType.Invert:
                         Scale -= new Vector2(1.5f, 3);
                         isInvertPowerup = true;
-                        item.isSelected = true;
-                        break;
-
-                    case Item.PowerupType.ReInvert:
-                        Scale = Vector2.One;
-                        Y = 300;
-                        X = item.X;
-                        isReInvertPowerup = true;
-                        item.isSelected = true;
                         break;
 
                     case Item.PowerupType.Portal1:
                         isPortal1Powerup = true;
-                        item.isSelected = true;
                         break;
 
                     case Item.PowerupType.Portal2:
                         isPortal2Powerup = true;
-                        item.isSelected = true;
                         break;
 
                     case Item.PowerupType.Shrink:
@@ -366,6 +355,16 @@ namespace Platformer
                         }
                         item.isSelected = true;
                         break;
+                }
+            }
+            else if (InvertHitBox.Intersects(item.HitBox))
+            {
+                if (item.Type == Item.PowerupType.ReInvert)
+                {
+                    Scale = Vector2.One;
+                    Y = 300;
+                    X = item.X;
+                    isReInvertPowerup = true;
                 }
             }
         }

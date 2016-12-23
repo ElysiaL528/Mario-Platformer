@@ -13,12 +13,11 @@ using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: Program powerups
+    /* To do: Program enemy to move & shoot
      * - 
             - Moving Platforms
             - Door animations??
-            - The penguin should move
-            - Rearrange the level menus
+            - The penguin should move & shoot
             - Make fireballs disappear when intersecting w/penguin hitbox
             - Slow shift function in ULevels
             - Load & animate underwater level characters
@@ -35,8 +34,8 @@ namespace Platformer
         Fix:
         - Some buttons don't highlight
         - Be able to fall smoothly
-        - The ULevel background changes when you advance to Ulevel 2
         - Only be able to jump once (not in midair)
+
 
             */
 
@@ -47,14 +46,14 @@ namespace Platformer
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D spriteSheet;
-        Texture2D penguinspritesheet;
+        Texture2D enemySpriteSheet;
+        Texture2D penguinSpritesheet;
         Texture2D PatrickSpritesheet;
         Texture2D SpongebobSpritesheet;
         Texture2D currentLevelMap;
-        //string levelmap = "Clouds";
         Vector2 speed;
         Vector2 position;
-        Vector2 penguinPosition;
+        Vector2 enemyPosition;
         Vector2 coinPosition;
         Texture2D pixel;
         bool hasfirepower = false;
@@ -90,7 +89,7 @@ namespace Platformer
         LevelMap currentMap;
         Dictionary<LevelMap, Texture2D> maps;
         Dictionary<World, List<Level>> levels;
-        AnimatedSprite Penguin;
+        AnimatedSprite enemy;
         Character MainCharacter;
         Sprite StartScreenBackground;
         Sprite flower;
@@ -114,6 +113,7 @@ namespace Platformer
         Button lvl11button;
         Button lvl12button;
         Button lvl13button;
+        Button lvl14button;
         Button lvl01button;
         Button lvl02button;
         Button lvl03button;
@@ -179,7 +179,7 @@ namespace Platformer
             //Instance variables
             spriteBatch = new SpriteBatch(GraphicsDevice);
             spriteSheet = Content.Load<Texture2D>("Mario Sprite Sheet");
-            penguinspritesheet = Content.Load<Texture2D>("penguin");
+            penguinSpritesheet = Content.Load<Texture2D>("penguin");
             PatrickSpritesheet = Content.Load<Texture2D>("PatrickSpriteSheet");
             SpongebobSpritesheet = Content.Load<Texture2D>("Spongebob_Spritesheet_2");
             font = Content.Load<SpriteFont>("SpriteFont1");
@@ -356,9 +356,10 @@ namespace Platformer
             //Run-time variables
             #region
             position = new Vector2(40, 390);
-            penguinPosition = new Vector2(500, 272);
+            enemyPosition = new Vector2(500, 270);
             speed = new Vector2(4);
-            Penguin = new AnimatedSprite(penguinspritesheet, penguinPosition, Color.White, strolling);
+            enemySpriteSheet = penguinSpritesheet;
+            enemy = new AnimatedSprite(enemySpriteSheet, enemyPosition, Color.White, strolling);
             #endregion
 
             //Assign MC values
@@ -410,6 +411,9 @@ namespace Platformer
             lvl13button = new Button(Content.Load<Texture2D>("lvl13button"), new Vector2(150, 330), Color.White);
             lvl13button.LevelValue = 12;
             landLevelButtons.Add(lvl13button);
+            lvl14button = new Button(Content.Load<Texture2D>("lvl14button"), new Vector2(300, 330), Color.White);
+            lvl14button.LevelValue = 13;
+            landLevelButtons.Add(lvl14button);
             lvl01button = new Button(Content.Load<Texture2D>("lvl1button"), new Vector2(150, 150), Color.White);
             lvl01button.ULevelValue = 0;
             ULevelButtons.Add(lvl01button);
@@ -464,7 +468,7 @@ namespace Platformer
 
             //Instance Variables
             MainCharacter.Origin = new Vector2(15, 33);
-            Penguin.Origin = new Vector2(300, 300);
+            enemy.Origin = new Vector2(300, 300);
             Texture2D platformImage = Content.Load<Texture2D>("Platform");
             Texture2D lavaPlatformImage = Content.Load<Texture2D>("lava");
             maps = new Dictionary<LevelMap, Texture2D>();
@@ -544,6 +548,8 @@ namespace Platformer
 
             List<Item> items0_2 = new List<Item>();
             items0_2.Add(bunnyPowerup);
+
+            enemyisdead = false;
 
             levels[World.Land].Add(new Level(level0_2Platforms, items0_2, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 150)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             LevelPowerups.Add(levels[World.Land][2], items0_2);
@@ -877,6 +883,7 @@ namespace Platformer
             if (screen == Gamescreen.Maingame)
             {
                 MainCharacter.Update(gameTime);
+                enemy.Update(gameTime);
                 MainCharacter.CheckCollision(levels[currentWorld][currentLevel].Platforms);
 
                 //Assign character traits>
@@ -903,17 +910,6 @@ namespace Platformer
                 {
                     leveltype = "Land";
                 }
-
-                /*if (MainCharacter.Y >= 489 || MainCharacter.touchedLava)
-                {
-                    MainCharacter.Position = levels[currentWorld][currentLevel].startPosition - Vector2.UnitY * 50;
-                    enemyisdead = false;
-                    hasfirepower = false;
-                    enemyisdead = false;
-                    MoreLives = false;
-                    lives--;
-
-                }*/
                 
                 if (currentWorld == World.Underwater)
                 {
@@ -941,11 +937,10 @@ namespace Platformer
                     if (movingTime >= timeToMove)
                     {
                         MainCharacter.X = portal2.X;
-                        //MainCharacter.Scale -= new Vector2(0.05f, .1f);
                         MainCharacter.Y = portal2.Y;
-                        //MainCharacter.Scale += new Vector2(0.05f, .1f);
-                        movingTime = TimeSpan.Zero;
+                        movingTime = TimeSpan.Zero;   
                     }
+                    MainCharacter.isPortal1Powerup = false;
                 }
                 if (MainCharacter.isPortal2Powerup)
                 {
@@ -953,12 +948,12 @@ namespace Platformer
                     if (movingTime >= timeToMove)
                     {
                         MainCharacter.X = portal1.X;
-                        //MainCharacter.Scale -= new Vector2(0.05f, .1f);
                         MainCharacter.Y = portal1.Y;
-                        //MainCharacter.Scale += new Vector2(0.05f, .1f);
                         movingTime = TimeSpan.Zero;
                     }
+                    MainCharacter.isPortal2Powerup = false;
                 }
+
 
                 //Set start positions
                 #region
@@ -1002,6 +997,7 @@ namespace Platformer
                         enemyisdead = false;
                         hasfirepower = false;
                         enemyisdead = false;
+                        hasJumpBoost = false;
                         MoreLives = false;
                         //Have all the level's item return to non-selected status
                         if (levels[currentWorld][currentLevel].hasPowerup)
@@ -1058,7 +1054,6 @@ namespace Platformer
                 if (restartbutton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     //restarts here
-                    lives = 100000000;
                     fireballhitcount = 0;
                     MainCharacter.Scale = Vector2.One;
                     MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
@@ -1068,7 +1063,10 @@ namespace Platformer
                     MoreLives = false;
                     foreach (Item powerup in LevelPowerups[levels[currentWorld][currentLevel]])
                     {
-                        powerup.isSelected = false;
+                        if (levels[currentWorld][currentLevel].hasPowerup)
+                        {
+                            powerup.isSelected = false;
+                        }
                     }
                 }
 
@@ -1097,7 +1095,7 @@ namespace Platformer
 
                 for (int i = 0; i < MainCharacter.fireballs.Count; i++)
                 {
-                    if (MainCharacter.fireballs[i].HitBox.Intersects(Penguin.HitBox) && canShootEnemy == true)
+                    if (MainCharacter.fireballs[i].HitBox.Intersects(enemy.HitBox) && canShootEnemy == true)
                     {
                         fireballhitcount++;
 
@@ -1142,6 +1140,26 @@ namespace Platformer
                 else
                 {
                     canShootEnemy = false;
+                }
+
+                if (levels[currentWorld][currentLevel] == levels[World.Land][4] || levels[currentWorld][currentLevel] == levels[World.Land][11] || levels[currentWorld][currentLevel] == levels[World.Land][12])
+                {
+                    HealthPowerup.Position = new Vector2(100, 100);
+                }
+                else if (levels[currentWorld][currentLevel] == levels[World.Land][5])
+                {
+                    portal1.Position = new Vector2(700, 380);
+                    portal2.Position = new Vector2(95, 380);
+                }
+                else if (levels[currentWorld][currentLevel] == levels[World.Land][6])
+                {
+                    HealthPowerup.Position = new Vector2(500, 290);
+                }
+
+                else if (levels[currentWorld][currentLevel] == levels[World.Land][9])
+                {
+                    portal1.Position = new Vector2(700, 380);
+                    portal2.Position = new Vector2(375, 175);
                 }
 
                 if (levels[currentWorld][currentLevel].hasPowerup)
@@ -1494,6 +1512,10 @@ namespace Platformer
             if (screen == Gamescreen.Maingame)
             {
                 levels[currentWorld][currentLevel].Draw(spriteBatch);
+                if (levels[currentWorld][currentLevel] == levels[World.Land][3] && !enemyisdead)
+                {
+                    enemy.Draw(spriteBatch);
+                }
                 MainCharacter.Draw(spriteBatch);
 
                 /*
@@ -1591,6 +1613,7 @@ namespace Platformer
                 lvl11button.Draw(spriteBatch);
                 lvl12button.Draw(spriteBatch);
                 lvl13button.Draw(spriteBatch);
+                lvl14button.Draw(spriteBatch);
                 ExitButton.Draw(spriteBatch);
             }
             if (screen == Gamescreen.GameOver)
@@ -1634,6 +1657,7 @@ namespace Platformer
                 spriteBatch.Draw(currentLevelMap, new Microsoft.Xna.Framework.Rectangle(0, 0, 1000, 489), Color.White);
                 ExitButton.Draw(spriteBatch);
             }
+            
 
             spriteBatch.End();
             base.Draw(gameTime);
