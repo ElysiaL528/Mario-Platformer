@@ -13,12 +13,9 @@ using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: Check if Mario intersects with any powerups (a list of a list of items is in the load function)
+    /* To do: Program powerups
      * - 
-            - Restore powerups & enemies
-            - Some buttons don't highlight
             - Moving Platforms
-            - Be able to fall smoothly
             - Door animations??
             - The penguin should move
             - Rearrange the level menus
@@ -28,16 +25,18 @@ namespace Platformer
             - Create more enemies
             - Create & animate coins
             - Be able to unlock maps
-            - Only be able to jump once (not in midair)
             - Add level 14 to Land Level Menu
             - Add more platforms (i.e. trampoline, moving, disappearing, triggering)
             - Add a COMPLETELY new game mode: Shapes
             - Add music
-            - Player loses lives when touching platforms in ULevel3
-            - The ULevel background changes when you advance to Ulevel 2
+            - Comment code
+            - Add level skips
 
-        COMPRESS CODE
-
+        Fix:
+        - Some buttons don't highlight
+        - Be able to fall smoothly
+        - The ULevel background changes when you advance to Ulevel 2
+        - Only be able to jump once (not in midair)
 
             */
 
@@ -355,21 +354,16 @@ namespace Platformer
             #endregion
 
             //Run-time variables
+            #region
             position = new Vector2(40, 390);
             penguinPosition = new Vector2(500, 272);
             speed = new Vector2(4);
             Penguin = new AnimatedSprite(penguinspritesheet, penguinPosition, Color.White, strolling);
+            #endregion
 
-            //Assign main character values and fireballs
-            if (!IsTiny)
-            {
-                MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("FireBall_1"));
-            }
-            else
-            {
-                MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("Copy of Fireball_1"));
-            }
-
+            //Assign MC values
+            MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("FireBall_1"));
+            
             //Load Starting Objects
             #region
             flower = new Sprite(Content.Load<Texture2D>("Fireball_Flower"), new Vector2(220, 250), Color.White);
@@ -488,22 +482,15 @@ namespace Platformer
             //Sets the level background to the map selected
             currentLevelMap = maps[currentMap];
 
-            //If background is changed, change map
-            //if (setLevelMap)
-            //{
-            //    currentLevelMap = maps[currentMap];
-            //}
+            pizza = new Item(Content.Load<Texture2D>("pizza"), new Vector2(870, 210), Color.White, PowerupType.Shrink);
+            portal1 = new Item(Content.Load<Texture2D>("portal"), new Vector2(700, 380), Color.White, PowerupType.Portal1);
+            portal2 = new Item(Content.Load<Texture2D>("portal"), new Vector2(95, 380), Color.White, PowerupType.Portal2);
+            bunnyPowerup = new Item(Content.Load<Texture2D>("bunny"), new Vector2(270, 400), Color.White, PowerupType.JumpBoost);
+            invert = new Item(Content.Load<Texture2D>("invert"), new Vector2(800, 120), Color.White, PowerupType.Invert);
+            reInvert = new Item(Content.Load<Texture2D>("re-invert"), new Vector2(500, 189), Color.White, PowerupType.ReInvert);
+            HealthPowerup = new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(500, 290), Color.White, PowerupType.Health);
 
             //Draws the platforms for each level. 0-1 means on land and level 1, 1-2 means underwater. First number can go from 0 to 1, second number can go from 0 to 13.
-
-            Item pizza = new Item(Content.Load<Texture2D>("pizza"), new Vector2(870, 210), Color.White, PowerupType.Shrink);
-            Item portal1 = new Item(Content.Load<Texture2D>("portal"), new Vector2(700, 380), Color.White, PowerupType.Portal1);
-            Item portal2 = new Item(Content.Load<Texture2D>("portal"), new Vector2(95, 380), Color.White, PowerupType.Portal2);
-            Item bunnyPowerup = new Item(Content.Load<Texture2D>("bunny"), new Vector2(270, 400), Color.White, PowerupType.JumpBoost);
-            Item invert = new Item(Content.Load<Texture2D>("invert"), new Vector2(800, 120), Color.White, PowerupType.Invert);
-            Item reInvert = new Item(Content.Load<Texture2D>("re-invert"), new Vector2(500, 189), Color.White, PowerupType.ReInvert);
-            Item HealthPowerup = new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(500, 290), Color.White, PowerupType.Health);
-            
 
             #region level 0-0
 
@@ -838,15 +825,15 @@ namespace Platformer
             var Level1_2platforms = new List<Platform>()
             {
                 //Regular platforms || X speed = 0 || Y speed = 0
-                new Platform(platformImage, new Vector2(0, 70), true) { Size = new Vector2(143, 28) },
-                new Platform(platformImage, new Vector2(635, 286), true) { Size = new Vector2(143, 28) },
+                new Platform(platformImage, new Vector2(0, 70), false) { Size = new Vector2(143, 28) },
+                new Platform(platformImage, new Vector2(635, 286), false) { Size = new Vector2(143, 28) },
                 // Horizontally moving platforms || X speed = 5 || Y speed = 0
-                new Platform(platformImage, new Vector2(180, 69), true) { Size = new Vector2(139, 28) },
-                new Platform(platformImage, new Vector2(652, 460), true) { Size = new Vector2(139, 28) },
-                new Platform(platformImage, new Vector2(125, 251), true) { Size = new Vector2(139, 28) },
+                new Platform(platformImage, new Vector2(180, 69), false) { Size = new Vector2(139, 28) },
+                new Platform(platformImage, new Vector2(652, 460), false) { Size = new Vector2(139, 28) },
+                new Platform(platformImage, new Vector2(125, 251), false) { Size = new Vector2(139, 28) },
                 // Vertically moving platforms || X speed = 0 || Y speed = 5
-                new Platform(platformImage, new Vector2(862, 83), true) { Size = new Vector2(139, 28) },
-                new Platform(platformImage, new Vector2(0, 460), true) { Size = new Vector2(112, 28) }
+                new Platform(platformImage, new Vector2(862, 83), false) { Size = new Vector2(139, 28) },
+                new Platform(platformImage, new Vector2(0, 460), false) { Size = new Vector2(112, 28) }
             };
             Level1_2platforms.AddRange(Level1_2lavaplatforms);
 
@@ -893,35 +880,28 @@ namespace Platformer
                 MainCharacter.CheckCollision(levels[currentWorld][currentLevel].Platforms);
 
                 //Assign character traits>
-                if (character == "Mario")
-                {
-                    MainCharacter.Image = spriteSheet;
-                    MainCharacter.Animations = marioAnimations;
 
-                }
-                else if (character == "Spongebob")
+                switch (character)
                 {
-                    MainCharacter.Image = SpongebobSpritesheet;
-                    MainCharacter.Animations = SpongebobAnimations;
-                }
-                else if (character == "Patrick")
-                {
-                    MainCharacter.Image = PatrickSpritesheet;
-                    MainCharacter.Animations = PatrickAnimations;
-                }
+                    case "Mario":
+                        MainCharacter.Image = spriteSheet;
+                        MainCharacter.Animations = marioAnimations;
+                        break;
 
+                    case "Spongebob":
+                        MainCharacter.Image = SpongebobSpritesheet;
+                        MainCharacter.Animations = SpongebobAnimations;
+                        break;
+
+                    case "Patrick":
+                        MainCharacter.Image = PatrickSpritesheet;
+                        MainCharacter.Animations = PatrickAnimations;
+                        break;
+                }
                 
                 if (currentLevelMap == maps[currentMap])
                 {
                     leveltype = "Land";
-                }
-                //else if(currentLevelMap == maps[c])
-                //{
-                //    leveltype = "Underwater";
-                //}
-                if (leveltype == "Underwater")
-                {
-                    currentLevel = 0;
                 }
 
                 /*if (MainCharacter.Y >= 489 || MainCharacter.touchedLava)
@@ -961,9 +941,9 @@ namespace Platformer
                     if (movingTime >= timeToMove)
                     {
                         MainCharacter.X = portal2.X;
-                        MainCharacter.Scale -= new Vector2(0.05f, .1f);
+                        //MainCharacter.Scale -= new Vector2(0.05f, .1f);
                         MainCharacter.Y = portal2.Y;
-                        MainCharacter.Scale += new Vector2(0.05f, .1f);
+                        //MainCharacter.Scale += new Vector2(0.05f, .1f);
                         movingTime = TimeSpan.Zero;
                     }
                 }
@@ -973,9 +953,9 @@ namespace Platformer
                     if (movingTime >= timeToMove)
                     {
                         MainCharacter.X = portal1.X;
-                        MainCharacter.Scale -= new Vector2(0.05f, .1f);
+                        //MainCharacter.Scale -= new Vector2(0.05f, .1f);
                         MainCharacter.Y = portal1.Y;
-                        MainCharacter.Scale += new Vector2(0.05f, .1f);
+                        //MainCharacter.Scale += new Vector2(0.05f, .1f);
                         movingTime = TimeSpan.Zero;
                     }
                 }
@@ -1028,10 +1008,17 @@ namespace Platformer
                         {
                             foreach (Item powerup in LevelPowerups[levels[currentWorld][currentLevel]])
                             {
-                                powerup.IsSelected = false;
+                                powerup.isSelected = false;
                             }
                         }
-                        levels[currentWorld][currentLevel].BackgroundImage = currentLevelMap;
+                        if (currentWorld != World.Underwater)
+                        {
+                            levels[currentWorld][currentLevel].BackgroundImage = currentLevelMap;
+                        }
+                        else
+                        {
+                            levels[World.Underwater][currentLevel].BackgroundImage = maps[LevelMap.Kelp];
+                        }
                     }
                     else
                     {
@@ -1071,7 +1058,7 @@ namespace Platformer
                 if (restartbutton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     //restarts here
-                    lives = 100;
+                    lives = 100000000;
                     fireballhitcount = 0;
                     MainCharacter.Scale = Vector2.One;
                     MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
@@ -1079,6 +1066,10 @@ namespace Platformer
                     hasfirepower = false;
                     enemyisdead = false;
                     MoreLives = false;
+                    foreach (Item powerup in LevelPowerups[levels[currentWorld][currentLevel]])
+                    {
+                        powerup.isSelected = false;
+                    }
                 }
 
 
@@ -1610,7 +1601,7 @@ namespace Platformer
             if (screen == Gamescreen.Maingame || screen == Gamescreen.GameOver)
             {
                 restartbutton.Draw(spriteBatch);
-                spriteBatch.DrawString(font, string.Format("Lives: {0} * {1}", lives, fireballhitcount), Vector2.Zero, Color.White);
+                spriteBatch.DrawString(font, string.Format("Lives: {0}", lives), Vector2.Zero, Color.White);
             }
             if (screen == Gamescreen.MainMenu)
             {

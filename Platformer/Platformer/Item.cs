@@ -11,7 +11,7 @@ namespace Platformer
     {
         public PowerupType Type { get; set; }
 
-        public bool IsSelected = false;
+        public bool isSelected = false;
 
         public Item(Texture2D img, Vector2 pos, Color color, PowerupType powerupType)
             :base(img, pos, color)
@@ -92,7 +92,7 @@ namespace Platformer
 
         public override void Draw(SpriteBatch spritebatch)
         {
-            if (!IsSelected)
+            if (!isSelected)
             {
                 spritebatch.Draw(_texture, _location, _sourceRectangle, _color, _rotation, Origin, Scale, _effects, _layerDepth);
             }

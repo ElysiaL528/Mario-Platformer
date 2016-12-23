@@ -17,7 +17,7 @@ namespace Platformer
         public Platform(Texture2D texture, Vector2 position)
             :this(texture, position, false)
         {
-            //Pass-throgh constructor
+            //Pass-through constructor
         }
 
         public Platform(Texture2D texture, Vector2 position, bool isDeadly)

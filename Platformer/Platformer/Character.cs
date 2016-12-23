@@ -319,71 +319,55 @@ namespace Platformer
 
         public void CheckPowerup(Item item)
         {
+            if (HitBox.Intersects(item.HitBox) & !item.isSelected)
+            {
+                switch (item.Type)
+                {
+                    case Item.PowerupType.JumpBoost:
+                        jumpPower = 10;
+                        isJumpBoostPowerup = true;
+                        item.isSelected = true;
+                        break;
 
-            /*if (isInvertPowerup)
-            {
-                Scale -= new Vector2(1.5f, 3);
-            }
-            if(isJumpBoostPowerup)
-            {
-                jumpPower = 10;
-            }
-            if(isPortal1Powerup)
-            {
-                   
-            }
-            if(isPortal2Powerup)
-            {
+                    case Item.PowerupType.Health:
+                        isHealthPowerup = true;
+                        item.isSelected = true;
+                        break;
 
-            }
-            if(isShrinkPowerup)
-            {
+                    case Item.PowerupType.Invert:
+                        Scale -= new Vector2(1.5f, 3);
+                        isInvertPowerup = true;
+                        item.isSelected = true;
+                        break;
 
-            }*/
+                    case Item.PowerupType.ReInvert:
+                        Scale = Vector2.One;
+                        Y = 300;
+                        X = item.X;
+                        isReInvertPowerup = true;
+                        item.isSelected = true;
+                        break;
 
-            if(HitBox.Intersects(item.HitBox) &!item.IsSelected)
-            {
-                if (item.Type == Item.PowerupType.JumpBoost)
-                {
-                    jumpPower = 10;
-                    isJumpBoostPowerup = true;
-                    item.IsSelected = true;
-                }
-                else if (item.Type == Item.PowerupType.Health)
-                {
-                    isHealthPowerup = true;
-                    item.IsSelected = true;
-                }
-                else if(item.Type == Item.PowerupType.Invert)
-                {
-                    Scale -= new Vector2(1.5f, 3);
-                    isInvertPowerup = true;
-                    item.IsSelected = true;
-                }
-                else if(item.Type == Item.PowerupType.Portal1)
-                {
-                    isPortal1Powerup = true;
-                    item.IsSelected = true;
-                }
-                else if(item.Type == Item.PowerupType.Portal2)
-                {
-                    isPortal2Powerup = true;
-                    item.IsSelected = true;
-                }
-                else if(item.Type == Item.PowerupType.ReInvert)
-                {
-                    Scale = Vector2.One;
-                    Y = 300;
-                    isReInvertPowerup = true;
-                    item.IsSelected = true;
-                }
-                else if(item.Type == Item.PowerupType.Shrink)
-                {
-                    isShrinkPowerup = true;
-                    item.IsSelected = true;
+                    case Item.PowerupType.Portal1:
+                        isPortal1Powerup = true;
+                        item.isSelected = true;
+                        break;
+
+                    case Item.PowerupType.Portal2:
+                        isPortal2Powerup = true;
+                        item.isSelected = true;
+                        break;
+
+                    case Item.PowerupType.Shrink:
+                        isShrinkPowerup = true;
+                        for (int i = 0; i < 70; i++)
+                        {
+                            Scale -= new Vector2(0.005f, .01f);
+                        }
+                        item.isSelected = true;
+                        break;
                 }
             }
-
         }
 
         public enum CharacterName
