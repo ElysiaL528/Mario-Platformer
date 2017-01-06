@@ -30,6 +30,7 @@ namespace Platformer
             - Add music
             - Comment code
             - Add level skips
+            - Multiplayer?
 
         Fix:
         - Some buttons don't highlight
@@ -153,7 +154,6 @@ namespace Platformer
         int maxFireballHits = 1;
         TimeSpan timeToMove = new TimeSpan(0, 0, 0, 0, 2000);
         TimeSpan movingTime = new TimeSpan(0, 0, 0, 0, 2000);
-        TimeSpan ShotDelay = TimeSpan.FromMilliseconds(300);
         TimeSpan TimeSinceLastShot = TimeSpan.Zero;
         World currentWorld = World.Land;
         int currentLevel = 0;
@@ -359,7 +359,7 @@ namespace Platformer
             enemyPosition = new Vector2(500, 270);
             speed = new Vector2(4);
             enemySpriteSheet = penguinSpritesheet;
-            enemy = new AnimatedSprite(enemySpriteSheet, enemyPosition, Color.White, strolling);
+            enemy = new AnimatedSprite(enemySpriteSheet, enemyPosition, Color.White, strolling, true);
             #endregion
 
             //Assign MC values
@@ -820,11 +820,11 @@ namespace Platformer
             // Lava platforms
             var Level1_2lavaplatforms = new List<Platform>()
             {
-                new Platform(lavaPlatformImage, new Vector2(0, 124)) { Size = new Vector2(795, 23) },
-                new Platform(lavaPlatformImage, new Vector2(777, 147)) { Size = new Vector2(19, 194) },
-                new Platform(lavaPlatformImage, new Vector2(265, 314)) { Size = new Vector2(531, 27) },
-                new Platform(lavaPlatformImage, new Vector2(265, 286)) { Size = new Vector2(33, 29) },
-                new Platform(lavaPlatformImage, new Vector2(265, 147)) { Size = new Vector2(33, 29) }
+                new Platform(lavaPlatformImage, new Vector2(0, 124), true) { Size = new Vector2(795, 23) },
+                new Platform(lavaPlatformImage, new Vector2(777, 147), true) { Size = new Vector2(19, 194) },
+                new Platform(lavaPlatformImage, new Vector2(265, 314), true) { Size = new Vector2(531, 27) },
+                new Platform(lavaPlatformImage, new Vector2(265, 286), true) { Size = new Vector2(33, 29) },
+                new Platform(lavaPlatformImage, new Vector2(265, 147), true) { Size = new Vector2(33, 29) }
             };
 
 

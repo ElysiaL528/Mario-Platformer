@@ -82,7 +82,7 @@ namespace Platformer
 
         
         public Character(Texture2D texture, Vector2 position, Dictionary<AnimationType, List<Frame>> animations, Texture2D fireballImage)
-            : base(texture, position, Color.White, animations[AnimationType.Idle])
+            : base(texture, position, Color.White, animations[AnimationType.Idle], false)
         {
             fireballs = new List<Fireball>();
             pixel = new Texture2D(texture.GraphicsDevice, 1, 1);
@@ -279,7 +279,7 @@ namespace Platformer
                 else
                 {
                     elapsedFallTime += gameTime.ElapsedGameTime;
-                    Y += gravity * elapsedFallTime.Milliseconds / 1000; //old value: 1000
+                    Y += gravity * elapsedFallTime.Milliseconds / 1000; 
                 }
             }
             else if (isGrounded == false)
