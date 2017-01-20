@@ -13,20 +13,31 @@ namespace Platformer
         Texture2D _fireballImage;
         TimeSpan TimeSinceLastShot = TimeSpan.Zero;
         TimeSpan ShotDelay = TimeSpan.FromMilliseconds(200);
+
+        EnemyMovement MovementType;
+        AnimationType currentAnimation;
         public List<Fireball> fireballs { get; }
         Dictionary<AnimationType, List<Frame>> _animations;
 
-        public Enemy(Texture2D texture, Vector2 position, Dictionary<AnimationType, List<Frame>> animations, Texture2D fireballImage)
+        int MaxCoord;
+        int MinCoord;
+        public int Xspeed;
+        public int Yspeed;
+
+        public Enemy(Texture2D texture, Vector2 position, Dictionary<AnimationType, List<Frame>> animations, Texture2D fireballImage, EnemyMovement movement, int MaxCoordinate, int MinCoordinate)
             : base(texture, position, Color.White, animations[AnimationType.Idle], false)
         {
             _fireballImage = fireballImage;
             fireballs = new List<Fireball>();
             _animations = animations;
-
+            currentAnimation = AnimationType.Walking;
+            MaxCoord = MaxCoordinate;
+            MinCoord = MinCoordinate;
         }
 
-        public override void Update(GameTime gameTime)
+        public void EnemyUpdate(GameTime gameTime)
         {
+
             if (TimeSinceLastShot >= ShotDelay)
             {
                 canShoot = true;
@@ -35,7 +46,7 @@ namespace Platformer
             {
                 canShoot = false;
             }
-
+           
             if (canShoot)
             {
                 Fireball newFireball = new Fireball(_fireballImage, new Vector2(_location.X, _location.Y - HitBox.Height), Color.White, new Vector2(10, 0));
@@ -55,6 +66,46 @@ namespace Platformer
                 canShoot = false;
                 TimeSinceLastShot = TimeSpan.Zero;
             }
+
+            if(MovementType == EnemyMovement.SidetoSide)
+            {
+                if(X >= MaxCoord || X <= MinCoord)
+                {
+                    Xspeed *= -1;
+                    X += Xspeed;
+
+                    if(_effects == SpriteEffects.FlipHorizontally)
+                    {
+                        _effects = SpriteEffects.None;
+                    }
+                    else
+                    {
+                        _effects = SpriteEffects.FlipHorizontally;
+                    }
+                }
+                else
+                {
+                    X += Xspeed;
+                }
+            }
+
+            if(MovementType == EnemyMovement.UpDown)
+            {
+                Y += Yspeed;
+                if (Y >= MaxCoord || Y <= MinCoord)
+                {
+                    Yspeed *= -1;
+                    Y += Yspeed;
+                }
+
+            }
+            _animation = _animations[currentAnimation];
+        }
+
+        public enum EnemyMovement
+        {
+            SidetoSide,
+            UpDown
         }
     }
     #endregion

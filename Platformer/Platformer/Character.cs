@@ -177,7 +177,7 @@ namespace Platformer
         public TimeSpan TimeSinceLastShot = TimeSpan.Zero;
 
 
-        public override void Update(GameTime gameTime)
+        public override void UpdateAnimation(GameTime gameTime)
         {
             KeyboardState keyboard = Keyboard.GetState();
             bool isRunning = false;
@@ -299,7 +299,7 @@ namespace Platformer
 
 
             _animation = _animations[currentAnimation];
-            base.Update(gameTime);
+            base.UpdateAnimation(gameTime);
         }
 
         public override void Draw(SpriteBatch spritebatch)

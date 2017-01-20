@@ -43,7 +43,7 @@ namespace Platformer
             elapsedAnimateTime = new TimeSpan();
         }
 
-        public virtual void Update(GameTime gameTime)
+        public virtual void UpdateAnimation(GameTime gameTime)
         {
             elapsedAnimateTime += gameTime.ElapsedGameTime;
             if (elapsedAnimateTime >= _animationtime)

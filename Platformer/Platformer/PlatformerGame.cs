@@ -31,11 +31,15 @@ namespace Platformer
             - Comment code
             - Add level skips
             - Multiplayer?
+            - Make fireballs spin
 
         Fix:
         - Some buttons don't highlight
         - Be able to fall smoothly
         - Only be able to jump once (not in midair)
+
+        Fixed:
+        - Programmed enemy movement logic
 
 
             */
@@ -90,7 +94,7 @@ namespace Platformer
         LevelMap currentMap;
         Dictionary<LevelMap, Texture2D> maps;
         Dictionary<World, List<Level>> levels;
-        AnimatedSprite enemy;
+        Enemy enemy;
         Character MainCharacter;
         Sprite StartScreenBackground;
         Sprite flower;
@@ -359,11 +363,11 @@ namespace Platformer
             enemyPosition = new Vector2(500, 270);
             speed = new Vector2(4);
             enemySpriteSheet = penguinSpritesheet;
-            enemy = new AnimatedSprite(enemySpriteSheet, enemyPosition, Color.White, strolling, true);
+            enemy = new Enemy(enemySpriteSheet, enemyPosition, penguinAnimations, Content.Load<Texture2D>("GreenFireball"), Enemy.EnemyMovement.SidetoSide, 700, 200);
             #endregion
 
             //Assign MC values
-            MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("FireBall_1"));
+            MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("GreenFireball"));
             
             //Load Starting Objects
             #region
@@ -469,8 +473,10 @@ namespace Platformer
             //Instance Variables
             MainCharacter.Origin = new Vector2(15, 33);
             enemy.Origin = new Vector2(300, 300);
+            enemy.Xspeed = 2;
             Texture2D platformImage = Content.Load<Texture2D>("Platform");
             Texture2D lavaPlatformImage = Content.Load<Texture2D>("lava");
+            
             maps = new Dictionary<LevelMap, Texture2D>();
             maps.Add(LevelMap.Stars, Content.Load<Texture2D>("PlatformerMap1"));
             maps.Add(LevelMap.Sunset, Content.Load<Texture2D>("PlatformerMap2"));
@@ -882,8 +888,9 @@ namespace Platformer
             //If we're playing the game, then...
             if (screen == Gamescreen.Maingame)
             {
-                MainCharacter.Update(gameTime);
-                enemy.Update(gameTime);
+                MainCharacter.UpdateAnimation(gameTime);
+                enemy.UpdateAnimation(gameTime);
+                enemy.EnemyUpdate(gameTime);
                 MainCharacter.CheckCollision(levels[currentWorld][currentLevel].Platforms);
 
                 //Assign character traits>
