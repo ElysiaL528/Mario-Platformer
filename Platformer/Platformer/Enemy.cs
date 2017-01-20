@@ -12,7 +12,7 @@ namespace Platformer
         #region  
         Texture2D _fireballImage;
         TimeSpan TimeSinceLastShot = TimeSpan.Zero;
-        TimeSpan ShotDelay = TimeSpan.FromMilliseconds(200);
+        TimeSpan ShotDelay = TimeSpan.FromMilliseconds(500);
 
         EnemyMovement MovementType;
         AnimationType currentAnimation;
@@ -37,7 +37,7 @@ namespace Platformer
 
         public void EnemyUpdate(GameTime gameTime)
         {
-
+            TimeSinceLastShot += gameTime.ElapsedGameTime;
             if (TimeSinceLastShot >= ShotDelay)
             {
                 canShoot = true;
@@ -46,14 +46,16 @@ namespace Platformer
             {
                 canShoot = false;
             }
-           
+
             if (canShoot)
             {
                 Fireball newFireball = new Fireball(_fireballImage, new Vector2(_location.X, _location.Y - HitBox.Height), Color.White, new Vector2(10, 0));
                 newFireball.Scale = Scale;
                 if (_effects == SpriteEffects.None)
                 {
+                    newFireball.Speed = new Vector2(10, 0);
                     fireballs.Add(newFireball);
+                    //fireballs[fireballs.Count - 1].Speed = new Vector2(10, 0);
                 }
                 else
                 {
@@ -67,14 +69,14 @@ namespace Platformer
                 TimeSinceLastShot = TimeSpan.Zero;
             }
 
-            if(MovementType == EnemyMovement.SidetoSide)
+            if (MovementType == EnemyMovement.SidetoSide)
             {
-                if(X >= MaxCoord || X <= MinCoord)
+                if (X >= MaxCoord || X <= MinCoord)
                 {
                     Xspeed *= -1;
                     X += Xspeed;
 
-                    if(_effects == SpriteEffects.FlipHorizontally)
+                    if (_effects == SpriteEffects.FlipHorizontally)
                     {
                         _effects = SpriteEffects.None;
                     }
@@ -89,7 +91,7 @@ namespace Platformer
                 }
             }
 
-            if(MovementType == EnemyMovement.UpDown)
+            if (MovementType == EnemyMovement.UpDown)
             {
                 Y += Yspeed;
                 if (Y >= MaxCoord || Y <= MinCoord)
@@ -99,7 +101,25 @@ namespace Platformer
                 }
 
             }
+
+            for (int i = 0; i < fireballs.Count; i++)
+            {
+                fireballs[i].Update();
+                if (fireballs[i].X > Global.Screen.X)
+                {
+                    fireballs.RemoveAt(i);
+                }
+            }
             _animation = _animations[currentAnimation];
+        }
+
+        public override void Draw(SpriteBatch spritebatch)
+        {
+            base.Draw(spritebatch);
+            for (int i = 0; i < fireballs.Count; i++)
+            {
+                fireballs[i].Draw(spritebatch);
+            }
         }
 
         public enum EnemyMovement

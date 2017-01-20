@@ -13,7 +13,7 @@ using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: Program enemy to move & shoot
+    /* To do: Program enemy to shoot
      * - 
             - Moving Platforms
             - Door animations??
@@ -32,6 +32,7 @@ namespace Platformer
             - Add level skips
             - Multiplayer?
             - Make fireballs spin
+            - Design title screen
 
         Fix:
         - Some buttons don't highlight
@@ -367,7 +368,7 @@ namespace Platformer
             #endregion
 
             //Assign MC values
-            MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("GreenFireball"));
+            MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("Fireball_1"));
             
             //Load Starting Objects
             #region
@@ -473,7 +474,7 @@ namespace Platformer
             //Instance Variables
             MainCharacter.Origin = new Vector2(15, 33);
             enemy.Origin = new Vector2(300, 300);
-            enemy.Xspeed = 2;
+            enemy.Xspeed = 1;
             Texture2D platformImage = Content.Load<Texture2D>("Platform");
             Texture2D lavaPlatformImage = Content.Load<Texture2D>("lava");
             
@@ -1519,7 +1520,7 @@ namespace Platformer
             if (screen == Gamescreen.Maingame)
             {
                 levels[currentWorld][currentLevel].Draw(spriteBatch);
-                if (levels[currentWorld][currentLevel] == levels[World.Land][3] && !enemyisdead)
+                if (levels[currentWorld][currentLevel] == levels[World.Land][3] && !enemyisdead || levels[currentWorld][currentLevel] == levels[World.Land][13] && !enemyisdead)
                 {
                     enemy.Draw(spriteBatch);
                 }
