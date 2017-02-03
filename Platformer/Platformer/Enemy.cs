@@ -24,6 +24,7 @@ namespace Platformer
         public int Xspeed;
         public int Yspeed;
 
+
         public Enemy(Texture2D texture, Vector2 position, Dictionary<AnimationType, List<Frame>> animations, Texture2D fireballImage, EnemyMovement movement, int MaxCoordinate, int MinCoordinate)
             : base(texture, position, Color.White, animations[AnimationType.Idle], false)
         {
