@@ -225,7 +225,7 @@ namespace Platformer
             }
 
 
-            if (keyboard.IsKeyDown(Keys.LeftShift) && isLevel13 == false || keyboard.IsKeyDown(Keys.RightShift) && isLevel13 == false)
+            if (keyboard.IsKeyDown(Keys.LeftShift) && isLevel13 == false || keyboard.IsKeyDown(Keys.RightShift))
             {
                 isRunning = true;
             }

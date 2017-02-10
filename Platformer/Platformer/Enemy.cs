@@ -24,6 +24,8 @@ namespace Platformer
         public int Xspeed;
         public int Yspeed;
 
+        public bool isDead;
+
 
         public Enemy(Texture2D texture, Vector2 position, Dictionary<AnimationType, List<Frame>> animations, Texture2D fireballImage, EnemyMovement movement, int MaxCoordinate, int MinCoordinate)
             : base(texture, position, Color.White, animations[AnimationType.Idle], false)
@@ -38,80 +40,83 @@ namespace Platformer
 
         public void EnemyUpdate(GameTime gameTime)
         {
-            TimeSinceLastShot += gameTime.ElapsedGameTime;
-            if (TimeSinceLastShot >= ShotDelay)
+            if (!isDead)
             {
-                canShoot = true;
-            }
-            else
-            {
-                canShoot = false;
-            }
-
-            if (canShoot)
-            {
-                Fireball newFireball = new Fireball(_fireballImage, new Vector2(_location.X, _location.Y - HitBox.Height), Color.White, new Vector2(10, 0));
-                newFireball.Scale = Scale;
-                if (_effects == SpriteEffects.None)
+                TimeSinceLastShot += gameTime.ElapsedGameTime;
+                if (TimeSinceLastShot >= ShotDelay)
                 {
-                    newFireball.Speed = new Vector2(10, 0);
-                    fireballs.Add(newFireball);
-                    //fireballs[fireballs.Count - 1].Speed = new Vector2(10, 0);
+                    canShoot = true;
                 }
                 else
                 {
-                    //fireballs.Add(new Fireball(_fireballImage, new Vector2(_location.X, _location.Y - HitBox.Height), Color.White, new Vector2(-10, 0)));
-                    fireballs.Add(newFireball);
-                    fireballs[fireballs.Count - 1].Effects = SpriteEffects.FlipHorizontally;
-                    fireballs[fireballs.Count - 1].Speed = new Vector2(-10, 0);
-
+                    canShoot = false;
                 }
-                canShoot = false;
-                TimeSinceLastShot = TimeSpan.Zero;
-            }
 
-            if (MovementType == EnemyMovement.SidetoSide)
-            {
-                if (X >= MaxCoord || X <= MinCoord)
+                if (canShoot)
                 {
-                    Xspeed *= -1;
-                    X += Xspeed;
-
-                    if (_effects == SpriteEffects.FlipHorizontally)
+                    Fireball newFireball = new Fireball(_fireballImage, new Vector2(_location.X, _location.Y - HitBox.Height), Color.White, new Vector2(10, 0));
+                    newFireball.Scale = Scale;
+                    if (_effects == SpriteEffects.None)
                     {
-                        _effects = SpriteEffects.None;
+                        newFireball.Speed = new Vector2(10, 0);
+                        fireballs.Add(newFireball);
+                        //fireballs[fireballs.Count - 1].Speed = new Vector2(10, 0);
                     }
                     else
                     {
-                        _effects = SpriteEffects.FlipHorizontally;
+                        //fireballs.Add(new Fireball(_fireballImage, new Vector2(_location.X, _location.Y - HitBox.Height), Color.White, new Vector2(-10, 0)));
+                        fireballs.Add(newFireball);
+                        fireballs[fireballs.Count - 1].Effects = SpriteEffects.FlipHorizontally;
+                        fireballs[fireballs.Count - 1].Speed = new Vector2(-10, 0);
+
+                    }
+                    canShoot = false;
+                    TimeSinceLastShot = TimeSpan.Zero;
+                }
+
+                if (MovementType == EnemyMovement.SidetoSide)
+                {
+                    if (X >= MaxCoord || X <= MinCoord)
+                    {
+                        Xspeed *= -1;
+                        X += Xspeed;
+
+                        if (_effects == SpriteEffects.FlipHorizontally)
+                        {
+                            _effects = SpriteEffects.None;
+                        }
+                        else
+                        {
+                            _effects = SpriteEffects.FlipHorizontally;
+                        }
+                    }
+                    else
+                    {
+                        X += Xspeed;
                     }
                 }
-                else
-                {
-                    X += Xspeed;
-                }
-            }
 
-            if (MovementType == EnemyMovement.UpDown)
-            {
-                Y += Yspeed;
-                if (Y >= MaxCoord || Y <= MinCoord)
+                if (MovementType == EnemyMovement.UpDown)
                 {
-                    Yspeed *= -1;
                     Y += Yspeed;
+                    if (Y >= MaxCoord || Y <= MinCoord)
+                    {
+                        Yspeed *= -1;
+                        Y += Yspeed;
+                    }
+
                 }
 
-            }
-
-            for (int i = 0; i < fireballs.Count; i++)
-            {
-                fireballs[i].Update();
-                if (fireballs[i].X > Global.Screen.X)
+                for (int i = 0; i < fireballs.Count; i++)
                 {
-                    fireballs.RemoveAt(i);
+                    fireballs[i].Update();
+                    if (fireballs[i].X > Global.Screen.X)
+                    {
+                        fireballs.RemoveAt(i);
+                    }
                 }
+                _animation = _animations[currentAnimation];
             }
-            _animation = _animations[currentAnimation];
         }
 
         public override void Draw(SpriteBatch spritebatch)

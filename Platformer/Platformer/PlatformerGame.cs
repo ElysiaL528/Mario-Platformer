@@ -13,7 +13,7 @@ using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: Have the MC lose a life when intersecting w/enemy fireballs
+    /* To do: Have the ULevel level buttons highlight when hovered over
      * - 
             - Moving Platforms
             - Door animations??
@@ -39,6 +39,7 @@ namespace Platformer
         - Be able to fall smoothly
         - Only be able to jump once (not in midair)
 
+
             */
 
     public class PlatformerGame : Microsoft.Xna.Framework.Game
@@ -53,13 +54,14 @@ namespace Platformer
         Texture2D PatrickSpritesheet;
         Texture2D SpongebobSpritesheet;
         Texture2D currentLevelMap;
+        Texture2D LandLevelMenuBackground;
+        Texture2D ULevelMenuBackground;
         Vector2 speed;
         Vector2 position;
         Vector2 coinPosition;
         Texture2D pixel;
         bool hasfirepower = false;
         bool IsTiny = false;
-        bool enemyisdead = false;
         bool gameisover = false;
         bool hasJumpBoost;
         bool MoreLives = false;
@@ -92,7 +94,7 @@ namespace Platformer
         Dictionary<LevelMap, Texture2D> maps;
         Dictionary<World, List<Level>> levels;
         Enemy enemy;
-        Character MCLives;
+        Character MainCharacter;
         Sprite StartScreenBackground;
         Sprite flower;
         MouseState lastMs;
@@ -147,12 +149,12 @@ namespace Platformer
 
         //Run-time variables
         #region
-        int MarioLives = 10000000;
+        int MCLives = 10000000;
         Gamescreen screen = Gamescreen.StartScreen;
         int fireballhitcount = 0;
         string character = "Patrick";
         string leveltype = "Land";
-        int maxFireballHits = 1;
+        int maxFireballHits = 5;
         TimeSpan timeToMove = new TimeSpan(0, 0, 0, 0, 2000);
         TimeSpan movingTime = new TimeSpan(0, 0, 0, 0, 2000);
         TimeSpan TimeSinceLastShot = TimeSpan.Zero;
@@ -363,7 +365,7 @@ namespace Platformer
             #endregion
 
             //Assign MC values
-            MCLives = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("Fireball_1"));
+            MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("Fireball_1"));
             
             //Load Starting Objects
             #region
@@ -467,12 +469,14 @@ namespace Platformer
             #endregion
 
             //Instance Variables
-            MCLives.Origin = new Vector2(15, 33);
+            MainCharacter.Origin = new Vector2(15, 33);
             enemy.Origin = new Vector2(300, 300);
             enemy.Xspeed = 1;
             Texture2D platformImage = Content.Load<Texture2D>("Platform");
             Texture2D lavaPlatformImage = Content.Load<Texture2D>("lava");
-            
+            ULevelMenuBackground = Content.Load<Texture2D>("ULevelMenu_Title");
+            LandLevelMenuBackground = Content.Load<Texture2D>("LandLevelMenu_Title");
+
             maps = new Dictionary<LevelMap, Texture2D>();
             maps.Add(LevelMap.Stars, Content.Load<Texture2D>("PlatformerMap1"));
             maps.Add(LevelMap.Sunset, Content.Load<Texture2D>("PlatformerMap2"));
@@ -551,7 +555,7 @@ namespace Platformer
             List<Item> items0_2 = new List<Item>();
             items0_2.Add(bunnyPowerup);
 
-            enemyisdead = false;
+            enemy.isDead = false;
 
             levels[World.Land].Add(new Level(level0_2Platforms, items0_2, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 150)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             LevelPowerups.Add(levels[World.Land][2], items0_2);
@@ -886,28 +890,28 @@ namespace Platformer
             //If we're playing the game, then...
             if (screen == Gamescreen.Maingame)
             {
-                MCLives.UpdateAnimation(gameTime);
+                MainCharacter.UpdateAnimation(gameTime);
                 enemy.UpdateAnimation(gameTime);
                 enemy.EnemyUpdate(gameTime);
-                MCLives.CheckCollision(levels[currentWorld][currentLevel].Platforms);
+                MainCharacter.CheckCollision(levels[currentWorld][currentLevel].Platforms);
 
                 //Assign character traits>
 
                 switch (character)
                 {
                     case "Mario":
-                        MCLives.Image = spriteSheet;
-                        MCLives.Animations = marioAnimations;
+                        MainCharacter.Image = spriteSheet;
+                        MainCharacter.Animations = marioAnimations;
                         break;
 
                     case "Spongebob":
-                        MCLives.Image = SpongebobSpritesheet;
-                        MCLives.Animations = SpongebobAnimations;
+                        MainCharacter.Image = SpongebobSpritesheet;
+                        MainCharacter.Animations = SpongebobAnimations;
                         break;
 
                     case "Patrick":
-                        MCLives.Image = PatrickSpritesheet;
-                        MCLives.Animations = PatrickAnimations;
+                        MainCharacter.Image = PatrickSpritesheet;
+                        MainCharacter.Animations = PatrickAnimations;
                         break;
                 }
                 
@@ -925,38 +929,38 @@ namespace Platformer
                     isUnderwaterLevel = false;
                 }
 
-                if (MCLives.isHealthPowerup)
+                if (MainCharacter.isHealthPowerup)
                 {
-                    MarioLives += 10;
-                    MCLives.isHealthPowerup = false;
+                    MCLives += 10;
+                    MainCharacter.isHealthPowerup = false;
                 }
 
-                if (MCLives.isJumpBoostPowerup)
+                if (MainCharacter.isJumpBoostPowerup)
                 {
                     hasJumpBoost = true;
                 }
 
-                if (MCLives.isPortal1Powerup)
+                if (MainCharacter.isPortal1Powerup)
                 {
                     movingTime += gameTime.ElapsedGameTime;
                     if (movingTime >= timeToMove)
                     {
-                        MCLives.X = portal2.X;
-                        MCLives.Y = portal2.Y;
+                        MainCharacter.X = portal2.X;
+                        MainCharacter.Y = portal2.Y;
                         movingTime = TimeSpan.Zero;   
                     }
-                    MCLives.isPortal1Powerup = false;
+                    MainCharacter.isPortal1Powerup = false;
                 }
-                if (MCLives.isPortal2Powerup)
+                if (MainCharacter.isPortal2Powerup)
                 {
                     movingTime += gameTime.ElapsedGameTime;
                     if (movingTime >= timeToMove)
                     {
-                        MCLives.X = portal1.X;
-                        MCLives.Y = portal1.Y;
+                        MainCharacter.X = portal1.X;
+                        MainCharacter.Y = portal1.Y;
                         movingTime = TimeSpan.Zero;
                     }
-                    MCLives.isPortal2Powerup = false;
+                    MainCharacter.isPortal2Powerup = false;
                 }
 
 
@@ -982,26 +986,26 @@ namespace Platformer
                 levels[World.Underwater][2].StartPosition = new Vector2(34, 45);
                 #endregion
 
-                if (MCLives.Y >= 489 || MCLives.Died)
+                if (MainCharacter.Y >= 489 || MainCharacter.Died)
                 {
-                    MCLives.Position = levels[currentWorld][currentLevel].StartPosition;
-                    enemyisdead = false;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
+                    enemy.isDead = false;
                     hasfirepower = false;
-                    enemyisdead = false;
-                    MarioLives--;
+                    enemy.isDead = false;
+                    MCLives--;
                 }
 
-                if (MCLives.HitBox.Intersects(levels[currentWorld][currentLevel].Door.HitBox))
+                if (MainCharacter.HitBox.Intersects(levels[currentWorld][currentLevel].Door.HitBox))
                 {
                     if (currentLevel < levels[currentWorld].Count)
                     {
                         currentLevel++;
                         fireballhitcount = 0;
-                        MCLives.Scale = Vector2.One;
-                        MCLives.Position = levels[currentWorld][currentLevel].StartPosition;
-                        enemyisdead = false;
+                        MainCharacter.Scale = Vector2.One;
+                        MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
+                        enemy.isDead = false;
                         hasfirepower = false;
-                        enemyisdead = false;
+                        enemy.isDead = false;
                         hasJumpBoost = false;
                         MoreLives = false;
                         //Have all the level's item return to non-selected status
@@ -1035,11 +1039,11 @@ namespace Platformer
                 {
                     fireballhitcount = 0;
                     gameisover = false;
-                    MCLives.Scale = Vector2.One;
-                    MCLives.Position = levels[currentWorld][currentLevel].StartPosition;
-                    enemyisdead = false;
+                    MainCharacter.Scale = Vector2.One;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
+                    enemy.isDead = false;
                     hasfirepower = false;
-                    enemyisdead = false;
+                    enemy.isDead = false;
                     MoreLives = false;
                 }
                 /*if (ks.IsKeyDown(Keys.B))
@@ -1060,11 +1064,11 @@ namespace Platformer
                 {
                     //restarts here
                     fireballhitcount = 0;
-                    MCLives.Scale = Vector2.One;
-                    MCLives.Position = levels[currentWorld][currentLevel].StartPosition;
-                    enemyisdead = false;
+                    MainCharacter.Scale = Vector2.One;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
+                    enemy.isDead = false;
                     hasfirepower = false;
-                    enemyisdead = false;
+                    enemy.isDead = false;
                     MoreLives = false;
                     foreach (Item powerup in LevelPowerups[levels[currentWorld][currentLevel]])
                     {
@@ -1080,7 +1084,7 @@ namespace Platformer
                 {
                     hasfirepower = false;
                 }
-                if (MarioLives <= 0)
+                if (MCLives <= 0)
                 {
                     screen = Gamescreen.GameOver;
                     gameisover = true;
@@ -1098,52 +1102,49 @@ namespace Platformer
                 //loop through all marios fireballs and check if any of them collide with enemies
                 //if collide remove both
 
-                for (int i = 0; i < MCLives.fireballs.Count; i++)
+                for (int i = 0; i < MainCharacter.fireballs.Count; i++)
                 {
-                    if (MCLives.fireballs[i].HitBox.Intersects(enemy.HitBox) && canShootEnemy == true)
+                    if (MainCharacter.fireballs[i].HitBox.Intersects(enemy.HitBox) && canShootEnemy == true)
                     {
                         fireballhitcount++;
+                        MainCharacter.fireballs.Remove(MainCharacter.fireballs[i]);
 
                     }
                 }
                 for(int i = 0; i < enemy.fireballs.Count; i++)
                 {
-                    if (enemy.fireballs[i].HitBox.Intersects(MCLives.HitBox) && !intersectingFireball)
+                    if (enemy.fireballs[i].HitBox.Intersects(MainCharacter.HitBox))
                     {
-                             MarioLives--;
-                            intersectingFireball = true;
-                    }
-                    else
-                    {
-                        intersectingFireball = false;
+                        MCLives--;
+                        enemy.fireballs.Remove(enemy.fireballs[i]);
                     }
                     
                 }
                 if (fireballhitcount >= maxFireballHits)
                 {
-                    enemyisdead = true;
+                    enemy.isDead = true;
                 }
 
                 if (ks.IsKeyDown(Keys.M))
                 {
-                    MCLives.X = ms.X;
-                    MCLives.Y = ms.Y;
+                    MainCharacter.X = ms.X;
+                    MainCharacter.Y = ms.Y;
                 }
 
 
                 if (hasJumpBoost == false)
                 {
-                    MCLives.jumpPower = 5;
+                    MainCharacter.jumpPower = 5;
                 }
                 else if (hasJumpBoost == true)
                 {
-                    MCLives.jumpPower = 10;
+                    MainCharacter.jumpPower = 10;
                 }
                 if (isUnderwaterLevel == true)
                 {
-                    MCLives.jumpPower = 1f;
-                    MCLives.gravity = 1f;
-                    MCLives.elapsedJumpTime = TimeSpan.FromMilliseconds(1);
+                    MainCharacter.jumpPower = 1f;
+                    MainCharacter.gravity = 1f;
+                    MainCharacter.elapsedJumpTime = TimeSpan.FromMilliseconds(1);
                 }
 
                 if (MenuButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
@@ -1209,7 +1210,7 @@ namespace Platformer
                 {
                     foreach (Item item in LevelPowerups[levels[currentWorld][currentLevel]])
                     {
-                        MCLives.CheckPowerup(item);
+                        MainCharacter.CheckPowerup(item);
                     }
                 }
             }
@@ -1224,7 +1225,7 @@ namespace Platformer
                         screen = Gamescreen.Maingame;
                         currentLevel = button.LevelValue;
                         fireballhitcount = 0;
-                        MCLives.Position = levels[currentWorld][currentLevel].StartPosition;
+                        MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
                     }
                     button.Update();
                 }
@@ -1233,7 +1234,7 @@ namespace Platformer
 
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = Gamescreen.MainMenu;
+                    screen = Gamescreen.KindOfLevelMenu;
                 }
 
             }
@@ -1242,10 +1243,10 @@ namespace Platformer
                 if (restartbutton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     //restarts here
-                    MarioLives = 100;
+                    MCLives = 100;
                     currentLevel = 0;
-                    MCLives.Position = levels[currentWorld][currentLevel].StartPosition;
-                    MCLives.Scale = Vector2.One;
+                    MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
+                    MainCharacter.Scale = Vector2.One;
                     gameisover = false;
                     screen = Gamescreen.Maingame;
                     MoreLives = false;
@@ -1349,6 +1350,12 @@ namespace Platformer
                     screen = Gamescreen.LandLevelMenu;
                 }
 
+                ExitButton.Update();
+                if(ExitButton.IsClicked)
+                {
+                    screen = Gamescreen.MainMenu;
+                }
+
             }
             if (screen == Gamescreen.UnderwaterLevelMenu)
             {
@@ -1360,22 +1367,14 @@ namespace Platformer
                         screen = Gamescreen.Maingame;
                         currentLevel = button.ULevelValue;
                         fireballhitcount = 0;
-                        MCLives.Position = levels[currentWorld][currentLevel].StartPosition;
+                        MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
                     }
+                    button.Update();
                 }
-
-                if (MenuButton.HitBox.Contains(ms.X, ms.Y))
-                {
-                    MenuButton = new Button(Content.Load<Texture2D>("MenuButton"), new Vector2(960, 40), Color.Black);
-                }
-                else
-                {
-                    MenuButton = new Button(Content.Load<Texture2D>("MenuButton"), new Vector2(960, 40), Color.White);
-                }
-
+                MenuButton.Update();
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    screen = Gamescreen.MainMenu;
+                    screen = Gamescreen.KindOfLevelMenu;
                 }
             }
 
@@ -1433,18 +1432,27 @@ namespace Platformer
             if (screen == Gamescreen.Maingame)
             {
                 levels[currentWorld][currentLevel].Draw(spriteBatch);
-                if (levels[currentWorld][currentLevel] == levels[World.Land][3] && !enemyisdead || levels[currentWorld][currentLevel] == levels[World.Land][12] && !enemyisdead)
+                if (levels[currentWorld][currentLevel] == levels[World.Land][3] && !enemy.isDead || levels[currentWorld][currentLevel] == levels[World.Land][12] && !enemy.isDead)
                 {
                     enemy.Draw(spriteBatch);
                 }
-                MCLives.Draw(spriteBatch);
+                MainCharacter.Draw(spriteBatch);
 
                 MenuButton.Draw(spriteBatch);
             }
 
-            if (screen == Gamescreen.LandLevelMenu || screen == Gamescreen.UnderwaterLevelMenu)
+            if (screen == Gamescreen.LandLevelMenu)
             {
-                LevelMenuBg.Draw(spriteBatch);
+                spriteBatch.Draw(LandLevelMenuBackground, new Microsoft.Xna.Framework.Rectangle(0, 0, 1000, 489), Color.White);
+            }
+
+            if(screen == Gamescreen.UnderwaterLevelMenu)
+            {
+                spriteBatch.Draw(ULevelMenuBackground, new Microsoft.Xna.Framework.Rectangle(0, 0, 1000, 489), Color.White);
+            }
+
+            if(screen == Gamescreen.UnderwaterLevelMenu || screen == Gamescreen.LandLevelMenu)
+            {
                 lvl1button.Draw(spriteBatch);
                 lvl2button.Draw(spriteBatch);
                 lvl3button.Draw(spriteBatch);
@@ -1469,7 +1477,7 @@ namespace Platformer
             if (screen == Gamescreen.Maingame || screen == Gamescreen.GameOver)
             {
                 restartbutton.Draw(spriteBatch);
-                spriteBatch.DrawString(font, string.Format("Lives: {0}", MarioLives), Vector2.Zero, Color.White);
+                spriteBatch.DrawString(font, string.Format("Lives: {0}", MCLives), Vector2.Zero, Color.White);
             }
             if (screen == Gamescreen.MainMenu)
             {
@@ -1495,6 +1503,7 @@ namespace Platformer
             {
                 UnderwaterLevelsButton.Draw(spriteBatch);
                 LandLevelsButton.Draw(spriteBatch);
+                ExitButton.Draw(spriteBatch);
             }
             if (screen == Gamescreen.ChooseBackgroundMenu)
             {
