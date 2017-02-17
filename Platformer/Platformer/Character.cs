@@ -33,6 +33,7 @@ namespace Platformer
         public bool isPortal2Powerup = false;
         public bool isInvertPowerup = false;
         public bool isReInvertPowerup = false;
+        public bool isJumping = false;
 
 
         Dictionary<AnimationType, List<Frame>> _animations;
@@ -268,7 +269,7 @@ namespace Platformer
             //{
             //    currentAnimation = AnimationType.Punching;
             //}
-            if (keyboard.IsKeyDown(Keys.Up) && canGoUp == true)
+            if (keyboard.IsKeyDown(Keys.Up) && canGoUp == true && !isJumping)
             {
                 elapsedJumpTime += gameTime.ElapsedGameTime;
                 if (elapsedJumpTime < jumpTime)
@@ -282,6 +283,7 @@ namespace Platformer
                     Y += gravity * elapsedFallTime.Milliseconds / 1000; 
                 }
             }
+
             else if (isGrounded == false)
             {
                 elapsedFallTime += gameTime.ElapsedGameTime;

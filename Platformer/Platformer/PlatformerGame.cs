@@ -13,7 +13,7 @@ using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: Have the ULevel level buttons highlight when hovered over
+    /* To do: Work on level skips with for looping through an array
      * - 
             - Moving Platforms
             - Door animations??
@@ -24,20 +24,18 @@ namespace Platformer
             - Create more enemies
             - Create & animate coins
             - Be able to unlock maps
-            - Add level 14 to Land Level Menu
             - Add more platforms (i.e. trampoline, moving, disappearing, triggering)
-            - Add a COMPLETELY new game mode: Shapes
             - Add music
             - Comment code
             - Add level skips
             - Multiplayer?
             - Make fireballs spin
             - Design title screen
+            - Fireballs still kill the MC even in when the enemy isn't in the level
 
         Fix:
-        - Some buttons don't highlight
         - Be able to fall smoothly
-        - Only be able to jump once (not in midair)
+        - If you select a background & choose a level via the level button, the program crashes
 
 
             */
@@ -90,6 +88,7 @@ namespace Platformer
         Dictionary<AnimationType, List<Frame>> PatrickAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<AnimationType, List<Frame>> CoinAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<Level, List<Item>> LevelPowerups = new Dictionary<Level, List<Item>>();
+        Keys[] LevelSkipKeys = { Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.D7, Keys.D8, Keys.D9, Keys.D0, Keys.Q, Keys.W, Keys.E, Keys.R };
         LevelMap currentMap;
         Dictionary<LevelMap, Texture2D> maps;
         Dictionary<World, List<Level>> levels;
@@ -452,7 +451,7 @@ namespace Platformer
             lvl012button = new Button(Content.Load<Texture2D>("lvl12button"), new Vector2(600, 270), Color.White);
             lvl012button.ULevelValue = 11;
             ULevelButtons.Add(lvl012button);
-            lvl013button = new Button(Content.Load<Texture2D>("lvl13button"), new Vector2(600, 330), Color.White);
+            lvl013button = new Button(Content.Load<Texture2D>("lvl13button"), new Vector2(150, 330), Color.White);
             lvl013button.ULevelValue = 12;
             ULevelButtons.Add(lvl013button);
             MenuButton = new Button(Content.Load<Texture2D>("MenuButton"), new Vector2(960, 40), Color.White);
@@ -914,7 +913,14 @@ namespace Platformer
                         MainCharacter.Animations = PatrickAnimations;
                         break;
                 }
+
                 
+                for(int i = 0; i <= LevelSkipKeys.Length; i++)
+                {
+                   
+                }
+
+
                 if (currentLevelMap == maps[currentMap])
                 {
                     leveltype = "Land";
@@ -1070,11 +1076,12 @@ namespace Platformer
                     hasfirepower = false;
                     enemy.isDead = false;
                     MoreLives = false;
-                    foreach (Item powerup in LevelPowerups[levels[currentWorld][currentLevel]])
+                    if (levels[currentWorld][currentLevel].hasPowerup)
                     {
-                        if (levels[currentWorld][currentLevel].hasPowerup)
+                        foreach (Item powerup in LevelPowerups[levels[currentWorld][currentLevel]])
                         {
-                            powerup.isSelected = false;
+                                powerup.isSelected = false;
+                            
                         }
                     }
                 }
@@ -1213,30 +1220,57 @@ namespace Platformer
                         MainCharacter.CheckPowerup(item);
                     }
                 }
+
+                MenuButton.Update();
+                restartbutton.Update();
             }
             if (screen == Gamescreen.LandLevelMenu)
             {
-                ExitButton = new Button(Content.Load<Texture2D>("ExitButton"), new Vector2(0, 420), Color.White);
+                //ExitButton = new Button(Content.Load<Texture2D>("ExitButton"), new Vector2(0, 420), Color.White);
                 currentWorld = World.Land;
                 foreach (Button button in landLevelButtons)
                 {
+                    button.Update();
                     if (button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                     {
                         screen = Gamescreen.Maingame;
                         currentLevel = button.LevelValue;
                         fireballhitcount = 0;
                         MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
+                        levels[currentWorld][currentLevel].BackgroundImage = currentLevelMap;
                     }
-                    button.Update();
+                 
                 }
-
                 MenuButton.Update();
 
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = Gamescreen.KindOfLevelMenu;
                 }
+                ExitButton.Update();
 
+            }
+            if (screen == Gamescreen.UnderwaterLevelMenu)
+            {
+                currentWorld = World.Underwater;
+                foreach (Button button in ULevelButtons)
+                {
+                    button.Update();
+                    if (button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
+                    {
+                        screen = Gamescreen.Maingame;
+                        currentLevel = button.ULevelValue;
+                        fireballhitcount = 0;
+                        MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
+                    }
+                   
+                }
+                MenuButton.Update();
+                if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
+                {
+                    screen = Gamescreen.KindOfLevelMenu;
+                }
+                ExitButton.Update();
             }
             if (screen == Gamescreen.GameOver)
             {
@@ -1357,26 +1391,7 @@ namespace Platformer
                 }
 
             }
-            if (screen == Gamescreen.UnderwaterLevelMenu)
-            {
-                currentWorld = World.Underwater;
-                foreach (Button button in ULevelButtons)
-                {
-                    if (button.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                    {
-                        screen = Gamescreen.Maingame;
-                        currentLevel = button.ULevelValue;
-                        fireballhitcount = 0;
-                        MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
-                    }
-                    button.Update();
-                }
-                MenuButton.Update();
-                if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    screen = Gamescreen.KindOfLevelMenu;
-                }
-            }
+            
 
             if (screen == Gamescreen.ChooseBackgroundMenu)
             {
@@ -1444,31 +1459,23 @@ namespace Platformer
             if (screen == Gamescreen.LandLevelMenu)
             {
                 spriteBatch.Draw(LandLevelMenuBackground, new Microsoft.Xna.Framework.Rectangle(0, 0, 1000, 489), Color.White);
+                foreach (Button button in landLevelButtons)
+                {
+                    button.Draw(spriteBatch);
+                }
+                ExitButton.Draw(spriteBatch);
             }
 
             if(screen == Gamescreen.UnderwaterLevelMenu)
             {
                 spriteBatch.Draw(ULevelMenuBackground, new Microsoft.Xna.Framework.Rectangle(0, 0, 1000, 489), Color.White);
-            }
-
-            if(screen == Gamescreen.UnderwaterLevelMenu || screen == Gamescreen.LandLevelMenu)
-            {
-                lvl1button.Draw(spriteBatch);
-                lvl2button.Draw(spriteBatch);
-                lvl3button.Draw(spriteBatch);
-                lvl4button.Draw(spriteBatch);
-                lvl5button.Draw(spriteBatch);
-                lvl6button.Draw(spriteBatch);
-                lvl7button.Draw(spriteBatch);
-                lvl8button.Draw(spriteBatch);
-                lvl9button.Draw(spriteBatch);
-                lvl10button.Draw(spriteBatch);
-                lvl11button.Draw(spriteBatch);
-                lvl12button.Draw(spriteBatch);
-                lvl13button.Draw(spriteBatch);
-                lvl14button.Draw(spriteBatch);
+                foreach (Button button in ULevelButtons)
+                {
+                    button.Draw(spriteBatch);
+                }
                 ExitButton.Draw(spriteBatch);
             }
+
             if (screen == Gamescreen.GameOver)
             {
                 GameOverScreen.Draw(spriteBatch);
