@@ -13,12 +13,10 @@ using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: Work on level skips with for looping through an array
+    /* To do: Design title screen & animate Princess Peach and Mario
      * - 
             - Moving Platforms
-            - Door animations??
             - The penguin should move & shoot
-            - Make fireballs disappear when intersecting w/penguin hitbox
             - Slow shift function in ULevels
             - Load & animate underwater level characters
             - Create more enemies
@@ -27,15 +25,13 @@ namespace Platformer
             - Add more platforms (i.e. trampoline, moving, disappearing, triggering)
             - Add music
             - Comment code
-            - Add level skips
             - Multiplayer?
             - Make fireballs spin
-            - Design title screen
-            - Fireballs still kill the MC even in when the enemy isn't in the level
+            - Add animations for Mario throwing fireballs
+            - Minigames
 
         Fix:
         - Be able to fall smoothly
-        - If you select a background & choose a level via the level button, the program crashes
 
 
             */
@@ -51,6 +47,7 @@ namespace Platformer
         Texture2D penguinSpritesheet;
         Texture2D PatrickSpritesheet;
         Texture2D SpongebobSpritesheet;
+        Texture2D PrincessPSpritesheet;
         Texture2D currentLevelMap;
         Texture2D LandLevelMenuBackground;
         Texture2D ULevelMenuBackground;
@@ -88,12 +85,13 @@ namespace Platformer
         Dictionary<AnimationType, List<Frame>> PatrickAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<AnimationType, List<Frame>> CoinAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<Level, List<Item>> LevelPowerups = new Dictionary<Level, List<Item>>();
-        Keys[] LevelSkipKeys = { Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.D7, Keys.D8, Keys.D9, Keys.D0, Keys.Q, Keys.W, Keys.E, Keys.R };
+        Keys[] LevelSkipKeys = { Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.D7, Keys.D8, Keys.D9, Keys.D0, Keys.Q, Keys.W, Keys.E, Keys.T };
         LevelMap currentMap;
         Dictionary<LevelMap, Texture2D> maps;
         Dictionary<World, List<Level>> levels;
         Enemy enemy;
         Character MainCharacter;
+        AnimatedSprite PrincessP;
         Sprite StartScreenBackground;
         Sprite flower;
         MouseState lastMs;
@@ -175,6 +173,18 @@ namespace Platformer
             Global.Screen = new Vector2(1000, 489);
             base.Initialize();
         }
+        
+        public void Reset()
+        {
+            fireballhitcount = 0;
+            gameisover = false;
+            MainCharacter.Scale = Vector2.One;
+            MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
+            enemy.isDead = false;
+            hasfirepower = false;
+            enemy.isDead = false;
+            MoreLives = false;
+        }
 
         protected override void LoadContent()
         {
@@ -184,6 +194,7 @@ namespace Platformer
             penguinSpritesheet = Content.Load<Texture2D>("penguin");
             PatrickSpritesheet = Content.Load<Texture2D>("PatrickSpriteSheet");
             SpongebobSpritesheet = Content.Load<Texture2D>("Spongebob_Spritesheet_2");
+            PrincessPSpritesheet = Content.Load<Texture2D>("Mario Sprite Sheet");
             font = Content.Load<SpriteFont>("SpriteFont1");
             font2 = Content.Load<SpriteFont>("Font2");
 
@@ -365,6 +376,9 @@ namespace Platformer
 
             //Assign MC values
             MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("Fireball_1"));
+
+
+            //PrincessP = new AnimatedSprite(PrincessPSpritesheet, new Vector2(100, 100), Color.White)
             
             //Load Starting Objects
             #region
@@ -890,8 +904,10 @@ namespace Platformer
             if (screen == Gamescreen.Maingame)
             {
                 MainCharacter.UpdateAnimation(gameTime);
-                enemy.UpdateAnimation(gameTime);
-                enemy.EnemyUpdate(gameTime);
+
+                    enemy.UpdateAnimation(gameTime);
+                    enemy.EnemyUpdate(gameTime);
+
                 MainCharacter.CheckCollision(levels[currentWorld][currentLevel].Platforms);
 
                 //Assign character traits>
@@ -914,10 +930,36 @@ namespace Platformer
                         break;
                 }
 
-                
-                for(int i = 0; i <= LevelSkipKeys.Length; i++)
+                //Set start positions
+                #region
+                levels[World.Land][0].StartPosition = new Vector2(27, 404);
+                levels[World.Land][1].StartPosition = new Vector2(50, 413);
+                levels[World.Land][2].StartPosition = new Vector2(45, 422);
+                levels[World.Land][3].StartPosition = new Vector2(51, 440);
+                levels[World.Land][4].StartPosition = new Vector2(180, 236);
+                levels[World.Land][5].StartPosition = new Vector2(26, 217);
+                levels[World.Land][6].StartPosition = new Vector2(44, 415);
+                levels[World.Land][7].StartPosition = new Vector2(32, 161);
+                levels[World.Land][8].StartPosition = new Vector2(19, 427);
+                levels[World.Land][9].StartPosition = new Vector2(95, 111);
+                levels[World.Land][10].StartPosition = new Vector2(29, 205);
+                levels[World.Land][11].StartPosition = new Vector2(209, 295);
+                levels[World.Land][12].StartPosition = new Vector2(30, 224);
+                levels[World.Land][13].StartPosition = new Vector2(111, 438);
+
+                levels[World.Underwater][0].StartPosition = new Vector2(913, 448);
+                levels[World.Underwater][1].StartPosition = new Vector2(27, 410);
+                levels[World.Underwater][2].StartPosition = new Vector2(34, 45);
+                #endregion
+
+
+                for (int i = 0; i <= 13 /*number of levels - 1*/; i++)
                 {
-                   
+                   if(ks.IsKeyDown(LevelSkipKeys[i]))
+                    {
+                        currentLevel = i;
+                        Reset();
+                    }
                 }
 
 
@@ -970,27 +1012,7 @@ namespace Platformer
                 }
 
 
-                //Set start positions
-                #region
-                levels[World.Land][0].StartPosition = new Vector2(27, 404);
-                levels[World.Land][1].StartPosition = new Vector2(50, 413);
-                levels[World.Land][2].StartPosition = new Vector2(45, 422);
-                levels[World.Land][3].StartPosition = new Vector2(51, 440);
-                levels[World.Land][4].StartPosition = new Vector2(180, 236);
-                levels[World.Land][5].StartPosition = new Vector2(26, 217);
-                levels[World.Land][6].StartPosition = new Vector2(44, 415);
-                levels[World.Land][7].StartPosition = new Vector2(32, 161);
-                levels[World.Land][8].StartPosition = new Vector2(19, 427);
-                levels[World.Land][9].StartPosition = new Vector2(95, 111);
-                levels[World.Land][10].StartPosition = new Vector2(29, 205);
-                levels[World.Land][11].StartPosition = new Vector2(209, 295);
-                levels[World.Land][12].StartPosition = new Vector2(30, 224);
-                levels[World.Land][13].StartPosition = new Vector2(111, 438);
-
-                levels[World.Underwater][0].StartPosition = new Vector2(913, 448);
-                levels[World.Underwater][1].StartPosition = new Vector2(27, 410);
-                levels[World.Underwater][2].StartPosition = new Vector2(34, 45);
-                #endregion
+                
 
                 if (MainCharacter.Y >= 489 || MainCharacter.Died)
                 {
@@ -1006,14 +1028,7 @@ namespace Platformer
                     if (currentLevel < levels[currentWorld].Count)
                     {
                         currentLevel++;
-                        fireballhitcount = 0;
-                        MainCharacter.Scale = Vector2.One;
-                        MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
-                        enemy.isDead = false;
-                        hasfirepower = false;
-                        enemy.isDead = false;
-                        hasJumpBoost = false;
-                        MoreLives = false;
+                        Reset();
                         //Have all the level's item return to non-selected status
                         if (levels[currentWorld][currentLevel].hasPowerup)
                         {
@@ -1043,39 +1058,14 @@ namespace Platformer
 
                 if (ks.IsKeyDown(Keys.R))
                 {
-                    fireballhitcount = 0;
-                    gameisover = false;
-                    MainCharacter.Scale = Vector2.One;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
-                    enemy.isDead = false;
-                    hasfirepower = false;
-                    enemy.isDead = false;
-                    MoreLives = false;
+                    Reset();
                 }
-                /*if (ks.IsKeyDown(Keys.B))
-                {
-                    currentLevel.Door.Scale += new Vector2(0.005f, .01f);
-                    currentLevel.Door.Y--;
-                }
-                if(ks.IsKeyDown(Keys.V))
-                {
-                    currentLevel.Door.Scale -= new Vector2(0.005f, .01f);
-                    currentLevel.Door.Y++;
-                }*/
-
-
-                // 
-
+            
                 if (restartbutton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     //restarts here
-                    fireballhitcount = 0;
-                    MainCharacter.Scale = Vector2.One;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
-                    enemy.isDead = false;
-                    hasfirepower = false;
-                    enemy.isDead = false;
-                    MoreLives = false;
+                    Reset();
+
                     if (levels[currentWorld][currentLevel].hasPowerup)
                     {
                         foreach (Item powerup in LevelPowerups[levels[currentWorld][currentLevel]])
@@ -1109,23 +1099,26 @@ namespace Platformer
                 //loop through all marios fireballs and check if any of them collide with enemies
                 //if collide remove both
 
-                for (int i = 0; i < MainCharacter.fireballs.Count; i++)
+                if (levels[currentWorld][currentLevel] == levels[World.Land][3] && levels[currentWorld][currentLevel] == levels[World.Land][12])
                 {
-                    if (MainCharacter.fireballs[i].HitBox.Intersects(enemy.HitBox) && canShootEnemy == true)
+                    for (int i = 0; i < MainCharacter.fireballs.Count; i++)
                     {
-                        fireballhitcount++;
-                        MainCharacter.fireballs.Remove(MainCharacter.fireballs[i]);
+                        if (MainCharacter.fireballs[i].HitBox.Intersects(enemy.HitBox) && canShootEnemy == true)
+                        {
+                            fireballhitcount++;
+                            MainCharacter.fireballs.Remove(MainCharacter.fireballs[i]);
+
+                        }
+                    }
+                    for (int i = 0; i < enemy.fireballs.Count; i++)
+                    {
+                        if (enemy.fireballs[i].HitBox.Intersects(MainCharacter.HitBox))
+                        {
+                            MCLives--;
+                            enemy.fireballs.Remove(enemy.fireballs[i]);
+                        }
 
                     }
-                }
-                for(int i = 0; i < enemy.fireballs.Count; i++)
-                {
-                    if (enemy.fireballs[i].HitBox.Intersects(MainCharacter.HitBox))
-                    {
-                        MCLives--;
-                        enemy.fireballs.Remove(enemy.fireballs[i]);
-                    }
-                    
                 }
                 if (fireballhitcount >= maxFireballHits)
                 {
@@ -1279,11 +1272,9 @@ namespace Platformer
                     //restarts here
                     MCLives = 100;
                     currentLevel = 0;
-                    MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
-                    MainCharacter.Scale = Vector2.One;
-                    gameisover = false;
+                    Reset();
                     screen = Gamescreen.Maingame;
-                    MoreLives = false;
+                    
                 }
             }
             if (screen == Gamescreen.MainMenu)
