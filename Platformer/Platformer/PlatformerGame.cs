@@ -32,6 +32,7 @@ namespace Platformer
 
         Fix:
         - Be able to fall smoothly
+        - Enemy fireballs don't sense intersection with the MC, and vice versa with MC fireballs
 
 
             */
@@ -84,6 +85,8 @@ namespace Platformer
         Dictionary<AnimationType, List<Frame>> SpongebobAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<AnimationType, List<Frame>> PatrickAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<AnimationType, List<Frame>> CoinAnimations = new Dictionary<AnimationType, List<Frame>>();
+        Dictionary<AnimationType, List<Frame>> PrincessPAnimations = new Dictionary<AnimationType, List<Frame>>();
+        Dictionary<AnimationType, List<Frame>> TurtleAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<Level, List<Item>> LevelPowerups = new Dictionary<Level, List<Item>>();
         Keys[] LevelSkipKeys = { Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.D7, Keys.D8, Keys.D9, Keys.D0, Keys.Q, Keys.W, Keys.E, Keys.T };
         LevelMap currentMap;
@@ -92,6 +95,7 @@ namespace Platformer
         Enemy enemy;
         Character MainCharacter;
         AnimatedSprite PrincessP;
+        AnimatedSprite FlyingTurtle;
         Sprite StartScreenBackground;
         Sprite flower;
         MouseState lastMs;
@@ -366,6 +370,26 @@ namespace Platformer
 
             #endregion
 
+            #region Princess Peach Animations
+            List<Frame> PrincessPFrames = new List<Frame>();
+            PrincessPFrames.Add(new Frame(new Rectangle(123, 262, 36, 51), new Vector2(36 / 2, 51 / 2)));
+            PrincessPFrames.Add(new Frame(new Rectangle(169, 261, 31, 52), new Vector2(31 / 2, 52 / 2)));
+            PrincessPFrames.Add(new Frame(new Rectangle(204, 262, 30, 53), new Vector2(30 / 2, 53 / 2)));
+
+            PrincessPAnimations.Add(AnimationType.Idle, PrincessPFrames);
+
+            #endregion
+
+            #region Flying Turtle Animations
+            List<Frame> TurtleFrames = new List<Frame>();
+            TurtleFrames.Add(new Frame(new Rectangle(242, 257, 35, 38), new Vector2(35 / 2, 38 / 2)));
+            TurtleFrames.Add(new Frame(new Rectangle(279, 255, 34, 39), new Vector2(34 / 2, 39 / 2)));
+
+            TurtleAnimations.Add(AnimationType.Idle, TurtleFrames);
+
+            #endregion
+
+            
             //Run-time variables
             #region
             position = new Vector2(40, 390);
@@ -378,7 +402,8 @@ namespace Platformer
             MainCharacter = new Character(spriteSheet, position, PatrickAnimations, Content.Load<Texture2D>("Fireball_1"));
 
 
-            //PrincessP = new AnimatedSprite(PrincessPSpritesheet, new Vector2(100, 100), Color.White)
+            PrincessP = new AnimatedSprite(PrincessPSpritesheet, new Vector2(100, 300), Color.White, PrincessPFrames);
+            FlyingTurtle = new AnimatedSprite(spriteSheet, new Vector2(100, 100), Color.White, TurtleFrames);
             
             //Load Starting Objects
             #region
@@ -894,10 +919,24 @@ namespace Platformer
 
             ms = Mouse.GetState();
 
+            TimeSpan PrincessPRunning = TimeSpan.FromMilliseconds(500);
+            PrincessPRunning = TimeSpan.FromMilliseconds(0);
+
             //Shortcut to Underwater Level Menu
             if (ks.IsKeyDown(Keys.L))
             {
                 screen = Gamescreen.UnderwaterLevelMenu;
+            }
+
+            if(screen == Gamescreen.StartScreen)
+            {
+                PrincessP.UpdateAnimation(gameTime);
+                
+                if(PrincessPRunning <= gameTime.ElapsedGameTime)
+                {
+                    PrincessP.X += 1;
+                }
+
             }
 
             //If we're playing the game, then...
@@ -1118,6 +1157,10 @@ namespace Platformer
                             enemy.fireballs.Remove(enemy.fireballs[i]);
                         }
 
+                    }
+                    if(MainCharacter.HitBox.Intersects(enemy.HitBox))
+                    {
+                        enemy.isDead = true;
                     }
                 }
                 if (fireballhitcount >= maxFireballHits)
@@ -1434,7 +1477,6 @@ namespace Platformer
             //    LevelMenuBg.Draw(spriteBatch);
             //}
 
-
             if (screen == Gamescreen.Maingame)
             {
                 levels[currentWorld][currentLevel].Draw(spriteBatch);
@@ -1496,6 +1538,8 @@ namespace Platformer
                 StartScreenBackground.Draw(spriteBatch);
                 PlayButton.Draw(spriteBatch);
                 spriteBatch.DrawString(font2, string.Format("Mario Platformer"), new Vector2(275, 200), Color.White);
+                PrincessP.Draw(spriteBatch);
+                FlyingTurtle.Draw(spriteBatch);
             }
             if (screen == Gamescreen.KindOfLevelMenu)
             {

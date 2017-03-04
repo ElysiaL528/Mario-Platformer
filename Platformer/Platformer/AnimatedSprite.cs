@@ -33,7 +33,7 @@ namespace Platformer
         public List<Fireball> fireballs { get; }
         public bool canShoot = true;
         int _currentframe;
-        public AnimatedSprite(Texture2D img, Vector2 pos, Color color, List<Frame> animation, bool isEnemy)
+        public AnimatedSprite(Texture2D img, Vector2 pos, Color color, List<Frame> animation)
             : base(img, pos, animation[0].SourceRectangle, color)
         {
             _animation = animation;

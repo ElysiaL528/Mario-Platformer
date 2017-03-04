@@ -83,7 +83,7 @@ namespace Platformer
 
         
         public Character(Texture2D texture, Vector2 position, Dictionary<AnimationType, List<Frame>> animations, Texture2D fireballImage)
-            : base(texture, position, Color.White, animations[AnimationType.Idle], false)
+            : base(texture, position, Color.White, animations[AnimationType.Idle])
         {
             fireballs = new List<Fireball>();
             pixel = new Texture2D(texture.GraphicsDevice, 1, 1);
@@ -210,7 +210,6 @@ namespace Platformer
                     fireballs.Add(newFireball);
                     fireballs[fireballs.Count - 1].Effects = SpriteEffects.FlipHorizontally;
                     fireballs[fireballs.Count - 1].Speed = new Vector2(-10, 0);
-
                 }
                 canShoot = false;
                 TimeSinceLastShot = TimeSpan.Zero;

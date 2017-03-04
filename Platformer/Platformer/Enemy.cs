@@ -28,7 +28,7 @@ namespace Platformer
 
 
         public Enemy(Texture2D texture, Vector2 position, Dictionary<AnimationType, List<Frame>> animations, Texture2D fireballImage, EnemyMovement movement, int MaxCoordinate, int MinCoordinate)
-            : base(texture, position, Color.White, animations[AnimationType.Idle], false)
+            : base(texture, position, Color.White, animations[AnimationType.Idle])
         {
             _fireballImage = fireballImage;
             fireballs = new List<Fireball>();
