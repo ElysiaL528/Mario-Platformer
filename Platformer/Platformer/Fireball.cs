@@ -10,6 +10,7 @@ namespace Platformer
     public class Fireball : Sprite
     {
         Vector2 _speed;
+        Rectangle Hitbox;
         public Vector2 Speed
         {
             get
@@ -26,6 +27,8 @@ namespace Platformer
             base(image, pos, sourceRectangle, tint)
         {
             _speed = speed;
+            Hitbox.X = (int)X;
+            Hitbox.Y = (int)Y;
         }
         public Fireball(Texture2D image, Vector2 pos, Color tint, Vector2 speed) :
             base(image, pos, tint)
@@ -35,7 +38,12 @@ namespace Platformer
 
         public void Update()
         {
+            Hitbox.X = (int)X;
+            Hitbox.Y = (int)Y;
             _location += _speed;
+
+            
+            
         }
         
 

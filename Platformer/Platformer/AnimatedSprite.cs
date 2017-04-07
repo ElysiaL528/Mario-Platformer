@@ -18,7 +18,8 @@ namespace Platformer
             Falling,
             Crouching,
             Punching,
-            Turning
+            Turning,
+            ThrowingFireball
         }
 
         public List<Frame> _animation;

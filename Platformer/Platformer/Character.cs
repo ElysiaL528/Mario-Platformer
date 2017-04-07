@@ -188,7 +188,7 @@ namespace Platformer
             currentAnimation = AnimationType.Idle;
 
             if (TimeSinceLastShot >= ShotDelay)
-            {
+              {
                 canShoot = true;
             }
             else
@@ -198,6 +198,11 @@ namespace Platformer
 
             if (keyboard.IsKeyDown(Keys.Space) && canShoot == true)
             {
+                if(currentCharacterName == CharacterName.Mario)
+                {
+                    currentAnimation = AnimationType.ThrowingFireball;
+                    _animationtime = TimeSpan.FromMilliseconds(200 / 3);
+                }
                 Fireball newFireball = new Fireball(_fireballImage, new Vector2(_location.X, _location.Y - HitBox.Height), Color.White, new Vector2(10, 0));
                 newFireball.Scale = Scale;
                 if (_effects == SpriteEffects.None)

@@ -140,5 +140,11 @@ namespace Platformer
             spritebatch.Draw(_texture, _location, _sourceRectangle, _color, _rotation, Origin, Scale, _effects, _layerDepth);
             //spritebatch.Draw(_texture, HitBox, Color.Red);
         }
+
+        public void UpdateHitbox(Rectangle hitbox)
+        {
+            hitbox.X = (int)X;
+            hitbox.Y = (int)Y;
+        }
     }
 }
