@@ -17,7 +17,7 @@ namespace Platformer
 
     public enum World
     {
-        Land,
-        Underwater
+        Land = 0,
+        Underwater = 1
     }
 }

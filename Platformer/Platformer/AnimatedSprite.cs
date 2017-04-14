@@ -31,6 +31,8 @@ namespace Platformer
         TimeSpan ShotDelay = TimeSpan.FromMilliseconds(200);
 
         public bool IsEnemy { get; set; }
+
+        public bool collected = false;
         public List<Fireball> fireballs { get; }
         public bool canShoot = true;
         int _currentframe;

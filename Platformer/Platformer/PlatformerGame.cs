@@ -13,7 +13,7 @@ using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: Create & animate coins
+    /* To do: Set coin positions in each level
      * - 
             - Moving Platforms
             - Slow shift function in ULevels
@@ -64,10 +64,13 @@ namespace Platformer
         bool canShootEnemy = false;
         bool hasDied = false;
         bool intersectingFireball = false;
+        int CollectedCoins = 0;
+        int TotalCoins = 0;
         MouseState ms;
         KeyboardState lastKS;
         SpriteFont font;
         SpriteFont font2;
+        SpriteFont coinCounter;
         Sprite GameOverScreen;
         Sprite LevelMenuBg;
         Item pizza;
@@ -188,6 +191,12 @@ namespace Platformer
             hasfirepower = false;
             enemy.isDead = false;
             MoreLives = false;
+            foreach(AnimatedSprite coin in levels[currentWorld][currentLevel].CoinList)
+            {
+                coin.collected = false;
+            }
+            TotalCoins = TotalCoins - CollectedCoins;
+            CollectedCoins = 0;
         }
 
         protected override void LoadContent()
@@ -201,6 +210,7 @@ namespace Platformer
             PrincessPSpritesheet = Content.Load<Texture2D>("Mario Sprite Sheet");
             font = Content.Load<SpriteFont>("SpriteFont1");
             font2 = Content.Load<SpriteFont>("Font2");
+            coinCounter = Content.Load<SpriteFont>("coinCounter");
             TitleScreen = Content.Load<Texture2D>("PlatformerTitleScreen");
 
             #region Mario Animations
@@ -283,6 +293,7 @@ namespace Platformer
             SpongebobIdle.Add(new Frame(new Rectangle(204, 1, 37, 43), new Vector2(37 / 2, 43 / 2)));
 
             SpongebobAnimations.Add(AnimationType.Idle, SpongebobIdle);
+            SpongebobAnimations.Add(AnimationType.ThrowingFireball, SpongebobIdle);
 
             List<Frame> SpongebobWalking = new List<Frame>();
             SpongebobWalking.Add(new Frame(new Rectangle(1, 95, 47, 48), new Vector2(47 / 2, 48 / 2)));
@@ -328,6 +339,7 @@ namespace Platformer
             PatrickIdle.Add(new Frame(new Rectangle(217, 2, 31, 50), new Vector2(31 / 2, 50 / 2)));
 
             PatrickAnimations.Add(AnimationType.Idle, PatrickIdle);
+            PatrickAnimations.Add(AnimationType.ThrowingFireball, PatrickIdle);
 
             List<Frame> PatrickFalling = new List<Frame>();
             PatrickFalling.Add(new Frame(new Rectangle(147, 167, 40, 50), new Vector2(40 / 2, 50 / 2)));
@@ -562,8 +574,11 @@ namespace Platformer
 
             var lvl0coins = new List<AnimatedSprite>()
             {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(113, 330), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(290, 277), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(470, 230), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(645, 190), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(800, 105), Color.White, CoinFrames)
         };
                     
 
@@ -589,8 +604,12 @@ namespace Platformer
 
             List<AnimatedSprite> lvl1coins = new List<AnimatedSprite>()
             {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(180, 363), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(500, 335), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(520, 335), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(790, 310), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(810, 310), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(830, 310), Color.White, CoinFrames)
         };
 
             levels[World.Land].Add(new Level(level0_1Platforms, new List<Item>(), lvl1coins, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(940, 368), Color.White) { Scale = new Vector2(.75f) }));
@@ -616,8 +635,9 @@ namespace Platformer
 
             List<AnimatedSprite> lvl2coins = new List<AnimatedSprite>()
             {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(565, 350), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(670, 350), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(840, 245), Color.White, CoinFrames),
             };
 
             enemy.isDead = false;
@@ -1009,11 +1029,7 @@ namespace Platformer
             {
                 screen = Gamescreen.UnderwaterLevelMenu;
             }
-
-                foreach (AnimatedSprite coin in Coins)
-                {
-                    coin.UpdateAnimation(gameTime);
-                }
+            
 
             if(screen == Gamescreen.StartScreen)
             {
@@ -1021,7 +1037,7 @@ namespace Platformer
                 PrincessP.UpdateAnimation(gameTime);
                 MarioSprite.UpdateAnimation(gameTime);
                 
-                
+
                 if (PrincessP.X <= 800)
                 {
                     PrincessP.X += 3;
@@ -1060,6 +1076,20 @@ namespace Platformer
                     enemy.EnemyUpdate(gameTime);
 
                 MainCharacter.CheckCollision(levels[currentWorld][currentLevel].Platforms);
+                
+                foreach (AnimatedSprite coin in levels[currentWorld][currentLevel].CoinList)
+                {
+                    coin.UpdateAnimation(gameTime);
+                    if(MainCharacter.HitBox.Intersects(coin.HitBox))
+                    {
+                        if (!coin.collected)
+                        {
+                            coin.collected = true;
+                            CollectedCoins++;
+                            TotalCoins++;
+                        }
+                    }
+                }
 
                 //Assign character traits>
 
@@ -1603,8 +1633,14 @@ namespace Platformer
 
                 foreach (AnimatedSprite coin in levels[currentWorld][currentLevel].CoinList)
                 {
-                    coin.Draw(spriteBatch);
+                    if (!coin.collected)
+                    {
+                        coin.Draw(spriteBatch);
+                    }
                 }
+
+                spriteBatch.DrawString(coinCounter, string.Format("Coins: {0}", TotalCoins), new Vector2(500, 0), Color.White);
+                
             }
 
             if (screen == Gamescreen.LandLevelMenu)

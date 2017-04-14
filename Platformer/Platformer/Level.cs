@@ -55,12 +55,7 @@ namespace Platformer
                 Platforms[i].Draw(spriteBatch);
             }
             Door.Draw(spriteBatch);
-
-            foreach (AnimatedSprite coin in CoinList)
-            {
-                coin.Draw(spriteBatch);
-            }
-
+            
             foreach (var item in Items)
             {
                 item.Draw(spriteBatch);
