@@ -13,7 +13,7 @@ using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: Set coin positions in each level
+    /* To do: Work on drawing Spongebob (a SelectedItem)
      * - 
             - Moving Platforms
             - Slow shift function in ULevels
@@ -28,6 +28,8 @@ namespace Platformer
             - Minigames
             - Don't be able to change speed in midair
             - Fix glitch in level 4
+            - Be able to buy items in the shop
+            - Set coin positions in each level
             
 
 
@@ -64,6 +66,7 @@ namespace Platformer
         bool canShootEnemy = false;
         bool hasDied = false;
         bool intersectingFireball = false;
+        bool restarted = false;
         int CollectedCoins = 0;
         int TotalCoins = 0;
         MouseState ms;
@@ -138,7 +141,7 @@ namespace Platformer
         Button ShopButton;
         Button ExitButton;
         Button MarioButton;
-        Button SpongebobButton;
+        SelectedItem SpongebobButton;
         Button PatrickButton;
         Button PlayButton;
         Button LandLevelsButton;
@@ -195,7 +198,11 @@ namespace Platformer
             {
                 coin.collected = false;
             }
-            TotalCoins = TotalCoins - CollectedCoins;
+            if(restarted)
+            {
+                TotalCoins = TotalCoins - CollectedCoins;
+            }
+            restarted = false;
             CollectedCoins = 0;
         }
 
@@ -521,7 +528,7 @@ namespace Platformer
             UnderwaterLevelsButton = new Button(Content.Load<Texture2D>("Underwater Levels_Button"), new Vector2(400, 100), Color.White);
             BackgroundButton = new Button(Content.Load<Texture2D>("ChooseBackgroundButton"), new Vector2(50, 300), Color.White);
             MarioButton = new Button(Content.Load<Texture2D>("MarioButton"), new Vector2(100, 100), Color.White);
-            SpongebobButton = new Button(Content.Load<Texture2D>("SpongebobButton"), new Vector2(250, 100), Color.White);
+            SpongebobButton = new SelectedItem(Content.Load<Texture2D>("SpongebobButton"), new Vector2(250, 100), Color.White, Content.Load<Texture2D>("Price_100"));
             PatrickButton = new Button(Content.Load<Texture2D>("PatrickButton"), new Vector2(400, 100), Color.White);
             #endregion
 
@@ -662,8 +669,8 @@ namespace Platformer
 
 
             var lvl3coins = new List<AnimatedSprite> {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(550, 30), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(550, 140), Color.White, CoinFrames)
                 };
             var items0_3 = new List<Item>();
             enemy.Position = new Vector2(500, 270);
@@ -1085,8 +1092,8 @@ namespace Platformer
                         if (!coin.collected)
                         {
                             coin.collected = true;
-                            CollectedCoins++;
-                            TotalCoins++;
+                            CollectedCoins += 10;
+                            TotalCoins += 10;
                         }
                     }
                 }
@@ -1201,6 +1208,8 @@ namespace Platformer
                     enemy.isDead = false;
                     hasfirepower = false;
                     enemy.isDead = false;
+                    restarted = true;
+                    Reset();
                     MCLives--;
                 }
 
@@ -1229,8 +1238,7 @@ namespace Platformer
                     }
                     else
                     {
-                        //finished world
-                        //make them go to main menu
+                        screen = Gamescreen.KindOfLevelMenu;
                     }
                 }
 
@@ -1240,12 +1248,13 @@ namespace Platformer
                 if (ks.IsKeyDown(Keys.R))
                 {
                     Reset();
+                    restarted = true;
                 }
             
                 if (restartbutton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
-                    //restarts here
                     Reset();
+                    restarted = true;
 
                     if (levels[currentWorld][currentLevel].hasPowerup)
                     {
@@ -1486,6 +1495,7 @@ namespace Platformer
             if (screen == Gamescreen.Shop)
             {
                 ExitButton = new Button(Content.Load<Texture2D>("ExitButton"), new Vector2(400, 400), Color.White);
+                /*
                 if (character != "Mario")
                 {
                     MarioButton = new Button(Content.Load<Texture2D>("MarioButton"), new Vector2(100, 100), Color.DarkGray);
@@ -1529,7 +1539,7 @@ namespace Platformer
                     character = "Patrick";
 
                 }
-
+                */
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = Gamescreen.Maingame;
