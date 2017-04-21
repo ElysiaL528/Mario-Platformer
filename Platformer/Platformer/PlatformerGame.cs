@@ -68,7 +68,7 @@ namespace Platformer
         bool intersectingFireball = false;
         bool restarted = false;
         int CollectedCoins = 0;
-        int TotalCoins = 0;
+        int TotalCollectedCoins = 0;
         MouseState ms;
         KeyboardState lastKS;
         SpriteFont font;
@@ -140,9 +140,9 @@ namespace Platformer
         Button lvl013button;
         Button ShopButton;
         Button ExitButton;
-        Button MarioButton;
+        SelectedItem MarioButton;
         SelectedItem SpongebobButton;
-        Button PatrickButton;
+        SelectedItem PatrickButton;
         Button PlayButton;
         Button LandLevelsButton;
         Button UnderwaterLevelsButton;
@@ -200,7 +200,7 @@ namespace Platformer
             }
             if(restarted)
             {
-                TotalCoins = TotalCoins - CollectedCoins;
+                TotalCollectedCoins = TotalCollectedCoins - CollectedCoins;
             }
             restarted = false;
             CollectedCoins = 0;
@@ -527,9 +527,9 @@ namespace Platformer
             LandLevelsButton = new Button(Content.Load<Texture2D>("Land Levels_Button"), new Vector2(100, 100), Color.White);
             UnderwaterLevelsButton = new Button(Content.Load<Texture2D>("Underwater Levels_Button"), new Vector2(400, 100), Color.White);
             BackgroundButton = new Button(Content.Load<Texture2D>("ChooseBackgroundButton"), new Vector2(50, 300), Color.White);
-            MarioButton = new Button(Content.Load<Texture2D>("MarioButton"), new Vector2(100, 100), Color.White);
-            SpongebobButton = new SelectedItem(Content.Load<Texture2D>("SpongebobButton"), new Vector2(250, 100), Color.White, Content.Load<Texture2D>("Price_100"));
-            PatrickButton = new Button(Content.Load<Texture2D>("PatrickButton"), new Vector2(400, 100), Color.White);
+            MarioButton = new SelectedItem(Content.Load<Texture2D>("MarioButton"), new Vector2(100, 100), Color.White, Content.Load<Texture2D>("Price_100"), 100);
+            SpongebobButton = new SelectedItem(Content.Load<Texture2D>("SpongebobButton"), new Vector2(250, 100), Color.White, Content.Load<Texture2D>("Price_100"), 100);
+            PatrickButton = new SelectedItem(Content.Load<Texture2D>("PatrickButton"), new Vector2(400, 100), Color.White, Content.Load<Texture2D>("Price_100"), 100);
             #endregion
 
             //Instance Variables
@@ -564,6 +564,11 @@ namespace Platformer
             invert = new Item(Content.Load<Texture2D>("invert"), new Vector2(800, 120), Color.White, PowerupType.Invert);
             reInvert = new Item(Content.Load<Texture2D>("re-invert"), new Vector2(500, 189), Color.White, PowerupType.ReInvert);
             HealthPowerup = new Item(Content.Load<Texture2D>("Caduceus"), new Vector2(500, 290), Color.White, PowerupType.Health);
+
+            SpongebobButton.isLocked = true;
+            PatrickButton.isLocked = true;
+            MarioButton.isLocked = false;
+            MarioButton.isSelected = true;
 
             //Draws the platforms for each level. 0-1 means on land and level 1, 1-2 means underwater. First number can go from 0 to 1, second number can go from 0 to 13.
 
@@ -1036,8 +1041,8 @@ namespace Platformer
             {
                 screen = Gamescreen.UnderwaterLevelMenu;
             }
-            
 
+            SpongebobButton.CollectedCoins = TotalCollectedCoins;
             if(screen == Gamescreen.StartScreen)
             {
                 FlyingTurtle.UpdateAnimation(gameTime);
@@ -1093,7 +1098,7 @@ namespace Platformer
                         {
                             coin.collected = true;
                             CollectedCoins += 10;
-                            TotalCoins += 10;
+                            TotalCollectedCoins += 10;
                         }
                     }
                 }
@@ -1495,51 +1500,7 @@ namespace Platformer
             if (screen == Gamescreen.Shop)
             {
                 ExitButton = new Button(Content.Load<Texture2D>("ExitButton"), new Vector2(400, 400), Color.White);
-                /*
-                if (character != "Mario")
-                {
-                    MarioButton = new Button(Content.Load<Texture2D>("MarioButton"), new Vector2(100, 100), Color.DarkGray);
-                }
-                else if (character == "Mario")
-                {
-                    MarioButton = new Button(Content.Load<Texture2D>("MarioButton"), new Vector2(100, 100), Color.White);
-                }
-                if (character != "Spongebob")
-                {
-                    SpongebobButton = new Button(Content.Load<Texture2D>("SpongebobButton"), new Vector2(250, 100), Color.DarkGray);
-                }
-                else if (character == "Spongebob")
-                {
-                    SpongebobButton = new Button(Content.Load<Texture2D>("SpongebobButton"), new Vector2(250, 100), Color.White);
-                }
-                if (character != "Patrick")
-                {
-                    PatrickButton = new Button(Content.Load<Texture2D>("PatrickButton"), new Vector2(400, 100), Color.DarkGray);
-                }
-                else if (character == "Patrick")
-                {
-                    PatrickButton = new Button(Content.Load<Texture2D>("PatrickButton"), new Vector2(400, 100), Color.White);
-                }
-                if (SpongebobButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    character = "Spongebob";
-                }
-                else if (MarioButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    character = "Mario";
 
-                }
-                else if (MarioButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    character = "Mario";
-
-                }
-                else if (PatrickButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
-                {
-                    character = "Patrick";
-
-                }
-                */
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
                 {
                     screen = Gamescreen.Maingame;
@@ -1549,6 +1510,9 @@ namespace Platformer
                 {
                     screen = Gamescreen.ChooseBackgroundMenu;
                 }
+                SpongebobButton.Update();
+                PatrickButton.Update();
+                MarioButton.Update();
             }
             if (screen == Gamescreen.StartScreen)
             {
@@ -1649,7 +1613,7 @@ namespace Platformer
                     }
                 }
 
-                spriteBatch.DrawString(coinCounter, string.Format("Coins: {0}", TotalCoins), new Vector2(500, 0), Color.White);
+                spriteBatch.DrawString(coinCounter, string.Format("Coins: {0}", TotalCollectedCoins), new Vector2(500, 0), Color.White);
                 
             }
 
