@@ -45,6 +45,7 @@ namespace Platformer
             {
                 spriteBatch.Draw(_texture, _location, _sourceRectangle, Color.White, _rotation, Origin, Scale, _effects, _layerDepth);
             }
+            
         }
 
         public void Update()
@@ -88,7 +89,7 @@ namespace Platformer
             if(IsClicked && canAfford && isLocked)
             {
                 isLocked = false;
-                isSelected = true;
+                isSelected = false;
             }
             if(IsClicked)
             {

@@ -13,7 +13,7 @@ using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: Work on drawing Spongebob (a SelectedItem)
+    /* To do: 
      * - 
             - Moving Platforms
             - Slow shift function in ULevels
@@ -30,6 +30,7 @@ namespace Platformer
             - Fix glitch in level 4
             - Be able to buy items in the shop
             - Set coin positions in each level
+            - Disable any powerup functions every time the level resets
             
 
 
@@ -197,6 +198,10 @@ namespace Platformer
             foreach(AnimatedSprite coin in levels[currentWorld][currentLevel].CoinList)
             {
                 coin.collected = false;
+            }
+            foreach(Item powerup in levels[currentWorld][currentLevel].Items)
+            {
+                powerup.isSelected = false;
             }
             if(restarted)
             {
@@ -699,8 +704,9 @@ namespace Platformer
             };
 
             var lvl4coins = new List<AnimatedSprite> {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(320, 460), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(590, 460), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(455, 235), Color.White, CoinFrames)
                 };
 
             levels[World.Land].Add(new Level(level0_4Platforms, new List<Item>(), lvl4coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 150)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
@@ -727,8 +733,9 @@ namespace Platformer
             items0_5.Add(portal2);
 
             var lvl5coins = new List<AnimatedSprite> {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(200, 150), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(400, 150), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(600, 150), Color.White, CoinFrames)
                 };
 
             levels[World.Land].Add(new Level(level0_5platforms, items0_5, lvl5coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 465)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
@@ -741,11 +748,9 @@ namespace Platformer
             var level0_6platforms = new List<Platform>()
             {
                 new Platform(platformImage, new Vector2(1, 440)) {Size =  new Vector2(280, 45)},
-                new Platform(platformImage, new Vector2(357, 349)) {Size =  new Vector2(83, 16)},
-                new Platform(platformImage, new Vector2(358, 229)) {Size = new Vector2(83, 16)},
+                new Platform(platformImage, new Vector2(357, 349)) {Size =  new Vector2(235, 16)},
+                new Platform(platformImage, new Vector2(358, 229)) {Size = new Vector2(235, 16)},
                 new Platform(platformImage, new Vector2(355, 142)) {Size =  new Vector2(235, 12)},
-                new Platform(platformImage, new Vector2(494, 229)) {Size =  new Vector2(88, 15)},
-                new Platform(platformImage, new Vector2(495, 350)) {Size =  new Vector2(88, 15)},
                 new Platform(platformImage, new Vector2(624, 439)) {Size =  new Vector2(374, 46)},
                 new Platform(platformImage, new Vector2(439, 141)) {Size =  new Vector2(56, 347)}
             };
@@ -755,8 +760,10 @@ namespace Platformer
             items0_6.Add(HealthPowerup);
 
             var lvl6coins = new List<AnimatedSprite> {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(400, 330), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(400, 210), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(470, 120), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(550, 210), Color.White, CoinFrames)
                 };
 
             levels[World.Land].Add(new Level(level0_6platforms, items0_6, lvl6coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 438)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
@@ -777,8 +784,8 @@ namespace Platformer
             items0_7.Add(reInvert);
 
             var lvl7coins = new List<AnimatedSprite> {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(300, 300), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(300, 350), Color.White, CoinFrames)
                 };
 
             levels[World.Land].Add(new Level(level0_7platforms, items0_7, lvl7coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(500, 447)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
@@ -796,8 +803,9 @@ namespace Platformer
             };
 
             var lvl8coins = new List<AnimatedSprite> {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(300, 320), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(500, 220), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(750, 150), Color.White, CoinFrames)
                 };
             levels[World.Land].Add(new Level(level0_8platforms, new List<Item>(), lvl8coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(940, 110)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
             levels[World.Land][8].hasPowerup = false;
@@ -827,8 +835,10 @@ namespace Platformer
             items0_9.Add(portal2);
 
             var lvl9coins = new List<AnimatedSprite> {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(470, 100), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(550, 100), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(630, 100), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(710, 100), Color.White, CoinFrames)
                 };
 
 
@@ -850,8 +860,12 @@ namespace Platformer
             };
 
             var lvl10coins = new List<AnimatedSprite> {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(290, 210), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(397, 210), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(510, 210), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(620, 210), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(730, 210), Color.White, CoinFrames),
+
                 };
 
             levels[World.Land].Add(new Level(level0_10platforms, new List<Item>(), lvl10coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(880, 215)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
@@ -874,8 +888,9 @@ namespace Platformer
             items0_11.Add(HealthPowerup);
 
             var lvl11coins = new List<AnimatedSprite> {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(750, 400), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(800, 350), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(850, 300), Color.White, CoinFrames)
                 };
 
             levels[World.Land].Add(new Level(level0_11platforms, items0_11, lvl11coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(700, 440)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
@@ -897,8 +912,12 @@ namespace Platformer
             items0_12.Add(HealthPowerup);
 
             var lvl12coins = new List<AnimatedSprite> {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(180, 340), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(300, 340), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(420, 340), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(540, 340), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(660, 340), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(780, 340), Color.White, CoinFrames)
                 };
 
             levels[World.Land].Add(new Level(level0_12platforms, items0_12, lvl12coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(900, 240)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
@@ -924,8 +943,13 @@ namespace Platformer
             };
 
             var lvl13coins = new List<AnimatedSprite> {
-                new AnimatedSprite(spriteSheet, new Vector2(10, 50), Color.White, CoinFrames),
-                new AnimatedSprite(spriteSheet, new Vector2(10, 80), Color.White, CoinFrames)
+                new AnimatedSprite(spriteSheet, new Vector2(100, 290), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(100, 160), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(280, 160), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(280, 290), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(630, 445), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(750, 110), Color.White, CoinFrames),
+                new AnimatedSprite(spriteSheet, new Vector2(700, 219), Color.White, CoinFrames)
                 };
 
             levels[World.Land].Add(new Level(level0_13platforms, new List<Item>(), lvl13coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(660, 120)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
@@ -1660,6 +1684,7 @@ namespace Platformer
                 PatrickButton.Draw(spriteBatch);
                 PlayButton.Draw(spriteBatch);
                 BackgroundButton.Draw(spriteBatch);
+                spriteBatch.DrawString(coinCounter, string.Format("Coins: {0}", TotalCollectedCoins), new Vector2(500, 0), Color.White);
             }
             if (screen == Gamescreen.StartScreen)
             {

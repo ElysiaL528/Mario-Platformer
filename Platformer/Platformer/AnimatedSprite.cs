@@ -82,7 +82,6 @@ namespace Platformer
                     }
                     else
                     {
-                        //fireballs.Add(new Fireball(_fireballImage, new Vector2(_location.X, _location.Y - HitBox.Height), Color.White, new Vector2(-10, 0)));
                         fireballs.Add(newFireball);
                         fireballs[fireballs.Count - 1].Effects = SpriteEffects.FlipHorizontally;
                         fireballs[fireballs.Count - 1].Speed = new Vector2(-10, 0);
