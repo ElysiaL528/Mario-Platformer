@@ -12,7 +12,7 @@ namespace Platformer
     {
         public bool isSelected;
         public bool isLocked = true;
-        public bool canAfford = true;
+        public bool canAfford = false;
         public Texture2D PriceImage;
         Texture2D PriceTexture;
         public Vector2 PricePosition;
@@ -22,14 +22,16 @@ namespace Platformer
         public int Price;
 
         MouseState lastms;
+        public int coins;
 
-        public SelectedItem(Texture2D img, Vector2 pos, Color color, Texture2D priceImage, int price)
+        public SelectedItem(Texture2D img, Vector2 pos, Color color, Texture2D priceImage, int price, int TotalCoins)
             :base(img, pos, color)
         {
             texture = img;
             tint = color;
             PriceImage = priceImage;
-            price = Price;
+            Price = price;
+            coins = TotalCoins;
         }
 
         public void Draw(SpriteBatch spriteBatch) 
@@ -77,25 +79,36 @@ namespace Platformer
             {
                 tint = Color.DarkGray;
             }
-
-            if(IsClicked && !isLocked)
+            
+            if (IsClicked && !isLocked)
             {
                 isSelected = true;
             }
-            if(CollectedCoins >= Price)
-            {
-                canAfford = true;
-            }
-            if(IsClicked && canAfford && isLocked)
-            {
-                isLocked = false;
-                isSelected = false;
-            }
+            
+            
             if(IsClicked)
             {
 
             }
 
         }
+
+        public void UnlockItem(int Coins)
+        {
+            coins = Coins;
+
+            if (coins >= Price)
+            {
+                canAfford = true;
+            }
+
+            isLocked = false;
+            isSelected = true;
+
+            coins = coins - Price;
+
+            Coins = coins;
+        }
+
     }
 }

@@ -29,7 +29,6 @@ namespace Platformer
             - Don't be able to change speed in midair
             - Fix glitch in level 4
             - Be able to buy items in the shop
-            - Set coin positions in each level
             - Disable any powerup functions every time the level resets
             
 
@@ -532,9 +531,9 @@ namespace Platformer
             LandLevelsButton = new Button(Content.Load<Texture2D>("Land Levels_Button"), new Vector2(100, 100), Color.White);
             UnderwaterLevelsButton = new Button(Content.Load<Texture2D>("Underwater Levels_Button"), new Vector2(400, 100), Color.White);
             BackgroundButton = new Button(Content.Load<Texture2D>("ChooseBackgroundButton"), new Vector2(50, 300), Color.White);
-            MarioButton = new SelectedItem(Content.Load<Texture2D>("MarioButton"), new Vector2(100, 100), Color.White, Content.Load<Texture2D>("Price_100"), 100);
-            SpongebobButton = new SelectedItem(Content.Load<Texture2D>("SpongebobButton"), new Vector2(250, 100), Color.White, Content.Load<Texture2D>("Price_100"), 100);
-            PatrickButton = new SelectedItem(Content.Load<Texture2D>("PatrickButton"), new Vector2(400, 100), Color.White, Content.Load<Texture2D>("Price_100"), 100);
+            MarioButton = new SelectedItem(Content.Load<Texture2D>("MarioButton"), new Vector2(100, 100), Color.White, Content.Load<Texture2D>("Price_100"), 100, TotalCollectedCoins);
+            SpongebobButton = new SelectedItem(Content.Load<Texture2D>("SpongebobButton"), new Vector2(250, 100), Color.White, Content.Load<Texture2D>("Price_100"), 100, TotalCollectedCoins);
+            PatrickButton = new SelectedItem(Content.Load<Texture2D>("PatrickButton"), new Vector2(400, 100), Color.White, Content.Load<Texture2D>("Price_100"), 100, TotalCollectedCoins);
             #endregion
 
             //Instance Variables
@@ -1055,6 +1054,7 @@ namespace Platformer
         
         protected override void Update(GameTime gameTime)
         {
+            character = "Mario";
             KeyboardState ks = Keyboard.GetState();
 
             ms = Mouse.GetState();
@@ -1523,6 +1523,9 @@ namespace Platformer
             }
             if (screen == Gamescreen.Shop)
             {
+                SpongebobButton.Update();
+                PatrickButton.Update();
+                MarioButton.Update();
                 ExitButton = new Button(Content.Load<Texture2D>("ExitButton"), new Vector2(400, 400), Color.White);
 
                 if (ExitButton.HitBox.Contains(ms.X, ms.Y) && ms.LeftButton == ButtonState.Pressed && lastMs.LeftButton == ButtonState.Released)
@@ -1534,9 +1537,18 @@ namespace Platformer
                 {
                     screen = Gamescreen.ChooseBackgroundMenu;
                 }
-                SpongebobButton.Update();
-                PatrickButton.Update();
-                MarioButton.Update();
+
+                if(SpongebobButton.IsClicked && SpongebobButton.isLocked && SpongebobButton.canAfford)
+                {
+                    SpongebobButton.UnlockItem(TotalCollectedCoins);
+                }
+                
+                else if(PatrickButton.IsClicked && PatrickButton.isLocked && PatrickButton.canAfford)
+                {
+                    PatrickButton.UnlockItem(TotalCollectedCoins);
+                }
+
+                
             }
             if (screen == Gamescreen.StartScreen)
             {
