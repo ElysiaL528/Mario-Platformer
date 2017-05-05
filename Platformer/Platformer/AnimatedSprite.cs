@@ -85,7 +85,6 @@ namespace Platformer
                         fireballs.Add(newFireball);
                         fireballs[fireballs.Count - 1].Effects = SpriteEffects.FlipHorizontally;
                         fireballs[fireballs.Count - 1].Speed = new Vector2(-10, 0);
-
                     }
                     canShoot = false;
                     TimeSinceLastShot = TimeSpan.Zero;

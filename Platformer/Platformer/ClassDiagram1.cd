@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Platformer.AnimatedSprite" Collapsed="true">
+    <Position X="1.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAgAKAAFAAAARCAEAAAwA=</HashCode>
+      <FileName>AnimatedSprite.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.Button" Collapsed="true">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAACAAAAAEBAAAAAQAACAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>Button.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.Character" Collapsed="true">
+    <Position X="0.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAGYAgqAAEAAAgWRQACAAACxAAIAABCICAQCIAIAAhk=</HashCode>
+      <FileName>Character.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.Enemy" Collapsed="true">
+    <Position X="2.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAACABEAAgAAEAIAAAABABAAABAAAAQCIAAAAgA=</HashCode>
+      <FileName>Enemy.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.Fireball" Collapsed="true">
+    <Position X="11.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAEAAAAAAAAAAABAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Fireball.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.Frame" Collapsed="true">
+    <Position X="14.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAgAAAA=</HashCode>
+      <FileName>Frame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.Global" Collapsed="true">
+    <Position X="16" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Global.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.Item" Collapsed="true">
+    <Position X="7.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAgAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Item.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.Level" Collapsed="true">
+    <Position X="17.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAEAAACgBAAAAAAAAAAAAAAAAACAAAAAAAAAg=</HashCode>
+      <FileName>Level.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.MovingPlatform" Collapsed="true">
+    <Position X="9.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAABAAAAAAFAAAAAABAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MovingPlatform.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.Platform" Collapsed="true">
+    <Position X="9.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Platform.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.PlatformerGame" Collapsed="true">
+    <Position X="14.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EY8P9koMiu75hzFoA4RB6UbIAoMCAcgCBQVDqIShsic=</HashCode>
+      <FileName>PlatformerGame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.Program" Collapsed="true">
+    <Position X="16" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.SelectedItem" Collapsed="true">
+    <Position X="5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQAgQAQAQAAAgAIAAAAQAAAAAAAAgAiAAwAAAIAAAg=</HashCode>
+      <FileName>SelectedItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Platformer.Sprite" Collapsed="true">
+    <Position X="6" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAQgIggAwBAYAAAABAAAAAAAAACAAQAgAYAA=</HashCode>
+      <FileName>Sprite.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Platformer.Gamescreen" Collapsed="true">
+    <Position X="14.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAIBABAAAAAAAAAgAAQCACAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>Gamescreen.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Platformer.LevelMap" Collapsed="true">
+    <Position X="16" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAEAAAAAAAAAAAABAAAgAAQAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>LevelMaps.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Platformer.World" Collapsed="true">
+    <Position X="17.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAggAAAAAAAAA=</HashCode>
+      <FileName>LevelMaps.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

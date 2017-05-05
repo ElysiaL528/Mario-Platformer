@@ -38,7 +38,7 @@ namespace Platformer
 
         public bool hasPowerup = false;
 
-        public Level(List<Platform> platform, List<Item> items, List<AnimatedSprite> CoinLists, Texture2D background, Sprite door)
+        public Level(List<Platform> platform, List<Item> items, List<AnimatedSprite> CoinLists, Texture2D background, Sprite door, List<MovingPlatform> mplatforms)
         {
             Platforms = platform;
             BackgroundImage = background;

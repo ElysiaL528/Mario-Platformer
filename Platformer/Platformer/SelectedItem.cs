@@ -24,6 +24,8 @@ namespace Platformer
         MouseState lastms;
         public int coins;
 
+        public bool beingPurchased;
+
         public SelectedItem(Texture2D img, Vector2 pos, Color color, Texture2D priceImage, int price, int TotalCoins)
             :base(img, pos, color)
         {
@@ -56,6 +58,8 @@ namespace Platformer
             lastms = mouseState;
             mouseState = Mouse.GetState();
 
+            beingPurchased = isLocked && IsClicked;
+
             if (HitBox.Contains(mouseState.X, mouseState.Y))
             {
                 _color = Color.DarkGray;
@@ -85,29 +89,20 @@ namespace Platformer
                 isSelected = true;
             }
             
-            
-            if(IsClicked)
-            {
-
-            }
-
         }
 
-        public void UnlockItem(int Coins)
+        public int UnlockItem(int Coins)
         {
             coins = Coins;
 
             if (coins >= Price)
             {
                 canAfford = true;
+                isLocked = false;
+                isSelected = true;
+                
             }
-
-            isLocked = false;
-            isSelected = true;
-
-            coins = coins - Price;
-
-            Coins = coins;
+            return coins - Price;
         }
 
     }

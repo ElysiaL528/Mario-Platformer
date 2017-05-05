@@ -82,6 +82,7 @@
     <Compile Include="Global.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="LevelMaps.cs" />
+    <Compile Include="MovingPlatform.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -130,6 +131,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="OverviewOfClasses.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

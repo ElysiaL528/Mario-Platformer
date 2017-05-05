@@ -10,7 +10,7 @@ namespace Platformer
 {
     public class Character : AnimatedSprite
     {
-        public CharacterName currentCharacterName { get; }
+        public CharacterName currentCharacterName;
 
         public Rectangle feetHitBox { get; set; }
 

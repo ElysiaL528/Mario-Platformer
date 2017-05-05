@@ -47,6 +47,7 @@ namespace Platformer
         Texture2D PatrickSpritesheet;
         Texture2D SpongebobSpritesheet;
         Texture2D PrincessPSpritesheet;
+        Texture2D PenguinCharacterSpritesheet;
         Texture2D currentLevelMap;
         Texture2D LandLevelMenuBackground;
         Texture2D ULevelMenuBackground;
@@ -68,7 +69,7 @@ namespace Platformer
         bool intersectingFireball = false;
         bool restarted = false;
         int CollectedCoins = 0;
-        int TotalCollectedCoins = 0;
+        int TotalCollectedCoins = 1000;
         MouseState ms;
         KeyboardState lastKS;
         SpriteFont font;
@@ -91,6 +92,7 @@ namespace Platformer
         Dictionary<AnimationType, List<Frame>> CoinAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<AnimationType, List<Frame>> PrincessPAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<AnimationType, List<Frame>> TurtleAnimations = new Dictionary<AnimationType, List<Frame>>();
+        Dictionary<AnimationType, List<Frame>> PenguinCharAnimations = new Dictionary<AnimationType, List<Frame>>();
         Dictionary<Level, List<Item>> LevelPowerups = new Dictionary<Level, List<Item>>();
         Keys[] LevelSkipKeys = { Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.D7, Keys.D8, Keys.D9, Keys.D0, Keys.Q, Keys.W, Keys.E, Keys.T };
         LevelMap currentMap;
@@ -219,6 +221,7 @@ namespace Platformer
             PatrickSpritesheet = Content.Load<Texture2D>("PatrickSpriteSheet");
             SpongebobSpritesheet = Content.Load<Texture2D>("Spongebob_Spritesheet_2");
             PrincessPSpritesheet = Content.Load<Texture2D>("Mario Sprite Sheet");
+            PenguinCharacterSpritesheet = Content.Load<Texture2D>("Penguin_Spritesheet_1");
             font = Content.Load<SpriteFont>("SpriteFont1");
             font2 = Content.Load<SpriteFont>("Font2");
             coinCounter = Content.Load<SpriteFont>("coinCounter");
@@ -418,6 +421,25 @@ namespace Platformer
 
             #endregion
 
+            #region Penguin Character Animations
+
+            var PenguinCharIdleFrames = new List<Frame>();
+
+            PenguinCharIdleFrames.Add(new Frame(new Rectangle(10, 34, 43, 46), new Vector2(43 / 2, 46 / 2)));
+
+            PenguinCharAnimations.Add(AnimationType.Idle, PenguinCharIdleFrames);
+            
+
+            var PenguinCharacterFramesWalking = new List<Frame>();
+            PenguinCharacterFramesWalking.Add(new Frame(new Rectangle(10, 34, 43, 46), new Vector2(43 / 2, 46 / 2)));
+            PenguinCharacterFramesWalking.Add(new Frame(new Rectangle(58, 34, 41, 46), new Vector2(41 / 2, 46 / 2)));
+            PenguinCharacterFramesWalking.Add(new Frame(new Rectangle(104, 34, 40, 46), new Vector2(20, 23)));
+            PenguinCharacterFramesWalking.Add(new Frame(new Rectangle(150, 34, 40, 46), new Vector2(20, 23)));
+
+            PenguinCharAnimations.Add(AnimationType.Walking, PenguinCharacterFramesWalking);
+
+
+            #endregion
 
             //Run-time variables
             #region
@@ -1016,7 +1038,7 @@ namespace Platformer
                 new Platform(platformImage, new Vector2(0, 70), false) { Size = new Vector2(143, 28) },
                 new Platform(platformImage, new Vector2(635, 286), false) { Size = new Vector2(143, 28) },
                 // Horizontally moving platforms || X speed = 5 || Y speed = 0
-                new Platform(platformImage, new Vector2(180, 69), false) { Size = new Vector2(139, 28) },
+                new Platform(platformImage, new Vector2(180, 69), false) { Size = new Vector2(139, 28) }, 
                 new Platform(platformImage, new Vector2(652, 460), false) { Size = new Vector2(139, 28) },
                 new Platform(platformImage, new Vector2(125, 251), false) { Size = new Vector2(139, 28) },
                 // Vertically moving platforms || X speed = 0 || Y speed = 5
@@ -1025,7 +1047,16 @@ namespace Platformer
             };
             Level1_2platforms.AddRange(Level1_2lavaplatforms);
 
-            levels[World.Underwater].Add(new Level(Level1_2platforms, new List<Item>(), new List<AnimatedSprite>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(950, 300), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            var Level1_2MovingPlatforms = new List<MovingPlatform>()
+            {
+                new MovingPlatform(platformImage, new Vector2(0, 0), MovingPlatform.PlatformMovement.SidetoSide, 10, 900, 100),
+
+
+            };
+
+            
+
+            levels[World.Underwater].Add(new Level(Level1_2platforms, new List<Item>(), new List<AnimatedSprite>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(700, 280), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
 
 
             #endregion
@@ -1054,7 +1085,8 @@ namespace Platformer
         
         protected override void Update(GameTime gameTime)
         {
-            character = "Mario";
+            currentWorld = World.Underwater;
+            currentLevel = 2;
             KeyboardState ks = Keyboard.GetState();
 
             ms = Mouse.GetState();
@@ -1129,19 +1161,19 @@ namespace Platformer
 
                 //Assign character traits>
 
-                switch (character)
+                switch (MainCharacter.currentCharacterName)
                 {
-                    case "Mario":
+                    case Character.CharacterName.Mario:
                         MainCharacter.Image = spriteSheet;
                         MainCharacter.Animations = marioAnimations;
                         break;
 
-                    case "Spongebob":
+                    case Character.CharacterName.Spongebob:
                         MainCharacter.Image = SpongebobSpritesheet;
                         MainCharacter.Animations = SpongebobAnimations;
                         break;
 
-                    case "Patrick":
+                    case Character.CharacterName.Patrick:
                         MainCharacter.Image = PatrickSpritesheet;
                         MainCharacter.Animations = PatrickAnimations;
                         break;
@@ -1438,6 +1470,11 @@ namespace Platformer
                     }
                 }
 
+                foreach(MovingPlatform mplatform in levels[currentWorld][currentLevel].Platforms)
+                {
+                    mplatform.Update();
+                }
+
                 MenuButton.Update();
                 restartbutton.Update();
             }
@@ -1537,15 +1574,16 @@ namespace Platformer
                 {
                     screen = Gamescreen.ChooseBackgroundMenu;
                 }
-
-                if(SpongebobButton.IsClicked && SpongebobButton.isLocked && SpongebobButton.canAfford)
+                if(SpongebobButton.IsClicked && SpongebobButton.isLocked)
                 {
-                    SpongebobButton.UnlockItem(TotalCollectedCoins);
+                    TotalCollectedCoins = SpongebobButton.UnlockItem(TotalCollectedCoins);
+                    MainCharacter.currentCharacterName = Character.CharacterName.Spongebob;
                 }
                 
-                else if(PatrickButton.IsClicked && PatrickButton.isLocked && PatrickButton.canAfford)
+                else if(PatrickButton.beingPurchased)
                 {
-                    PatrickButton.UnlockItem(TotalCollectedCoins);
+                    TotalCollectedCoins = PatrickButton.UnlockItem(TotalCollectedCoins);
+                    MainCharacter.currentCharacterName = Character.CharacterName.Patrick;
                 }
 
                 
