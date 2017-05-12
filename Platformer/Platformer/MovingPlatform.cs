@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Platformer
 {
-    class MovingPlatform : Platform
+    public class MovingPlatform : Platform
     {
         public PlatformMovement Movement;
         public int Speed;
@@ -18,9 +18,9 @@ namespace Platformer
             :base(texture, position)
         {
             movement = Movement;
-            speed = Speed;
-            MaxCoordinate = MaxCoord;
-            MinCoordinate = MinCoord;
+            Speed = speed;
+            MaxCoord = MaxCoordinate;
+            MinCoord = MinCoordinate;
         }
 
         public void Update()
@@ -28,6 +28,7 @@ namespace Platformer
 
             if(Movement== PlatformMovement.SidetoSide)
             {
+                    X += Speed;
                 if (X >= MaxCoord || X <= MinCoord)
                 {
                     Speed *= -1;

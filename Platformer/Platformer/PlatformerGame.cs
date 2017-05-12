@@ -13,7 +13,7 @@ using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: 
+    /* To do: Work on CheckCollision function in the Platform class
      * - 
             - Moving Platforms
             - Slow shift function in ULevels
@@ -100,7 +100,7 @@ namespace Platformer
         Dictionary<World, List<Level>> levels;
         List<AnimatedSprite> Coins = new List<AnimatedSprite>();
         Enemy enemy;
-        Character MainCharacter;
+        public static Character MainCharacter;
         AnimatedSprite PrincessP;
         AnimatedSprite FlyingTurtle;
         AnimatedSprite MarioSprite;
@@ -438,6 +438,19 @@ namespace Platformer
 
             PenguinCharAnimations.Add(AnimationType.Walking, PenguinCharacterFramesWalking);
 
+            var PenguinCharacterFramesJumping = new List<Frame>();
+            PenguinCharacterFramesJumping.Add(new Frame(new Rectangle(11, 93, 40, 47), new Vector2(40 / 2, 47 / 2)));
+            PenguinCharacterFramesJumping.Add(new Frame(new Rectangle(56, 84, 45, 45), new Vector2(45 / 2, 45 / 2)));
+            PenguinCharacterFramesJumping.Add(new Frame(new Rectangle(103, 88, 45, 45), new Vector2(45 / 2, 45 / 2)));
+
+            PenguinCharAnimations.Add(AnimationType.Jumping, PenguinCharacterFramesJumping);
+
+            var PenguinCharDucking = new List<Frame>();
+            PenguinCharDucking.Add(new Frame(new Rectangle(7, 146, 44, 40), new Vector2(44 / 2, 40 / 2)));
+            PenguinCharDucking.Add(new Frame(new Rectangle(61, 156, 51, 32), new Vector2(51 / 2, 32 / 2)));
+
+            PenguinCharAnimations.Add(AnimationType.Crouching, PenguinCharDucking);
+
 
             #endregion
 
@@ -620,8 +633,9 @@ namespace Platformer
         };
                     
 
-            levels[World.Land].Add(new Level(level0_0Platforms, new List<Item>(), lvl0coins, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_0Platforms, new List<Item>(), lvl0coins, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(921, 150), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             levels[currentWorld][0].hasPowerup = false;
+            levels[currentWorld][0].hasMovingPlatforms = false;
             #endregion
             #region level 0-1
 
@@ -650,8 +664,9 @@ namespace Platformer
                 new AnimatedSprite(spriteSheet, new Vector2(830, 310), Color.White, CoinFrames)
         };
 
-            levels[World.Land].Add(new Level(level0_1Platforms, new List<Item>(), lvl1coins, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(940, 368), Color.White) { Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_1Platforms, new List<Item>(), lvl1coins, currentLevelMap, new Sprite(Content.Load<Texture2D>("door"), new Vector2(940, 368), Color.White) { Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             levels[World.Land][1].hasPowerup = false;
+            levels[World.Land][1].hasMovingPlatforms = false;
             #endregion
             #region level 0-2
 
@@ -680,9 +695,10 @@ namespace Platformer
 
             enemy.isDead = false;
 
-            levels[World.Land].Add(new Level(level0_2Platforms, items0_2, lvl2coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 150)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_2Platforms, items0_2, lvl2coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 150)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             LevelPowerups.Add(levels[World.Land][2], items0_2);
             levels[World.Land][2].hasPowerup = true;
+            levels[World.Land][2].hasMovingPlatforms = false;
             #endregion
             #region level 0-3
 
@@ -706,9 +722,10 @@ namespace Platformer
             var items0_3 = new List<Item>();
             enemy.Position = new Vector2(500, 270);
             items0_3.Add(HealthPowerup);
-            levels[World.Land].Add(new Level(level0_3Platforms, items0_3, lvl3coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 150)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_3Platforms, items0_3, lvl3coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 150)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             LevelPowerups.Add(levels[World.Land][3], items0_3);
             levels[World.Land][3].hasPowerup = true;
+            levels[World.Land][3].hasMovingPlatforms = false;
             #endregion
             #region level 0-4
 
@@ -730,8 +747,9 @@ namespace Platformer
                 new AnimatedSprite(spriteSheet, new Vector2(455, 235), Color.White, CoinFrames)
                 };
 
-            levels[World.Land].Add(new Level(level0_4Platforms, new List<Item>(), lvl4coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 150)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_4Platforms, new List<Item>(), lvl4coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 150)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             levels[World.Land][4].hasPowerup = false;
+            levels[World.Land][4].hasMovingPlatforms = false;
             #endregion
             #region level 0-5
 
@@ -759,9 +777,10 @@ namespace Platformer
                 new AnimatedSprite(spriteSheet, new Vector2(600, 150), Color.White, CoinFrames)
                 };
 
-            levels[World.Land].Add(new Level(level0_5platforms, items0_5, lvl5coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 465)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_5platforms, items0_5, lvl5coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 465)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             LevelPowerups.Add(levels[World.Land][5], items0_5);
             levels[World.Land][5].hasPowerup = true;
+            levels[World.Land][5].hasPowerup = false;
 
             #endregion
             #region level 0-6
@@ -787,9 +806,10 @@ namespace Platformer
                 new AnimatedSprite(spriteSheet, new Vector2(550, 210), Color.White, CoinFrames)
                 };
 
-            levels[World.Land].Add(new Level(level0_6platforms, items0_6, lvl6coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 438)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_6platforms, items0_6, lvl6coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(921, 438)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             LevelPowerups.Add(levels[World.Land][6], items0_6);
             levels[World.Land][6].hasPowerup = true;
+            levels[World.Land][6].hasMovingPlatforms = false;
             #endregion
             #region level 0-7
             var level0_7platforms = new List<Platform>()
@@ -809,9 +829,10 @@ namespace Platformer
                 new AnimatedSprite(spriteSheet, new Vector2(300, 350), Color.White, CoinFrames)
                 };
 
-            levels[World.Land].Add(new Level(level0_7platforms, items0_7, lvl7coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(500, 447)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_7platforms, items0_7, lvl7coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(500, 447)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             LevelPowerups.Add(levels[World.Land][7], items0_7);
             levels[World.Land][7].hasPowerup = true;
+            levels[World.Land][7].hasMovingPlatforms = false;
             #endregion
             #region level 0-8
             var level0_8platforms = new List<Platform>()
@@ -828,8 +849,9 @@ namespace Platformer
                 new AnimatedSprite(spriteSheet, new Vector2(500, 220), Color.White, CoinFrames),
                 new AnimatedSprite(spriteSheet, new Vector2(750, 150), Color.White, CoinFrames)
                 };
-            levels[World.Land].Add(new Level(level0_8platforms, new List<Item>(), lvl8coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(940, 110)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_8platforms, new List<Item>(), lvl8coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(940, 110)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             levels[World.Land][8].hasPowerup = false;
+            levels[World.Land][8].hasMovingPlatforms = false;
             #endregion
             #region level 0-9
 
@@ -863,9 +885,10 @@ namespace Platformer
                 };
 
 
-            levels[World.Land].Add(new Level(level0_9platforms, items0_9, lvl9coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(910, 130)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_9platforms, items0_9, lvl9coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(910, 130)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             LevelPowerups.Add(levels[World.Land][9], items0_9);
             levels[World.Land][9].hasPowerup = true;
+            levels[World.Land][9].hasMovingPlatforms = false;
             #endregion
             #region level 0-10
 
@@ -889,8 +912,9 @@ namespace Platformer
 
                 };
 
-            levels[World.Land].Add(new Level(level0_10platforms, new List<Item>(), lvl10coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(880, 215)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_10platforms, new List<Item>(), lvl10coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(880, 215)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             levels[World.Land][10].hasPowerup = false;
+            levels[World.Land][10].hasMovingPlatforms = false;
             #endregion
             #region level 0-11
 
@@ -914,9 +938,10 @@ namespace Platformer
                 new AnimatedSprite(spriteSheet, new Vector2(850, 300), Color.White, CoinFrames)
                 };
 
-            levels[World.Land].Add(new Level(level0_11platforms, items0_11, lvl11coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(700, 440)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_11platforms, items0_11, lvl11coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(700, 440)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             LevelPowerups.Add(levels[World.Land][11], items0_11);
             levels[World.Land][11].hasPowerup = true;
+            levels[World.Land][11].hasMovingPlatforms= false;
             #endregion
             #region level 0-12
 
@@ -941,7 +966,7 @@ namespace Platformer
                 new AnimatedSprite(spriteSheet, new Vector2(780, 340), Color.White, CoinFrames)
                 };
 
-            levels[World.Land].Add(new Level(level0_12platforms, items0_12, lvl12coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(900, 240)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_12platforms, items0_12, lvl12coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(900, 240)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             LevelPowerups.Add(levels[World.Land][12], items0_12);
             levels[World.Land][12].hasPowerup = true;
             #endregion
@@ -973,7 +998,7 @@ namespace Platformer
                 new AnimatedSprite(spriteSheet, new Vector2(700, 219), Color.White, CoinFrames)
                 };
 
-            levels[World.Land].Add(new Level(level0_13platforms, new List<Item>(), lvl13coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(660, 120)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Land].Add(new Level(level0_13platforms, new List<Item>(), lvl13coins, currentLevelMap, new Platform(Content.Load<Texture2D>("door"), new Vector2(660, 120)) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             levels[currentWorld][13].hasPowerup = false;
             #endregion
             #region level 1-0
@@ -992,7 +1017,7 @@ namespace Platformer
             };
             level1_0platforms.AddRange(level1_0lavaplatforms);
 
-            levels[World.Underwater].Add(new Level(level1_0platforms, new List<Item>(), new List<AnimatedSprite>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(660, 120), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Underwater].Add(new Level(level1_0platforms, new List<Item>(), new List<AnimatedSprite>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(660, 120), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
 
 
             #endregion
@@ -1018,7 +1043,7 @@ namespace Platformer
             };
             level1_1platforms.AddRange(level1_1lavaplatforms);
 
-            levels[World.Underwater].Add(new Level(level1_1platforms, new List<Item>(), new List<AnimatedSprite>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(950, 300), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
+            levels[World.Underwater].Add(new Level(level1_1platforms, new List<Item>(), new List<AnimatedSprite>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(950, 300), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
             #endregion
             #region Level 1-2
             // Lava platforms
@@ -1050,14 +1075,16 @@ namespace Platformer
             var Level1_2MovingPlatforms = new List<MovingPlatform>()
             {
                 new MovingPlatform(platformImage, new Vector2(0, 0), MovingPlatform.PlatformMovement.SidetoSide, 10, 900, 100),
-
-
+                new MovingPlatform(platformImage, new Vector2(180, 69), MovingPlatform.PlatformMovement.SidetoSide, 10, 900, 100),
+                new MovingPlatform(platformImage, new Vector2(652, 460), MovingPlatform.PlatformMovement.SidetoSide, 10, 900, 100),
+                new MovingPlatform(platformImage, new Vector2(125, 251), MovingPlatform.PlatformMovement.SidetoSide, 10, 900, 100),
+                new MovingPlatform(platformImage, new Vector2(862, 83), MovingPlatform.PlatformMovement.UpDown, 10, 400, 10),
+                new MovingPlatform(platformImage, new Vector2(0, 460), MovingPlatform.PlatformMovement.UpDown, 10, 400, 10)
             };
-
             
 
-            levels[World.Underwater].Add(new Level(Level1_2platforms, new List<Item>(), new List<AnimatedSprite>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(700, 280), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }));
-
+            levels[World.Underwater].Add(new Level(Level1_2platforms, new List<Item>(), new List<AnimatedSprite>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(700, 280), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, Level1_2MovingPlatforms));
+            levels[World.Underwater][2].hasMovingPlatforms = true;
 
             #endregion
 
@@ -1469,10 +1496,13 @@ namespace Platformer
                         MainCharacter.CheckPowerup(item);
                     }
                 }
-
-                foreach(MovingPlatform mplatform in levels[currentWorld][currentLevel].Platforms)
+                
+                foreach(MovingPlatform mplatform in levels[currentWorld][currentLevel].mPlatforms)
                 {
-                    mplatform.Update();
+                    if (levels[currentWorld][currentLevel].hasMovingPlatforms)
+                    {
+                        mplatform.Update();
+                    }
                 }
 
                 MenuButton.Update();
@@ -1686,7 +1716,7 @@ namespace Platformer
                         coin.Draw(spriteBatch);
                     }
                 }
-
+                
                 spriteBatch.DrawString(coinCounter, string.Format("Coins: {0}", TotalCollectedCoins), new Vector2(500, 0), Color.White);
                 
             }

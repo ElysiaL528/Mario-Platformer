@@ -25,5 +25,20 @@ namespace Platformer
         {
             IsDeadly = isDeadly;
         }
+
+        public void CheckCollision()
+        {
+
+            PlatformerGame.MainCharacter.feetHitBox = new Rectangle(HitBox.X + 5, HitBox.Y + HitBox.Height - 1, HitBox.Width - 10, 1);
+            PlatformerGame.MainCharacter.groundHitBox = new Rectangle(HitBox.X + 5, HitBox.Y + HitBox.Height, HitBox.Width - 10, 1);
+            PlatformerGame.MainCharacter.topHitBox = new Rectangle(HitBox.X + 5, HitBox.Y, HitBox.Width - 10, 1);
+            PlatformerGame.MainCharacter.leftHitBox = new Rectangle(HitBox.X - 1, HitBox.Y + 5, 1, HitBox.Height - 10);
+            PlatformerGame.MainCharacter.rightHitBox = new Rectangle(HitBox.X + HitBox.Width, HitBox.Y + 5, 1, HitBox.Height - 10);
+
+            isGrounded = false;
+            canWalkLeft = true;
+            canWalkRight = true;
+            canGoUp = true;
+        }
     }
 }

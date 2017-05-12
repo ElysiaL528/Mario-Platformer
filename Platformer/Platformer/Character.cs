@@ -16,11 +16,11 @@ namespace Platformer
 
         public Rectangle groundHitBox { get; set; }
 
-        Rectangle rightHitBox { get; set; }
+        public Rectangle rightHitBox { get; set; }
 
-        Rectangle leftHitBox { get; set; }
+        public Rectangle leftHitBox { get; set; }
 
-        Rectangle topHitBox { get; set; }
+        public Rectangle topHitBox { get; set; }
 
         public float gravity = 5.18f;
         public float jumpPower = 5;

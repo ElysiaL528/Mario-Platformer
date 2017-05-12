@@ -24,6 +24,8 @@ namespace Platformer
         /// </summary>
         public List<Item> Items { get; set; }
 
+        public List<MovingPlatform> mPlatforms { get; set; }
+
         /// <summary>
         /// Background image for the level.
         /// </summary>
@@ -37,6 +39,7 @@ namespace Platformer
         public List<AnimatedSprite> CoinList;
 
         public bool hasPowerup = false;
+        public bool hasMovingPlatforms = false;
 
         public Level(List<Platform> platform, List<Item> items, List<AnimatedSprite> CoinLists, Texture2D background, Sprite door, List<MovingPlatform> mplatforms)
         {
@@ -45,6 +48,7 @@ namespace Platformer
             Door = door;
             Items = items;
             CoinList = CoinLists;
+            mPlatforms = mplatforms;
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)
@@ -59,6 +63,11 @@ namespace Platformer
             foreach (var item in Items)
             {
                 item.Draw(spriteBatch);
+            }
+
+            foreach (var platform in mPlatforms)
+            {
+                platform.Draw(spriteBatch);
             }
         }
     }
