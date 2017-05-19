@@ -26,7 +26,7 @@ namespace Platformer
         public void Update()
         {
 
-            if(Movement== PlatformMovement.SidetoSide)
+            if(Movement== PlatformMovement.Horizontal)
             {
                     X += Speed;
                 if (X >= MaxCoord || X <= MinCoord)
@@ -48,7 +48,7 @@ namespace Platformer
                     X += Speed;
                 }
             }
-            else if(Movement == PlatformMovement.UpDown)
+            else if(Movement == PlatformMovement.Vertical)
             {
                 Y += Speed;
                 if (Y >= MaxCoord || Y <= MinCoord)
@@ -57,12 +57,24 @@ namespace Platformer
                     Y += Speed;
                 }
             }
+
+            if (PlatformerGame.MainCharacter.groundHitBox.Intersects(HitBox))
+            {
+                if (Movement == PlatformMovement.Horizontal)
+                {
+                    PlatformerGame.MainCharacter.X += Speed;
+                }
+                else if (Movement == PlatformMovement.Vertical)
+                {
+                    PlatformerGame.MainCharacter.Y += Speed;
+                }
+            }
         }
 
         public enum PlatformMovement
         {
-            SidetoSide,
-            UpDown,
+            Horizontal,
+            Vertical,
         }
     }
 }

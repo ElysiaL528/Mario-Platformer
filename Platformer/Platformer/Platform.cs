@@ -32,59 +32,47 @@ namespace Platformer
 
         public void CheckCollision()
         {
-            PlatformerGame.MainCharacter.isGrounded = false;
-            PlatformerGame.MainCharacter.canWalkLeft = true;
-            PlatformerGame.MainCharacter.canWalkRight = true;
-            PlatformerGame.MainCharacter.canGoUp = true;
+           
 
             if(PlatformerGame.MainCharacter.groundHitBox.Intersects(HitBox))
             {
                 PlatformerGame.MainCharacter.isGrounded = true;
                 while (PlatformerGame.MainCharacter.feetHitBox.Intersects(HitBox))
                 {
-                    PlatformerGame.MainCharacter.Y--;
+                    PlatformerGame.MainCharacter.Y -= 0.1f;
                     PlatformerGame.MainCharacter.feetHitBox = new Rectangle(PlatformerGame.MainCharacter.HitBox.X, PlatformerGame.MainCharacter.HitBox.Y + PlatformerGame.MainCharacter.HitBox.Height - 1, PlatformerGame.MainCharacter.HitBox.Width, 1);
                 }
             }
 
-            if(PlatformerGame.MainCharacter.leftHitBox.Intersects(HitBox))
+          else if(PlatformerGame.MainCharacter.leftHitBox.Intersects(HitBox))
             {
                 PlatformerGame.MainCharacter.canWalkLeft = false;
                 while (PlatformerGame.MainCharacter.leftHitBox.Intersects(HitBox))
                 {
-                    PlatformerGame.MainCharacter.X++;
+                    PlatformerGame.MainCharacter.X += 0.1f;
                     PlatformerGame.MainCharacter.leftHitBox = new Rectangle(PlatformerGame.MainCharacter.HitBox.X - 1, PlatformerGame.MainCharacter.HitBox.Y + 5, 1, PlatformerGame.MainCharacter.HitBox.Height - 10);
                 }
             }
 
-            if(PlatformerGame.MainCharacter.rightHitBox.Intersects(HitBox))
+            else if(PlatformerGame.MainCharacter.rightHitBox.Intersects(HitBox))
             {
                 PlatformerGame.MainCharacter.canWalkRight = false;
                 while (PlatformerGame.MainCharacter.rightHitBox.Intersects(HitBox))
                 {
-                    PlatformerGame.MainCharacter.X--;
+                    PlatformerGame.MainCharacter.X -= 0.1f;
                     PlatformerGame.MainCharacter.rightHitBox = new Rectangle(PlatformerGame.MainCharacter.HitBox.X + PlatformerGame.MainCharacter.HitBox.Width, PlatformerGame.MainCharacter.HitBox.Y + 5, 1, PlatformerGame.MainCharacter.HitBox.Height - 10);
                 }
             }
 
-            if(PlatformerGame.MainCharacter.topHitBox.Intersects(HitBox))
+            else if(PlatformerGame.MainCharacter.topHitBox.Intersects(HitBox))
             {
                 PlatformerGame.MainCharacter.canGoUp = false;
                 while(PlatformerGame.MainCharacter.topHitBox.Intersects(HitBox))
                 {
-                    PlatformerGame.MainCharacter.Y++;
+                    PlatformerGame.MainCharacter.Y += 0.1f;
                     PlatformerGame.MainCharacter.topHitBox = new Rectangle(PlatformerGame.MainCharacter.HitBox.Y + 5, PlatformerGame.MainCharacter.HitBox.Y, PlatformerGame.MainCharacter.HitBox.Width - 10, 1);
                 }
             }
-        }
-
-        public void Update()
-        {
-            PlatformerGame.MainCharacter.feetHitBox = new Rectangle(PlatformerGame.MainCharacter.HitBox.X + 5, PlatformerGame.MainCharacter.HitBox.Y + PlatformerGame.MainCharacter.HitBox.Height - 1, PlatformerGame.MainCharacter.HitBox.Width - 10, 1);
-            PlatformerGame.MainCharacter.groundHitBox = new Rectangle(PlatformerGame.MainCharacter.HitBox.X + 5, PlatformerGame.MainCharacter.HitBox.Y + PlatformerGame.MainCharacter.HitBox.Height, PlatformerGame.MainCharacter.HitBox.Width - 10, 1);
-            PlatformerGame.MainCharacter.topHitBox = new Rectangle(PlatformerGame.MainCharacter.HitBox.X + 5, PlatformerGame.MainCharacter.HitBox.Y, PlatformerGame.MainCharacter.HitBox.Width - 10, 1);
-            PlatformerGame.MainCharacter.leftHitBox = new Rectangle(PlatformerGame.MainCharacter.HitBox.X - 1, PlatformerGame.MainCharacter.HitBox.Y + 5, 1, PlatformerGame.MainCharacter.HitBox.Height - 10);
-            PlatformerGame.MainCharacter.rightHitBox = new Rectangle(PlatformerGame.MainCharacter.HitBox.X + PlatformerGame.MainCharacter.HitBox.Width, PlatformerGame.MainCharacter.HitBox.Y + 5, 1, PlatformerGame.MainCharacter.HitBox.Height - 10);
         }
     }
 }

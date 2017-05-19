@@ -13,7 +13,7 @@ using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: Work on CheckCollision function in the Platform class
+    /* To do: Fix the MC's intersection with the mplatforms; the MC doesn't move at the same pace as the mplatform
      * - 
             - Moving Platforms
             - Slow shift function in ULevels
@@ -30,6 +30,8 @@ namespace Platformer
             - Fix glitch in level 4
             - Be able to buy items in the shop
             - Disable any powerup functions every time the level resets
+            - No matter what level you choose, it always goes to the third ULevel (somewhere, there's a line of code that sets the level repeatedly to ULevel 3)
+            - Loop back to the title screen when all the levels are finished
             
 
 
@@ -68,6 +70,7 @@ namespace Platformer
         bool hasDied = false;
         bool intersectingFireball = false;
         bool restarted = false;
+        bool isOnMPlatform = false;
         int CollectedCoins = 0;
         int TotalCollectedCoins = 1000;
         MouseState ms;
@@ -1074,12 +1077,12 @@ namespace Platformer
 
             var Level1_2MovingPlatforms = new List<MovingPlatform>()
             {
-                new MovingPlatform(platformImage, new Vector2(0, 0), MovingPlatform.PlatformMovement.SidetoSide, 10, 900, 100),
-                new MovingPlatform(platformImage, new Vector2(180, 69), MovingPlatform.PlatformMovement.SidetoSide, 10, 900, 100),
-                new MovingPlatform(platformImage, new Vector2(652, 460), MovingPlatform.PlatformMovement.SidetoSide, 10, 900, 100),
-                new MovingPlatform(platformImage, new Vector2(125, 251), MovingPlatform.PlatformMovement.SidetoSide, 10, 900, 100),
-                new MovingPlatform(platformImage, new Vector2(862, 83), MovingPlatform.PlatformMovement.UpDown, 10, 400, 10),
-                new MovingPlatform(platformImage, new Vector2(0, 460), MovingPlatform.PlatformMovement.UpDown, 10, 400, 10)
+                new MovingPlatform(platformImage, new Vector2(0, 0), MovingPlatform.PlatformMovement.Horizontal, 1, 900, 100),
+                new MovingPlatform(platformImage, new Vector2(180, 69), MovingPlatform.PlatformMovement.Horizontal, 1, 900, 100),
+                new MovingPlatform(platformImage, new Vector2(652, 460), MovingPlatform.PlatformMovement.Horizontal, 1, 900, 100),
+                new MovingPlatform(platformImage, new Vector2(125, 251), MovingPlatform.PlatformMovement.Horizontal, 1, 900, 100),
+                new MovingPlatform(platformImage, new Vector2(862, 83), MovingPlatform.PlatformMovement.Vertical, 1, 400, 10),
+                new MovingPlatform(platformImage, new Vector2(0, 460), MovingPlatform.PlatformMovement.Vertical, 1, 400, 10)
             };
             
 
@@ -1171,11 +1174,20 @@ namespace Platformer
                     enemy.EnemyUpdate(gameTime);
 
                 //MainCharacter.CheckCollision(levels[currentWorld][currentLevel].Platforms);
-                
-                foreach(Platform platform in levels[currentWorld][currentLevel].Platforms)
+
+                MainCharacter.isGrounded = false;
+                MainCharacter.canWalkLeft = true;
+                MainCharacter.canWalkRight = true;
+                MainCharacter.canGoUp = true;
+
+                foreach (Platform platform in levels[currentWorld][currentLevel].Platforms)
                 {
                     platform.CheckCollision();
-                    platform.Update();
+                }
+
+                foreach (MovingPlatform mplatform in levels[currentWorld][currentLevel].mPlatforms)
+                {
+                    mplatform.CheckCollision();
                 }
                 
                 foreach (AnimatedSprite coin in levels[currentWorld][currentLevel].CoinList)

@@ -140,7 +140,7 @@ namespace Platformer
         public virtual void Draw(SpriteBatch spritebatch)
         {
             spritebatch.Draw(_texture, _location, _sourceRectangle, _color, _rotation, Origin, Scale, _effects, _layerDepth);
-            //spritebatch.Draw(_texture, HitBox, Color.Red);
+            //spritebatch.Draw(_texture, HitBox, Color.Red);            
         }
 
         public void UpdateHitbox(Rectangle hitbox)
