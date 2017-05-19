@@ -33,6 +33,7 @@ namespace Platformer
             set
             {
                 _location.X = value;
+                UpdateHitbox(HitBox);
             }
         }
         public float Y
@@ -44,6 +45,7 @@ namespace Platformer
             set
             {
                 _location.Y = value;
+                UpdateHitbox(HitBox);
             }
         }
 

@@ -98,10 +98,10 @@ namespace Platformer
             _fireballImage = fireballImage;
         }
 
-        bool isGrounded = false;
-        bool canWalkLeft = true;
-        bool canWalkRight = true;
-        bool canGoUp = true;
+        public bool isGrounded = false;
+        public bool canWalkLeft = true;
+        public bool canWalkRight = true;
+        public bool canGoUp = true;
 
         public void CheckCollision(List<Platform> platforms)
         {
@@ -311,12 +311,12 @@ namespace Platformer
         public override void Draw(SpriteBatch spritebatch)
         {
             base.Draw(spritebatch);
-            /*spritebatch.Draw(pixel, HitBox, Color.Lerp(Color.Yellow, Color.Transparent, .5f));
-            spritebatch.Draw(pixel, FeetHitBox, Color.Lerp(Color.Green, Color.Transparent, .1f));
-            spritebatch.Draw(pixel, GroundHitBox, Color.Lerp(Color.Brown, Color.Transparent, .1f));
-            spritebatch.Draw(pixel, TopHitBox, Color.Lerp(Color.Red, Color.Transparent, .1f));
-            spritebatch.Draw(pixel, LeftHitBox, Color.Lerp(Color.Red, Color.Transparent, .1f));
-            spritebatch.Draw(pixel, RightHitBox, Color.Lerp(Color.Red, Color.Transparent, .1f));*/
+            spritebatch.Draw(pixel, HitBox, Color.Lerp(Color.Yellow, Color.Transparent, .5f));
+            spritebatch.Draw(pixel, feetHitBox, Color.Lerp(Color.Green, Color.Transparent, .1f));
+            spritebatch.Draw(pixel, groundHitBox, Color.Lerp(Color.Brown, Color.Transparent, .1f));
+            spritebatch.Draw(pixel, topHitBox, Color.Lerp(Color.Red, Color.Transparent, .1f));
+            spritebatch.Draw(pixel, leftHitBox, Color.Lerp(Color.Red, Color.Transparent, .1f));
+            spritebatch.Draw(pixel, rightHitBox, Color.Lerp(Color.Red, Color.Transparent, .1f));
             for (int i = 0; i < fireballs.Count; i++)
             {
                 fireballs[i].Draw(spritebatch);

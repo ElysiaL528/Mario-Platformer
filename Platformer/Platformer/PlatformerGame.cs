@@ -1170,7 +1170,13 @@ namespace Platformer
                     enemy.UpdateAnimation(gameTime);
                     enemy.EnemyUpdate(gameTime);
 
-                MainCharacter.CheckCollision(levels[currentWorld][currentLevel].Platforms);
+                //MainCharacter.CheckCollision(levels[currentWorld][currentLevel].Platforms);
+                
+                foreach(Platform platform in levels[currentWorld][currentLevel].Platforms)
+                {
+                    platform.CheckCollision();
+                    platform.Update();
+                }
                 
                 foreach (AnimatedSprite coin in levels[currentWorld][currentLevel].CoinList)
                 {
