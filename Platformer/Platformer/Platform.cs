@@ -70,7 +70,7 @@ namespace Platformer
                 while(PlatformerGame.MainCharacter.topHitBox.Intersects(HitBox))
                 {
                     PlatformerGame.MainCharacter.Y += 0.1f;
-                    PlatformerGame.MainCharacter.topHitBox = new Rectangle(PlatformerGame.MainCharacter.HitBox.Y + 5, PlatformerGame.MainCharacter.HitBox.Y, PlatformerGame.MainCharacter.HitBox.Width - 10, 1);
+                    PlatformerGame.MainCharacter.topHitBox = new Rectangle(PlatformerGame.MainCharacter.HitBox.X , PlatformerGame.MainCharacter.HitBox.Y + 5, PlatformerGame.MainCharacter.HitBox.Width - 10, 1);
                 }
             }
         }

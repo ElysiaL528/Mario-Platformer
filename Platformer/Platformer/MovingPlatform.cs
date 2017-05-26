@@ -60,6 +60,7 @@ namespace Platformer
 
             if (PlatformerGame.MainCharacter.groundHitBox.Intersects(HitBox))
             {
+                _color = Color.Red;
                 if (Movement == PlatformMovement.Horizontal)
                 {
                     PlatformerGame.MainCharacter.X += Speed;
@@ -68,6 +69,10 @@ namespace Platformer
                 {
                     PlatformerGame.MainCharacter.Y += Speed;
                 }
+            }
+            else
+            {
+                _color = Color.White;
             }
         }
 

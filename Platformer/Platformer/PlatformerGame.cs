@@ -13,7 +13,7 @@ using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: Fix the MC's intersection with the mplatforms; the MC doesn't move at the same pace as the mplatform
+    /* To do: Fix the MC's intersection with the mplatforms; the MC doesn't move at the same pace as the mplatform; problem with CheckCollision function?
      * - 
             - Moving Platforms
             - Slow shift function in ULevels
@@ -32,6 +32,7 @@ namespace Platformer
             - Disable any powerup functions every time the level resets
             - No matter what level you choose, it always goes to the third ULevel (somewhere, there's a line of code that sets the level repeatedly to ULevel 3)
             - Loop back to the title screen when all the levels are finished
+            - Animate the fireballs in Mario's sprite sheet for the loading
             
 
 
@@ -232,23 +233,29 @@ namespace Platformer
 
             #region Mario Animations
             var walking = new List<Frame>();
-            walking.Add(new Frame(new Rectangle(304, 18, 32, 47), new Vector2(15, 31)));
+            
+            /*walking.Add(new Frame(new Rectangle(304, 18, 32, 47), new Vector2(15, 31)));
             walking.Add(new Frame(new Rectangle(343, 16, 24, 47), new Vector2(12, 31)));
             walking.Add(new Frame(new Rectangle(371, 17, 28, 47), new Vector2(13, 31)));
-            walking.Add(new Frame(new Rectangle(343, 16, 24, 47), new Vector2(12, 31)));
+            walking.Add(new Frame(new Rectangle(343, 16, 24, 47), new Vector2(12, 31)));*/
+
+            walking.Add(new Frame(new Rectangle(304, 18, 32, 47), new Vector2(16, (float)23.5)));
+            walking.Add(new Frame(new Rectangle(343, 16, 24, 47), new Vector2(12, (float)23.5)));
+            walking.Add(new Frame(new Rectangle(371, 17, 28, 47), new Vector2(13, (float)23.5)));
+            walking.Add(new Frame(new Rectangle(343, 16, 24, 47), new Vector2(12, (float)23.5)));
+            
             marioAnimations.Add(AnimationType.Walking, walking);
 
             var idle = new List<Frame>();
-            idle.Add(new Frame(new Rectangle(6, 16, 30, 47), new Vector2(13, 35)));
-            idle.Add(new Frame(new Rectangle(40, 18, 32, 45), new Vector2(18, 33)));
+            idle.Add(new Frame(new Rectangle(6, 16, 30, 47), new Vector2(/*13, 35*/15, (float)23.5)));
             marioAnimations.Add(AnimationType.Idle, idle);
 
             var jumping = new List<Frame>();
-            jumping.Add(new Frame(new Rectangle(128, 18, 35, 45), new Vector2(146 - 128, 50 - 18)));
+            jumping.Add(new Frame(new Rectangle(128, 18, 35, 45), new Vector2(/*18, 32*/(float)17.5, (float)22.5)));
             marioAnimations.Add(AnimationType.Jumping, jumping);
 
             var falling = new List<Frame>();
-            falling.Add(new Frame(new Rectangle(174, 19, 34, 44), new Vector2(11, 31)));
+            falling.Add(new Frame(new Rectangle(174, 19, 34, 44), new Vector2(/*11, 31*/17, 22)));
             marioAnimations.Add(AnimationType.Falling, falling);
 
             var flamethrower = new List<Frame>();
@@ -453,7 +460,7 @@ namespace Platformer
             PenguinCharDucking.Add(new Frame(new Rectangle(61, 156, 51, 32), new Vector2(51 / 2, 32 / 2)));
 
             PenguinCharAnimations.Add(AnimationType.Crouching, PenguinCharDucking);
-
+            
 
             #endregion
 
@@ -1115,8 +1122,8 @@ namespace Platformer
         
         protected override void Update(GameTime gameTime)
         {
-            currentWorld = World.Underwater;
-            currentLevel = 2;
+            /*currentWorld = World.Underwater;
+            currentLevel = 2;*/
             KeyboardState ks = Keyboard.GetState();
 
             ms = Mouse.GetState();
@@ -1523,6 +1530,19 @@ namespace Platformer
                     }
                 }
 
+                if(ks.IsKeyDown(Keys.Delete) && lastKS.IsKeyUp(Keys.Delete))
+                {
+                    currentLevel = 0;
+                    if (currentWorld == World.Land)
+                    {
+                        currentWorld = World.Underwater;
+                    }
+                    else if(currentWorld == World.Underwater)
+                    {
+                        currentWorld = World.Land;
+                    }
+                    Reset();
+                }
                 MenuButton.Update();
                 restartbutton.Update();
             }
