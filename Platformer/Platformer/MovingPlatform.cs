@@ -14,6 +14,8 @@ namespace Platformer
         public int MaxCoord;
         public int MinCoord;
 
+        public bool isTriggered = false;
+
         public MovingPlatform(Texture2D texture, Vector2 position, PlatformMovement movement, int speed, int MaxCoordinate, int MinCoordinate)
             :base(texture, position)
         {
@@ -25,57 +27,66 @@ namespace Platformer
 
         public void Update()
         {
-
-            if(Movement== PlatformMovement.Horizontal)
+            if(PlatformerGame.MainCharacter.groundHitBox.Intersects(HitBox))
             {
-                    X += Speed;
-                if (X >= MaxCoord || X <= MinCoord)
+                isTriggered = true;
+            }
+            else
+            {
+                isTriggered = false;
+            }
+            
+            if (isTriggered)
+            {
+                if (Movement == PlatformMovement.Horizontal)
                 {
-                    Speed *= -1;
-                    X += Speed;
-
-                    if (_effects == SpriteEffects.FlipHorizontally)
+                    if (X >= MaxCoord || X <= MinCoord)
                     {
-                        _effects = SpriteEffects.None;
+                        Speed *= -1;
+                        X += Speed;
+
+                        if (_effects == SpriteEffects.FlipHorizontally)
+                        {
+                            _effects = SpriteEffects.None;
+                        }
+                        else
+                        {
+                            _effects = SpriteEffects.FlipHorizontally;
+                        }
                     }
                     else
                     {
-                        _effects = SpriteEffects.FlipHorizontally;
+                        X += Speed;
+                    }
+                }
+                else if (Movement == PlatformMovement.Vertical)
+                {
+                    Y += Speed;
+                    if (Y >= MaxCoord || Y <= MinCoord)
+                    {
+                        Speed *= -1;
+                        Y += Speed;
+                    }
+                }
+
+                if (PlatformerGame.MainCharacter.groundHitBox.Intersects(HitBox))
+                {
+                    _color = Color.Red;
+                    if (Movement == PlatformMovement.Horizontal)
+                    {
+                        PlatformerGame.MainCharacter.X += Speed;
+                    }
+                    else if (Movement == PlatformMovement.Vertical)
+                    {
+                        PlatformerGame.MainCharacter.Y += Speed;
                     }
                 }
                 else
                 {
-                    X += Speed;
+                    _color = Color.White;
                 }
-            }
-            else if(Movement == PlatformMovement.Vertical)
-            {
-                Y += Speed;
-                if (Y >= MaxCoord || Y <= MinCoord)
-                {
-                    Speed *= -1;
-                    Y += Speed;
-                }
-            }
-
-            if (PlatformerGame.MainCharacter.groundHitBox.Intersects(HitBox))
-            {
-                _color = Color.Red;
-                if (Movement == PlatformMovement.Horizontal)
-                {
-                    PlatformerGame.MainCharacter.X += Speed;
-                }
-                else if (Movement == PlatformMovement.Vertical)
-                {
-                    PlatformerGame.MainCharacter.Y += Speed;
-                }
-            }
-            else
-            {
-                _color = Color.White;
             }
         }
-
         public enum PlatformMovement
         {
             Horizontal,

@@ -32,7 +32,6 @@ namespace Platformer
 
         public void CheckCollision()
         {
-           
 
             if(PlatformerGame.MainCharacter.groundHitBox.Intersects(HitBox))
             {
@@ -71,6 +70,13 @@ namespace Platformer
                 {
                     PlatformerGame.MainCharacter.Y += 0.1f;
                     PlatformerGame.MainCharacter.topHitBox = new Rectangle(PlatformerGame.MainCharacter.HitBox.X , PlatformerGame.MainCharacter.HitBox.Y + 5, PlatformerGame.MainCharacter.HitBox.Width - 10, 1);
+                }
+            }
+            else if(PlatformerGame.MainCharacter.HitBox.Intersects(HitBox))
+            {
+                if(IsDeadly)
+                {
+                    PlatformerGame.MainCharacter.Died = true;
                 }
             }
         }

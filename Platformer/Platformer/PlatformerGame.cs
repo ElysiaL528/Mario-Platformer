@@ -13,7 +13,7 @@ using static Platformer.Item;
 
 namespace Platformer
 {
-    /* To do: Fix the MC's intersection with the mplatforms; the MC doesn't move at the same pace as the mplatform; problem with CheckCollision function?
+    /* To do: Work on changing the format for adding levels; load the platforms by reading the pixels in an image, instead of having to load every single one
      * - 
             - Moving Platforms
             - Slow shift function in ULevels
@@ -30,7 +30,6 @@ namespace Platformer
             - Fix glitch in level 4
             - Be able to buy items in the shop
             - Disable any powerup functions every time the level resets
-            - No matter what level you choose, it always goes to the third ULevel (somewhere, there's a line of code that sets the level repeatedly to ULevel 3)
             - Loop back to the title screen when all the levels are finished
             - Animate the fireballs in Mario's sprite sheet for the loading
             
@@ -56,6 +55,7 @@ namespace Platformer
         Texture2D ULevelMenuBackground;
         Texture2D TitleScreen;
         Texture2D CoinImage;
+        Texture2D TestLevelMap;
         Vector2 speed;
         Vector2 position;
         Vector2 coinPosition;
@@ -198,7 +198,7 @@ namespace Platformer
             MainCharacter.Position = levels[currentWorld][currentLevel].StartPosition;
             enemy.isDead = false;
             hasfirepower = false;
-            enemy.isDead = false;
+            MainCharacter.Died = false;
             MoreLives = false;
             foreach(AnimatedSprite coin in levels[currentWorld][currentLevel].CoinList)
             {
@@ -587,6 +587,7 @@ namespace Platformer
             enemy.Xspeed = 1;
             Texture2D platformImage = Content.Load<Texture2D>("Platform");
             Texture2D lavaPlatformImage = Content.Load<Texture2D>("lava");
+            TestLevelMap = Content.Load<Texture2D>("LevelX");
             CoinImage = Content.Load<Texture2D>("CoinImage");
             ULevelMenuBackground = Content.Load<Texture2D>("ULevelMenu_Title");
             LandLevelMenuBackground = Content.Load<Texture2D>("LandLevelMenu_Title");
@@ -1014,21 +1015,16 @@ namespace Platformer
             #region level 1-0
             var level1_0platforms = new List<Platform>()
             {
-                new Platform(platformImage, new Vector2(18, 473)) {Size =  new Vector2(968, 19)}
-            };
-
-            var level1_0lavaplatforms = new List<Platform>()
-            {
+                new Platform(platformImage, new Vector2(18, 473)) {Size =  new Vector2(968, 19)},
                 new Platform(lavaPlatformImage, new Vector2(0, 0), true) {Size =  new Vector2(19, 490)},
                 new Platform(lavaPlatformImage, new Vector2(18, 0), true) {Size =  new Vector2(968, 19)},
                 new Platform(lavaPlatformImage, new Vector2(985, 1), true) {Size =  new Vector2(15, 488)},
                 new Platform(lavaPlatformImage, new Vector2(207, 321), true) {Size =  new Vector2(779, 22)},
                 new Platform(lavaPlatformImage, new Vector2(17, 157), true) {Size =  new Vector2(802, 22)}
+                
+
             };
-            level1_0platforms.AddRange(level1_0lavaplatforms);
-
             levels[World.Underwater].Add(new Level(level1_0platforms, new List<Item>(), new List<AnimatedSprite>(), maps[LevelMap.Kelp], new Sprite(Content.Load<Texture2D>("door"), new Vector2(660, 120), Color.White) { Origin = new Vector2(0, Content.Load<Texture2D>("door").Height), Scale = new Vector2(.75f) }, new List<MovingPlatform>()));
-
 
             #endregion
             #region level 1-1
@@ -1073,23 +1069,23 @@ namespace Platformer
                 new Platform(platformImage, new Vector2(0, 70), false) { Size = new Vector2(143, 28) },
                 new Platform(platformImage, new Vector2(635, 286), false) { Size = new Vector2(143, 28) },
                 // Horizontally moving platforms || X speed = 5 || Y speed = 0
-                new Platform(platformImage, new Vector2(180, 69), false) { Size = new Vector2(139, 28) }, 
+                /*new Platform(platformImage, new Vector2(180, 69), false) { Size = new Vector2(139, 28) }, 
                 new Platform(platformImage, new Vector2(652, 460), false) { Size = new Vector2(139, 28) },
-                new Platform(platformImage, new Vector2(125, 251), false) { Size = new Vector2(139, 28) },
+                new Platform(platformImage, new Vector2(125, 251), false) { Size = new Vector2(139, 28) },*/
                 // Vertically moving platforms || X speed = 0 || Y speed = 5
+                /*
                 new Platform(platformImage, new Vector2(862, 83), false) { Size = new Vector2(139, 28) },
-                new Platform(platformImage, new Vector2(0, 460), false) { Size = new Vector2(112, 28) }
+                new Platform(platformImage, new Vector2(0, 460), false) { Size = new Vector2(112, 28) }*/
             };
             Level1_2platforms.AddRange(Level1_2lavaplatforms);
 
             var Level1_2MovingPlatforms = new List<MovingPlatform>()
             {
-                new MovingPlatform(platformImage, new Vector2(0, 0), MovingPlatform.PlatformMovement.Horizontal, 1, 900, 100),
-                new MovingPlatform(platformImage, new Vector2(180, 69), MovingPlatform.PlatformMovement.Horizontal, 1, 900, 100),
-                new MovingPlatform(platformImage, new Vector2(652, 460), MovingPlatform.PlatformMovement.Horizontal, 1, 900, 100),
-                new MovingPlatform(platformImage, new Vector2(125, 251), MovingPlatform.PlatformMovement.Horizontal, 1, 900, 100),
-                new MovingPlatform(platformImage, new Vector2(862, 83), MovingPlatform.PlatformMovement.Vertical, 1, 400, 10),
-                new MovingPlatform(platformImage, new Vector2(0, 460), MovingPlatform.PlatformMovement.Vertical, 1, 400, 10)
+                new MovingPlatform(platformImage, new Vector2(180, 69), MovingPlatform.PlatformMovement.Horizontal, 2, 900, 100),
+                new MovingPlatform(platformImage, new Vector2(652, 460), MovingPlatform.PlatformMovement.Horizontal, 2, 900, 100),
+                new MovingPlatform(platformImage, new Vector2(125, 251), MovingPlatform.PlatformMovement.Horizontal, 2, 900, 100),
+                new MovingPlatform(platformImage, new Vector2(862, 83), MovingPlatform.PlatformMovement.Vertical, 2, 400, 10),
+                new MovingPlatform(platformImage, new Vector2(0, 460), MovingPlatform.PlatformMovement.Vertical, 2, 400, 10)
             };
             
 
@@ -1330,8 +1326,8 @@ namespace Platformer
                 {
                     if (currentLevel < levels[currentWorld].Count)
                     {
-                        currentLevel++;
                         Reset();
+                        currentLevel++;
                         //Have all the level's item return to non-selected status
                         if (levels[currentWorld][currentLevel].hasPowerup)
                         {
@@ -1425,7 +1421,7 @@ namespace Platformer
                     }
                     if(MainCharacter.HitBox.Intersects(enemy.HitBox))
                     {
-                        enemy.isDead = true;
+                        MainCharacter.Died = true;
                     }
                 }
                 if (fireballhitcount >= maxFireballHits)
